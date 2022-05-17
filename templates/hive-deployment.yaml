@@ -1,0 +1,75 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app:  {{ .Release.Name }}-app
+  name: {{ .Release.Name }}-app
+  namespace: {{ .Release.Namespace }}
+spec:
+  type: LoadBalancer
+  # type: NodePort
+  ports:
+    - port: {{ .Values.theHiveApp.service.port }}
+      nodePort: {{ .Values.theHiveApp.service.nodePort }}
+  selector:
+    app: {{ .Release.Name }}-app
+---
+apiVersion: apps/v1
+kind: StatefulSet
+#kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-app
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: {{ .Release.Name }}-app
+spec:
+  serviceName: {{ .Release.Name }}-app
+  replicas: {{ .Values.theHiveApp.deployments.replicas }}
+  selector:
+    matchLabels:
+      app: {{ .Release.Name }}-app
+  template:
+    metadata:
+      labels:
+        app: {{ .Release.Name }}-app
+    spec:
+      serviceAccountName: {{ .Release.Name }}-app
+      containers:
+        - name: {{ .Release.Name }}-app
+          image: {{ .Values.theHiveApp.deployments.image }}
+          command:
+            - "/opt/thehive/entrypoint"
+            - "--secret"
+            - "SuperSecretForKubernetes"
+            - "--cql-hostnames"
+            - "cassandra"
+            - "--no-cql-wait"
+            - "--no-config-cortex"
+            - "--kubernetes"
+            - "--index-backend"
+            - "elasticsearch"
+            - "--es-hostnames"
+            - "elasticsearch"
+            - "--s3-endpoint"
+            - "http://minio:9000"
+            - "--s3-access-key"
+            - "minioadmin"
+            - "--s3-secret-key"
+            - "minioadmin"
+            - "--s3-use-path-access-style"
+            - "--cluster-min-nodes-count"
+            - "0"
+          ports:
+            - containerPort: {{ .Values.theHiveApp.deployments.containerPort }}
+              name: {{ .Values.theHiveApp.deployments.name }}
+          env:
+            - name: POD_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.podIP
+          resources:
+            limits:
+              memory: {{ .Values.theHiveApp.deployments.resources.limits.memory}}
+            requests:
+              cpu: {{ .Values.theHiveApp.deployments.resources.requests.cpu}}
+              memory: {{ .Values.theHiveApp.deployments.resources.requests.memory}}

@@ -1,0 +1,73 @@
+theHiveApp:
+  service:
+    port: 9000
+    nodePort: 30001
+  deployments:
+    replicas: 2
+    containerPort: 9000
+    name: http
+    resources:
+      limits:
+        memory: 2Gi
+      requests:
+        cpu: "100m"
+        memory: 512Mi
+    image: strangebee/thehive:latest
+
+cassandra:
+  enabled: true
+  service:
+    port: 9042
+  statefulset:
+    replicas: 1
+    terminationGracePeriodSeconds: 1800
+    image: cassandra:4.0
+    resources:
+      limits:
+        cpu: "500m"
+        memory: 1Gi
+      requests:
+        cpu: "100m"
+        memory: 1Gi
+
+elasticSearch:
+  enabled: true
+  service:
+    port: 9000
+  statefulset:
+    replicas: 1
+    terminationGracePeriodSeconds: 1800
+    initContainers:
+      name: init
+      image: debian:stable-slim
+    containers:
+      image: docker.elastic.co/elasticsearch/elasticsearch:7.17.1
+      ports:
+        containerPort: 9200
+        name: http
+      resources:
+        limits:
+          cpu: "500m"
+          memory: 1Gi
+        requests:
+          cpu: "100m"
+          memory: 512Mi
+
+minio:
+  service:
+    port: 9000
+  statefulset:
+    replicas: 1
+    terminationGracePeriodSeconds: 1800
+    containers:
+      image: quay.io/minio/minio
+      ports:
+        containerPort: 9000
+        name: http
+      resources:
+        limits:
+          cpu: "500m"
+          memory: 1Gi
+        requests:
+          cpu: "100m"
+          memory: 256Mi
