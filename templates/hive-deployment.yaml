@@ -15,15 +15,15 @@ spec:
     app: {{ .Release.Name }}-app
 ---
 apiVersion: apps/v1
-kind: StatefulSet
-#kind: Deployment
+#kind: StatefulSet
+kind: Deployment
 metadata:
   name: {{ .Release.Name }}-app
   namespace: {{ .Release.Namespace }}
   labels:
     app: {{ .Release.Name }}-app
 spec:
-  serviceName: {{ .Release.Name }}-app
+  #serviceName: {{ .Release.Name }}-app
   replicas: {{ .Values.theHiveApp.deployments.replicas }}
   selector:
     matchLabels:
@@ -42,14 +42,14 @@ spec:
             - "--secret"
             - "SuperSecretForKubernetes"
             - "--cql-hostnames"
-            - "cassandra"
+            - {{ .Values.theHiveApp.deployments.cassandraHostname | default "cassandra" }}
             - "--no-cql-wait"
             - "--no-config-cortex"
             - "--kubernetes"
             - "--index-backend"
             - "elasticsearch"
             - "--es-hostnames"
-            - "elasticsearch"
+            - {{ .Values.theHiveApp.deployments.elasticsearchHostname | default "elasticsearch" }}
             - "--s3-endpoint"
             - "http://minio:9000"
             - "--s3-access-key"

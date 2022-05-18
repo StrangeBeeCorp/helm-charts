@@ -11,7 +11,7 @@ theHiveApp:
         memory: 2Gi
       requests:
         cpu: "100m"
-        memory: 512Mi
+        memory: 100Mi
     image: strangebee/thehive:latest
 
 cassandra:
@@ -28,12 +28,12 @@ cassandra:
         memory: 1Gi
       requests:
         cpu: "100m"
-        memory: 1Gi
+        memory: 100Mi
 
 elasticSearch:
   enabled: true
   service:
-    port: 9000
+    port: 9200
   statefulset:
     replicas: 1
     terminationGracePeriodSeconds: 1800
@@ -51,7 +51,7 @@ elasticSearch:
           memory: 1Gi
         requests:
           cpu: "100m"
-          memory: 512Mi
+          memory: 100Mi
 
 minio:
   service:
@@ -67,7 +67,7 @@ minio:
       resources:
         limits:
           cpu: "500m"
-          memory: 1Gi
+          memory: 512Mi
         requests:
           cpu: "100m"
-          memory: 256Mi
+          memory: 100Mi
