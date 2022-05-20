@@ -1,7 +1,7 @@
 theHiveApp:
   service:
     port: 9000
-    nodePort: 30001
+    nodePort: 30002
   deployments:
     replicas: 2
     containerPort: 9000
@@ -13,6 +13,8 @@ theHiveApp:
         cpu: "100m"
         memory: 100Mi
     image: strangebee/thehive:latest
+    cassandraHostname: "cassandraTest"
+    elasticSearchHostname: "elasticSearchTest"
 
 cassandra:
   enabled: true
@@ -71,3 +73,23 @@ minio:
         requests:
           cpu: "100m"
           memory: 100Mi
+
+
+cortex:
+  service:
+    port: 9001
+  statefulset:
+    replicas: 1
+    terminationGracePeriodSeconds: 1800
+    containers:
+      image: thehiveproject/cortex:3.1.1-1
+      ports:
+        containerPort: 9001
+        name: http
+      resources:
+        limits:
+          cpu: "500m"
+          memory: 1Gi
+        requests:
+          cpu: "100m"
+          memory: 512Mi

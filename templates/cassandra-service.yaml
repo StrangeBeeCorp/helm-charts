@@ -1,0 +1,14 @@
+{{- if .Values.cassandra.enabled -}}
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: {{ .Release.Name }}-cassandra
+  name: {{ .Release.Name }}-cassandra
+  namespace: {{ .Release.Namespace }}
+spec:
+  ports:
+    - port: {{.Values.cassandra.service.port}}
+  selector:
+    app: {{ .Release.Name }}-cassandra
+{{- end }}

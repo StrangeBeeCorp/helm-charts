@@ -1,25 +1,12 @@
-apiVersion: v1
-kind: Service
-metadata:
-  labels:
-    app: {{ .Release.Name }}-minio
-  name: {{ .Release.Name }}-minio
-  namespace: {{ .Release.Namespace }}
-spec:
-  ports:
-    - port: {{ .Values.minio.service.port }}
-  selector:
-    app: {{ .Release.Name }}-minio
----
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: {{ .Release.Name }}-minio
+  name: minio
   namespace: {{ .Release.Namespace }}
   labels:
-    app: {{ .Release.Name }}-minio
+    app: minio
 spec:
-  serviceName: {{ .Release.Name }}-minio
+  serviceName: minio
   replicas: {{ .Values.minio.statefulset.replicas }}
   selector:
     matchLabels:
@@ -31,7 +18,7 @@ spec:
     spec:
       terminationGracePeriodSeconds: {{ .Values.minio.statefulset.terminationGracePeriodSeconds }}
       containers:
-        - name: {{ .Release.Name }}-minio
+        - name: minio
           image: {{ .Values.minio.statefulset.containers.image }}
           command: ["minio", "server", "/data", "--console-address", ":9001"]
           env:

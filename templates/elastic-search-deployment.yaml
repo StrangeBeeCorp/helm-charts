@@ -1,18 +1,4 @@
 {{- if .Values.elasticSearch.enabled -}}
-apiVersion: v1
-kind: Service
-metadata:
-  labels:
-    app: {{ .Release.Name }}-elasticsearch
-  name: {{ .Release.Name }}-elasticsearch
-  namespace: {{ .Release.Namespace }}
-spec:
-  type: LoadBalancer
-  ports:
-    - port: {{ .Values.elasticSearch.service.port }}
-  selector:
-    app: {{ .Release.Name }}-elasticsearch
----
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:

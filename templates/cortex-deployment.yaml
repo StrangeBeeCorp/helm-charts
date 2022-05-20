@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: cortex
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: cortex
+spec:
+  serviceName: cortex
+  replicas: {{ .Values.cortex.statefulset.replicas }}
+  selector:
+    matchLabels:
+      app: cortex
+  template:
+    metadata:
+      labels:
+        app: cortex
+    spec:
+      terminationGracePeriodSeconds: {{ .Values.cortex.statefulset.terminationGracePeriodSeconds }}
+      containers:
+      - name: cortex
+        image: {{ .Values.cortex.statefulset.containers.image }}
+        ports:
+          - containerPort: {{ .Values.cortex.statefulset.containers.ports.containerPort }}
+            name: {{ .Values.cortex.statefulset.containers.ports.name }}
+        resources:
+          limits:
+            cpu: {{ .Values.cortex.statefulset.containers.resources.limits.cpu }}
+            memory: {{ .Values.cortex.statefulset.containers.resources.limits.memory }}
+          requests:
+            cpu: {{ .Values.cortex.statefulset.containers.resources.requests.cpu }}
+            memory: {{ .Values.cortex.statefulset.containers.resources.requests.memory }}
+        env:
+          - name: es_uri
+            value: http://{{ ternary (printf "%s-elasticsearch" .Release.Name) .Values.theHiveApp.deployments.elasticSearchHostname .Values.elasticSearch.enabled }}:9200
+          - name: kubernetes_job_pvc
+            value: hppvc
+        volumeMounts:
+        - mountPath: /tmp/cortex-jobs
+          name: jobdir
+      volumes:
+      - name: jobdir
+        emptyDir: {}
