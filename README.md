@@ -1,12 +1,18 @@
-# thehive helm charts
+# Thehive Helm Chart
 
-Run the command:
 
 To Verify if the templates are correct:
 ```bash
 helm install thehive ./ --values values.yaml -n thehive --create-namespace --dry-run --debug
 ```
-Apply the templates:
+Deploy chart:
 
 ```bash
 helm install thehive ./ --values values.yaml -n thehive --create-namespace
+```
+
+Update helm deployment:
+
+```bash
+helm upgrade thehive ./ --values values.yaml -n thehive
+```
