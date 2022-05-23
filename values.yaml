@@ -1,9 +1,9 @@
 theHiveApp:
   service:
     port: 9000
-    nodePort: 30002
+    nodePort: 30001
   deployments:
-    replicas: 2
+    replicas: 1
     containerPort: 9000
     name: http
     resources:
@@ -13,8 +13,8 @@ theHiveApp:
         cpu: "100m"
         memory: 100Mi
     image: strangebee/thehive:latest
-    cassandraHostname: "cassandraTest"
-    elasticSearchHostname: "elasticSearchTest"
+    cassandraHostname: "cassandra"
+    elasticSearchHostname: "elasticSearch"
 
 cassandra:
   enabled: true
