@@ -93,3 +93,23 @@ cortex:
         requests:
           cpu: "100m"
           memory: 512Mi
+
+HiveStorageClass:
+  cloud: hive-local
+  name: hive-storageclass
+  reclaimPolicy: Retain
+
+HivePersistentVolumeClaim:
+  name: hive-pvc
+  spec:
+    resources:
+      storage: 2G 
+
+HiveHorizontalPodAutoscaler:
+  name: hive-hpa
+  spec:
+    minReplicas: 1
+    maxReplicas: 3
+    metrics:
+      averageUtilization: 90
+      averageValue: 900Mi

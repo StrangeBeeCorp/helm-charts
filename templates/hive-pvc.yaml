@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ .Values.HivePersistentVolumeClaim.name }}
+  namespace: {{ .Release.Namespace }}
+spec:
+  storageClassName: {{ .Values.HiveStorageClass.name }}
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: {{ .Values.HivePersistentVolumeClaim.spec.resources.storage }}

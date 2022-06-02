@@ -1,6 +1,5 @@
 apiVersion: apps/v1
-#kind: StatefulSet
-kind: Deployment
+kind: StatefulSet
 metadata:
   name: {{ .Release.Name }}
   namespace: {{ .Release.Namespace }}
@@ -59,3 +58,10 @@ spec:
             requests:
               cpu: {{ .Values.theHiveApp.deployments.resources.requests.cpu}}
               memory: {{ .Values.theHiveApp.deployments.resources.requests.memory}}
+          volumeMounts:
+          - mountPath: /tmp/hive-jobs
+            name: hive-volume
+      volumes:
+      - name: hive-volume
+        persistentVolumeClaim:
+          claimName: {{ .Values.PersistentVolumeClaim.name }}
