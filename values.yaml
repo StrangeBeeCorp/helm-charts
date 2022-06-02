@@ -74,7 +74,6 @@ minio:
           cpu: "100m"
           memory: 100Mi
 
-
 cortex:
   service:
     port: 9001
@@ -93,3 +92,14 @@ cortex:
         requests:
           cpu: "100m"
           memory: 512Mi
+
+StorageClass:
+  cloud: local
+  name: cortex-storageclass
+  reclaimPolicy: Retain
+
+PersistentVolumeClaim:
+  name: cortex-pvc
+  spec:
+    resources:
+      storage: 2G 

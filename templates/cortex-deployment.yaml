@@ -40,4 +40,5 @@ spec:
           name: jobdir
       volumes:
       - name: jobdir
-        emptyDir: {}
+        persistentVolumeClaim:
+          claimName: {{ .Values.PersistentVolumeClaim.name }}
