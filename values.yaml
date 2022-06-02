@@ -93,13 +93,22 @@ cortex:
           cpu: "100m"
           memory: 512Mi
 
-StorageClass:
+CortexStorageClass:
   cloud: local
   name: cortex-storageclass
   reclaimPolicy: Retain
 
-PersistentVolumeClaim:
+CortexPersistentVolumeClaim:
   name: cortex-pvc
   spec:
     resources:
       storage: 2G 
+
+CortexHPA:
+  name: cortex-autoscale
+  spec:
+    minReplicas: 1
+    maxReplicas: 3
+    metrics:
+      averageUtilization: 90
+      averageValue: 900Mi

@@ -1,12 +1,12 @@
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: {{ .Values.PersistentVolumeClaim.name }}
+  name: {{ .Values.CortexPersistentVolumeClaim.name }}
   namespace: {{ .Release.Namespace }}
 spec:
-  storageClassName: {{ .Values.StorageClass.name }}
+  storageClassName: {{ .Values.CortexStorageClass.name }}
   accessModes:
     - ReadWriteOnce
   resources:
     requests:
-      storage: {{ .Values.PersistentVolumeClaim.spec.resources.storage }}
+      storage: {{ .Values.CortexPersistentVolumeClaim.spec.resources.storage }}

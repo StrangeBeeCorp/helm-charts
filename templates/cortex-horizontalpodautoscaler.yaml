@@ -1,0 +1,24 @@
+apiVersion: autoscaling/v2beta2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: {{ .Values.CortexHPA.name }}
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: StatefulSet
+    name: cortex
+  minReplicas: {{ .Values.CortexHPA.spec.minReplicas }}
+  maxReplicas: {{ .Values.CortexHPA.spec.maxReplicas }}
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: {{ .Values.CortexHPA.spec.metrics.averageUtilization }}
+  - type: Resource
+    resource:
+      name: memory
+      target:
+        type: AverageValue
+        averageValue: {{ .Values.CortexHPA.spec.metrics.averageValue }}
