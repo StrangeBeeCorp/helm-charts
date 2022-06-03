@@ -5,8 +5,9 @@ metadata:
   namespace: {{ .Release.Namespace }}
 spec:
   storageClassName: {{ .Values.HiveStorageClass.name }}
-  accessModes:
-    - ReadWriteOnce
+  volumeName: {{ .Values.HivePersistentVolume.name }}
+  accessModes: 
+    - {{ .Values.HivePersistentVolumeClaim.spec.accessModes }}
   resources:
     requests:
-      storage: {{ .Values.HivePersistentVolumeClaim.spec.resources.storage }}
+      storage: {{ .Values.HivePersistentVolumeClaim.spec.resources.requests.storage }}

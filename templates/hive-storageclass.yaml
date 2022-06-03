@@ -16,30 +16,33 @@ parameters:
   fstype: ext4
   replication-type: none
 --- 
-{{ else if eq .Values.HiveStorageClass.cloud "local" }}
+{{ else if eq .Values.HiveStorageClass.cloud "hive-local" }}
 #==================                             =======================#
 #==================       Local Provisioner     =======================#
 #==================                             =======================#
 apiVersion: storage.k8s.io/v1
-kind: HiveStorageClass
+kind: StorageClass
 metadata:
   name: {{ .Values.HiveStorageClass.name }}
   namespace: {{ .Release.Namespace }}
 provisioner: kubernetes.io/no-provisioner
-volumeBindingMode: Immediate
+# volumeBindingMode: Immediate
+volumeBindingMode: WaitForFirstConsumer
 allowVolumeExpansion: true
+# mountOptions:
+#   - debug
 reclaimPolicy: {{ .Values.HiveStorageClass.reclaimPolicy }}
-parameters:
-  type: pd-standard
-  fstype: ext4
-  replication-type: none
+# parameters:
+#   type: pd-standard
+#   fstype: ext4
+#   replication-type: none
 ---
 {{ else if eq .Values.HiveStorageClass.cloud "azure"}}
 #==================                             =======================#
 #==================       Azure Provisioner     =======================#
 #==================                             =======================#
 apiVersion: storage.k8s.io/v1
-kind: HiveStorageClass
+kind: StorageClass
 metadata:
   name: {{ .Values.HiveStorageClass.name }}
   namespace: {{ .Release.Namespace }}
@@ -53,7 +56,7 @@ parameters:
 #==================       AWS Provisioner       =======================#
 #==================                             =======================#
 apiVersion: storage.k8s.io/v1
-kind: HiveStorageClass
+kind: StorageClass
 metadata:
   name: {{ .Values.HiveStorageClass.name }}
   namespace: {{ .Release.Namespace }}

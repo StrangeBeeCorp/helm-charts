@@ -6,8 +6,8 @@ metadata:
   labels:
     app: {{ .Release.Name }}
 spec:
-  #serviceName: {{ .Release.Name }}
-  replicas: {{ .Values.theHiveApp.deployments.replicas }}
+  serviceName: {{ .Release.Name }}
+  replicas: {{ .Values.theHiveApp.statefulset.replicas }}
   selector:
     matchLabels:
       app: {{ .Release.Name }}
@@ -19,10 +19,10 @@ spec:
       serviceAccountName: {{ .Release.Name }}
       containers:
         - name: {{ .Release.Name }}
-          image: {{ .Values.theHiveApp.deployments.image }}
+          image: {{ .Values.theHiveApp.statefulset.image }}
           command:
-            {{ $cqlhost := ternary (printf "%s-cassandra" .Release.Name) .Values.theHiveApp.deployments.cassandraHostname .Values.cassandra.enabled }}
-            {{ $eshost := ternary (printf "%s-elasticsearch" .Release.Name) .Values.theHiveApp.deployments.elasticSearchHostname .Values.elasticSearch.enabled }}
+            {{ $cqlhost := ternary (printf "%s-cassandra" .Release.Name) .Values.theHiveApp.statefulset.cassandraHostname .Values.cassandra.enabled }}
+            {{ $eshost := ternary (printf "%s-elasticsearch" .Release.Name) .Values.theHiveApp.statefulset.elasticSearchHostname .Values.elasticSearch.enabled }}
             - "/opt/thehive/entrypoint"
             - "--secret"
             - "SuperSecretForKubernetes"
@@ -45,8 +45,8 @@ spec:
             - "--cluster-min-nodes-count"
             - "0"
           ports:
-            - containerPort: {{ .Values.theHiveApp.deployments.containerPort }}
-              name: {{ .Values.theHiveApp.deployments.name }}
+            - containerPort: {{ .Values.theHiveApp.statefulset.containerPort }}
+              name: {{ .Values.theHiveApp.statefulset.name }}
           env:
             - name: POD_IP
               valueFrom:
@@ -54,14 +54,15 @@ spec:
                   fieldPath: status.podIP
           resources:
             limits:
-              memory: {{ .Values.theHiveApp.deployments.resources.limits.memory}}
+              memory: {{ .Values.theHiveApp.statefulset.resources.limits.memory}}
             requests:
-              cpu: {{ .Values.theHiveApp.deployments.resources.requests.cpu}}
-              memory: {{ .Values.theHiveApp.deployments.resources.requests.memory}}
+              cpu: {{ .Values.theHiveApp.statefulset.resources.requests.cpu}}
+              memory: {{ .Values.theHiveApp.statefulset.resources.requests.memory}}
           volumeMounts:
-          - mountPath: /tmp/hive-jobs
+          - mountPath: /var/log/thehive2
+            # subPath: application.log
             name: hive-volume
       volumes:
       - name: hive-volume
         persistentVolumeClaim:
-          claimName: {{ .Values.PersistentVolumeClaim.name }}
+          claimName: {{ .Values.HivePersistentVolumeClaim.name }}

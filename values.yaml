@@ -2,7 +2,7 @@ theHiveApp:
   service:
     port: 9000
     nodePort: 30001
-  deployments:
+  statefulset:
     replicas: 1
     containerPort: 9000
     name: http
@@ -74,7 +74,6 @@ minio:
           cpu: "100m"
           memory: 100Mi
 
-
 cortex:
   service:
     port: 9001
@@ -102,14 +101,16 @@ HiveStorageClass:
 HivePersistentVolumeClaim:
   name: hive-pvc
   spec:
+    accessModes: ReadWriteOnce
     resources:
-      storage: 2G 
+      requests:
+        storage: 2Gi
 
-HiveHorizontalPodAutoscaler:
-  name: hive-hpa
+HivePersistentVolume:
+  name: hive-pv
   spec:
-    minReplicas: 1
-    maxReplicas: 3
-    metrics:
-      averageUtilization: 90
-      averageValue: 900Mi
+    accessModes: ReadWriteOnce
+    capacity:
+      storage: 5Gi
+    hostPath:
+      path: /data/hive
