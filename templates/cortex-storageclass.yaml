@@ -26,13 +26,13 @@ metadata:
   name: {{ .Values.CortexStorageClass.name }}
   namespace: {{ .Release.Namespace }}
 provisioner: kubernetes.io/no-provisioner
-volumeBindingMode: Immediate
+volumeBindingMode: WaitForFirstConsumer
 allowVolumeExpansion: true
 reclaimPolicy: {{ .Values.CortexStorageClass.reclaimPolicy }}
-parameters:
-  type: pd-standard
-  fstype: ext4
-  replication-type: none
+# parameters:
+#   type: pd-standard
+#   fstype: ext4
+#   replication-type: none
 ---
 {{ else if eq .Values.CortexStorageClass.cloud "azure"}}
 #==================                             =======================#
