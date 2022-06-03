@@ -59,7 +59,7 @@ spec:
               cpu: {{ .Values.theHiveApp.statefulset.resources.requests.cpu}}
               memory: {{ .Values.theHiveApp.statefulset.resources.requests.memory}}
           volumeMounts:
-          - mountPath: /var/log/thehive2
+          - mountPath: /var/log/thehive
             # subPath: application.log
             name: hive-volume
       volumes:

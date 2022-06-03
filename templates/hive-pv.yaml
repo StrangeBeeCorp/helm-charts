@@ -4,21 +4,21 @@ metadata:
   name: {{ .Values.HivePersistentVolume.name }}
   namespace: {{ .Release.Namespace }}
 spec:
-  persistentVolumeReclaimPolicy: Retain
+  # persistentVolumeReclaimPolicy: Retain
   storageClassName: {{ .Values.HiveStorageClass.name }}
   accessModes:
     - {{ .Values.HivePersistentVolume.spec.accessModes }}
   capacity:
     storage: {{ .Values.HivePersistentVolume.spec.capacity.storage }}
-  # hostPath:
-  #   path: {{ .Values.HivePersistentVolume.spec.hostPath.path }}
-  local:
-    path: /data/hive
-  nodeAffinity:
-    required:
-      nodeSelectorTerms:
-      - matchExpressions:
-        - key: kubernetes.io/hostname
-          operator: In
-          values:
-          - minikube
+  hostPath:
+    path: {{ .Values.HivePersistentVolume.spec.hostPath.path }}
+  # local:
+  #   path: /data/hive
+  # nodeAffinity:
+  #   required:
+  #     nodeSelectorTerms:
+  #     - matchExpressions:
+  #       - key: kubernetes.io/hostname
+  #         operator: In
+  #         values:
+  #         - minikube

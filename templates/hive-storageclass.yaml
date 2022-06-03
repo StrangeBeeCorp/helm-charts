@@ -26,8 +26,8 @@ metadata:
   name: {{ .Values.HiveStorageClass.name }}
   namespace: {{ .Release.Namespace }}
 provisioner: kubernetes.io/no-provisioner
-# volumeBindingMode: Immediate
-volumeBindingMode: WaitForFirstConsumer
+volumeBindingMode: Immediate
+# volumeBindingMode: WaitForFirstConsumer
 allowVolumeExpansion: true
 # mountOptions:
 #   - debug
