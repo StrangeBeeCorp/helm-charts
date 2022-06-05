@@ -97,6 +97,7 @@ CortexStorageClass:
   cloud: local
   name: cortex-storageclass
   reclaimPolicy: Retain
+  accessModes: ReadWriteMany
 
 CortexPersistentVolumeClaim:
   name: cortex-pvc
@@ -112,3 +113,7 @@ CortexHPA:
     metrics:
       averageUtilization: 90
       averageValue: 900Mi
+
+CortexPersistentVolume:
+  name: cortex-pv
+  accessModes: ReadWriteMany

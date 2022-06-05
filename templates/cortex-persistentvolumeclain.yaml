@@ -4,11 +4,10 @@ metadata:
   name: {{ .Values.CortexPersistentVolumeClaim.name }}
   namespace: {{ .Release.Namespace }}
 spec:
-  # storageClassName: stantard
   storageClassName: {{ .Values.CortexStorageClass.name }}
-  volumeName: cortex-pv
+  volumeName: {{ .Values.CortexPersistentVolume.name }}
   accessModes:
-    - ReadWriteMany
+    - {{ .Values.CortexStorageClass.accessModes }}
   resources:
     requests:
       storage: {{ .Values.CortexPersistentVolumeClaim.spec.resources.storage }}
