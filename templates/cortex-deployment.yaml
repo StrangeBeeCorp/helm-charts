@@ -1,24 +1,24 @@
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: cortex
+  name: {{ .Release.Name }}-cortex
   namespace: {{ .Release.Namespace }}
   labels:
-    app: cortex
+    app: {{ .Release.Name }}-cortex
 spec:
-  serviceName: cortex
+  serviceName: {{ .Release.Name }}-cortex
   replicas: {{ .Values.cortex.statefulset.replicas }}
   selector:
     matchLabels:
-      app: cortex
+      app: {{ .Release.Name }}-cortex
   template:
     metadata:
       labels:
-        app: cortex
+        app: {{ .Release.Name }}-cortex
     spec:
       terminationGracePeriodSeconds: {{ .Values.cortex.statefulset.terminationGracePeriodSeconds }}
       containers:
-      - name: cortex
+      - name: {{ .Release.Name }}-cortex
         image: {{ .Values.cortex.statefulset.containers.image }}
         ports:
           - containerPort: {{ .Values.cortex.statefulset.containers.ports.containerPort }}
@@ -42,4 +42,4 @@ spec:
       volumes:
         - name: jobdir
           persistentVolumeClaim:
-            claimName: {{ .Values.CortexPersistentVolumeClaim.name }}
+            claimName: "{{ .Release.Name }}-{{ .Values.CortexPersistentVolumeClaim.name }}"

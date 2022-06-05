@@ -99,11 +99,17 @@ CortexStorageClass:
   reclaimPolicy: Retain
   accessModes: ReadWriteMany
 
+CortexPersistentVolume:
+  name: cortex-pv
+  accessModes: ReadWriteMany
+  capacity:
+    storage: 5Gi
+
 CortexPersistentVolumeClaim:
   name: cortex-pvc
   spec:
     resources:
-      storage: 2G 
+      storage: 4G
 
 CortexHPA:
   name: cortex-autoscale
@@ -113,7 +119,3 @@ CortexHPA:
     metrics:
       averageUtilization: 90
       averageValue: 900Mi
-
-CortexPersistentVolume:
-  name: cortex-pv
-  accessModes: ReadWriteMany

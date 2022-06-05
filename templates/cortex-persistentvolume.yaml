@@ -1,13 +1,13 @@
 apiVersion: v1
 kind: PersistentVolume
 metadata:
-  name: {{ .Values.CortexPersistentVolume.name }}
+  name: "{{ .Release.Name }}-{{ .Values.CortexPersistentVolume.name }}"
   namespace: {{ .Release.Namespace }}
 spec:
-  storageClassName: {{ .Values.CortexStorageClass.name }}
+  storageClassName: "{{ .Release.Name }}-{{ .Values.CortexStorageClass.name }}"
   accessModes:
     - {{ .Values.CortexPersistentVolume.accessModes }}
   capacity:
-    storage: 5Gi
+    storage: {{ .Values.CortexPersistentVolume.capacity.storage }}
   hostPath:
     path: /cortex

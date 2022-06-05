@@ -1,12 +1,13 @@
 apiVersion: autoscaling/v2beta2
 kind: HorizontalPodAutoscaler
 metadata:
-  name: {{ .Values.CortexHPA.name }}
+  name: "{{ .Release.Name }}-{{ .Values.CortexHPA.name }}"
+  namespace: {{ .Release.Namespace }}
 spec:
   scaleTargetRef:
     apiVersion: apps/v1
     kind: StatefulSet
-    name: cortex
+    name: {{ .Release.Name }}-cortex
   minReplicas: {{ .Values.CortexHPA.spec.minReplicas }}
   maxReplicas: {{ .Values.CortexHPA.spec.maxReplicas }}
   metrics:

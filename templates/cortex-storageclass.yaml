@@ -5,7 +5,7 @@
 apiVersion: storage.k8s.io/v1
 kind: StorageClass
 metadata:
-  name: {{ .Values.CortexStorageClass.name }}
+  name: "{{ .Release.Name }}-{{ .Values.CortexStorageClass.name }}"
   namespace: {{ .Release.Namespace }}
 provisioner: kubernetes.io/gce-pd         
 volumeBindingMode: Immediate
@@ -23,7 +23,7 @@ parameters:
 apiVersion: storage.k8s.io/v1
 kind: StorageClass
 metadata:
-  name: {{ .Values.CortexStorageClass.name }}
+  name: "{{ .Release.Name }}-{{ .Values.CortexStorageClass.name }}"
   namespace: {{ .Release.Namespace }}
 provisioner: kubernetes.io/no-provisioner
 volumeBindingMode: WaitForFirstConsumer
@@ -41,7 +41,7 @@ reclaimPolicy: {{ .Values.CortexStorageClass.reclaimPolicy }}
 apiVersion: storage.k8s.io/v1
 kind: StorageClass
 metadata:
-  name: {{ .Values.CortexStorageClass.name }}
+  name: "{{ .Release.Name }}-{{ .Values.CortexStorageClass.name }}"
   namespace: {{ .Release.Namespace }}
 provisioner: kubernetes.io/azure-disk
 parameters:
@@ -55,7 +55,7 @@ parameters:
 apiVersion: storage.k8s.io/v1
 kind: StorageClass
 metadata:
-  name: {{ .Values.CortexStorageClass.name }}
+  name: "{{ .Release.Name }}-{{ .Values.CortexStorageClass.name }}"
   namespace: {{ .Release.Namespace }}
 provisioner: kubernetes.io/aws-ebs
 parameters:

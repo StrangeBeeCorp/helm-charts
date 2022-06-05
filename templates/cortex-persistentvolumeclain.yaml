@@ -1,11 +1,11 @@
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: {{ .Values.CortexPersistentVolumeClaim.name }}
+  name: "{{ .Release.Name }}-{{ .Values.CortexPersistentVolumeClaim.name }}"
   namespace: {{ .Release.Namespace }}
 spec:
-  storageClassName: {{ .Values.CortexStorageClass.name }}
-  volumeName: {{ .Values.CortexPersistentVolume.name }}
+  storageClassName: "{{ .Release.Name }}-{{ .Values.CortexStorageClass.name }}"
+  volumeName: "{{ .Release.Name }}-{{ .Values.CortexPersistentVolume.name }}"
   accessModes:
     - {{ .Values.CortexStorageClass.accessModes }}
   resources:
