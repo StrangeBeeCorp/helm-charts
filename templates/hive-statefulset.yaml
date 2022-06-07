@@ -60,9 +60,16 @@ spec:
               memory: {{ .Values.theHiveApp.statefulset.resources.requests.memory}}
           volumeMounts:
           - mountPath: /var/log/thehive
-            # subPath: application.log
             name: hive-volume
+          - mountPath: /config
+            name: configs-volume
       volumes:
       - name: hive-volume
         persistentVolumeClaim:
           claimName: {{ .Values.HivePersistentVolumeClaim.name }}
+      - name: configs-volume
+        configMap:
+          name: "{{ .Release.Name }}-{{ .Values.ConfigMap.name }}"
+          items:
+          - key: {{ .Values.theHiveApp.volumes.items.key}}
+            path: {{ .Values.theHiveApp.volumes.items.path}}
