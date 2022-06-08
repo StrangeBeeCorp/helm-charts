@@ -117,7 +117,7 @@ HivePersistentVolume:
     capacity:
       storage: 5Gi
     hostPath:
-      path: /data/hive
+      path: /hive
 
 ConfigMap:
   name: hive-svc

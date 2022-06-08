@@ -16,15 +16,13 @@ spec:
       labels:
         app: {{ .Release.Name }}
     spec:
-      # serviceAccountName: {{ .Release.Name }}
-      securityContext:
-        runAsUser: 1000
+      serviceAccountName: {{ .Release.Name }}
       containers:
         - name: {{ .Release.Name }}
           image: {{ .Values.theHiveApp.statefulset.image }}
-          securityContext:
-            runAsUser: 2000
-            allowPrivilegeEscalation: false
+          # securityContext:
+          #   runAsUser: 2000
+          #   allowPrivilegeEscalation: false
           command:
             {{ $cqlhost := ternary (printf "%s-cassandra" .Release.Name) .Values.theHiveApp.statefulset.cassandraHostname .Values.cassandra.enabled }}
             {{ $eshost := ternary (printf "%s-elasticsearch" .Release.Name) .Values.theHiveApp.statefulset.elasticSearchHostname .Values.elasticSearch.enabled }}
