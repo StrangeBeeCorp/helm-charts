@@ -16,37 +16,19 @@ spec:
       labels:
         app: {{ .Release.Name }}
     spec:
+      securityContext:
+        fsGroup: 1000
+        runAsUser: 1000
+        runAsGroup: 1000
       serviceAccountName: {{ .Release.Name }}
       containers:
         - name: {{ .Release.Name }}
           image: {{ .Values.theHiveApp.statefulset.image }}
-          # securityContext:
-          #   runAsUser: 2000
-          #   allowPrivilegeEscalation: false
-          command:
             {{ $cqlhost := ternary (printf "%s-cassandra" .Release.Name) .Values.theHiveApp.statefulset.cassandraHostname .Values.cassandra.enabled }}
             {{ $eshost := ternary (printf "%s-elasticsearch" .Release.Name) .Values.theHiveApp.statefulset.elasticSearchHostname .Values.elasticSearch.enabled }}
-            - "/opt/thehive/entrypoint"
-            - "--secret"
-            - "SuperSecretForKubernetes"
-            - "--cql-hostnames"
-            - {{ $cqlhost }}
-            - "--no-cql-wait"
-            - "--no-config-cortex"
-            - "--kubernetes"
-            - "--index-backend"
-            - {{ $eshost }}
-            - "--es-hostnames"
-            - {{ $eshost }}
-            - "--s3-endpoint"
-            - "http://minio:9000"
-            - "--s3-access-key"
-            - "minioadmin"
-            - "--s3-secret-key"
-            - "minioadmin"
-            - "--s3-use-path-access-style"
-            - "--cluster-min-nodes-count"
-            - "0"
+          command: ["/bin/sh", "-c"]
+          args:
+            - /opt/thehive/entrypoint --secret SuperSecretForKubernetes --cql-hostnames thehive-cassandra --no-cql-wait --no-config-cortex --kubernetes --index-backend thehive-elasticsearch --es-hostnames thehive-elasticsearch --s3-endpoint http://minio:9000 --s3-access-key minioadmin --s3-secret-key minioadmin --s3-use-path-access-style --cluster-min-nodes-count 0;
           ports:
             - containerPort: {{ .Values.theHiveApp.statefulset.containerPort }}
               name: {{ .Values.theHiveApp.statefulset.name }}
