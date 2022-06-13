@@ -35,7 +35,7 @@ allowVolumeExpansion: true
 # mountOptions:
 # - uid=1000
 # - gid=1000
-#   - debug
+# - debug
 reclaimPolicy: {{ .Values.HiveStorageClass.reclaimPolicy }}
 # parameters:
 #   type: pd-standard
