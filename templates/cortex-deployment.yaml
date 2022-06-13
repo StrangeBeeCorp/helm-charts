@@ -32,7 +32,7 @@ spec:
             memory: {{ .Values.cortex.statefulset.containers.resources.requests.memory }}
         env:
           - name: es_uri
-            value: http://{{ ternary (printf "%s-elasticsearch" .Release.Name) .Values.theHiveApp.deployments.elasticSearchHostname .Values.elasticSearch.enabled }}:9200
+            value: http://{{ ternary (printf "%s-elasticsearch" .Release.Name) .Values.theHiveApp.statefulset.elasticSearchHostname .Values.elasticSearch.enabled }}:9200
           - name: kubernetes_job_pvc
             value: hppvc
         volumeMounts:

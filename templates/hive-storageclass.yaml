@@ -1,0 +1,81 @@
+{{ if eq .Values.HiveStorageClass.cloud "google" }}
+#==================                             =======================#
+#==================       Google Provisioner    =======================#
+#==================                             =======================#
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: {{ .Values.HiveStorageClass.name }}
+  namespace: {{ .Release.Namespace }}
+provisioner: kubernetes.io/gce-pd         
+volumeBindingMode: Immediate
+allowVolumeExpansion: true
+reclaimPolicy: {{ .Values.HiveStorageClass.reclaimPolicy }}
+parameters:
+  type: pd-standard
+  fstype: ext4
+  replication-type: none
+mountOptions:
+- uid=1000
+- gid=1000
+--- 
+{{ else if eq .Values.HiveStorageClass.cloud "hive-local" }}
+#==================                             =======================#
+#==================       Local Provisioner     =======================#
+#==================                             =======================#
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: {{ .Values.HiveStorageClass.name }}
+  namespace: {{ .Release.Namespace }}
+provisioner: kubernetes.io/no-provisioner
+volumeBindingMode: WaitForFirstConsumer
+# volumeBindingMode: Immediate
+allowVolumeExpansion: true
+# mountOptions:
+# - uid=1000
+# - gid=1000
+#   - debug
+reclaimPolicy: {{ .Values.HiveStorageClass.reclaimPolicy }}
+# parameters:
+#   type: pd-standard
+#   fstype: ext4
+#   replication-type: none
+---
+{{ else if eq .Values.HiveStorageClass.cloud "azure"}}
+#==================                             =======================#
+#==================       Azure Provisioner     =======================#
+#==================                             =======================#
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: {{ .Values.HiveStorageClass.name }}
+  namespace: {{ .Release.Namespace }}
+provisioner: kubernetes.io/azure-disk
+parameters:
+  storageaccounttype: Standard_LRS
+  kind: managed
+mountOptions:
+  - uid=1000
+  - gid=1000
+---
+{{ else if eq .Values.HiveStorageClass.cloud "aws" }}
+#==================                             =======================#
+#==================       AWS Provisioner       =======================#
+#==================                             =======================#
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: {{ .Values.HiveStorageClass.name }}
+  namespace: {{ .Release.Namespace }}
+provisioner: kubernetes.io/aws-ebs
+parameters:
+  type: gp2
+reclaimPolicy: {{ .Values.HiveStorageClass.reclaimPolicy }}
+allowVolumeExpansion: true
+mountOptions:
+  - debug
+  - uid=1000
+  - gid=1000
+volumeBindingMode: Immediate
+{{ end }}

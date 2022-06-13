@@ -1,0 +1,60 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ .Release.Name }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: {{ .Release.Name }}
+spec:
+  serviceName: {{ .Release.Name }}
+  replicas: {{ .Values.theHiveApp.statefulset.replicas }}
+  selector:
+    matchLabels:
+      app: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Release.Name }}
+    spec:
+      securityContext:
+        fsGroup: 1000
+        runAsUser: 1000
+        runAsGroup: 1000
+      serviceAccountName: {{ .Release.Name }}
+      containers:
+        - name: {{ .Release.Name }}
+          image: {{ .Values.theHiveApp.statefulset.image }}
+            {{ $cqlhost := ternary (printf "%s-cassandra" .Release.Name) .Values.theHiveApp.statefulset.cassandraHostname .Values.cassandra.enabled }}
+            {{ $eshost := ternary (printf "%s-elasticsearch" .Release.Name) .Values.theHiveApp.statefulset.elasticSearchHostname .Values.elasticSearch.enabled }}
+          command: ["/bin/sh", "-c"]
+          args:
+            - /opt/thehive/entrypoint --secret SuperSecretForKubernetes --cql-hostnames thehive-cassandra --no-cql-wait --no-config-cortex --kubernetes --index-backend thehive-elasticsearch --es-hostnames thehive-elasticsearch --s3-endpoint http://minio:9000 --s3-access-key minioadmin --s3-secret-key minioadmin --s3-use-path-access-style --cluster-min-nodes-count 0;
+          ports:
+            - containerPort: {{ .Values.theHiveApp.statefulset.containerPort }}
+              name: {{ .Values.theHiveApp.statefulset.name }}
+          env:
+            - name: POD_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.podIP
+          resources:
+            limits:
+              memory: {{ .Values.theHiveApp.statefulset.resources.limits.memory}}
+            requests:
+              cpu: {{ .Values.theHiveApp.statefulset.resources.requests.cpu}}
+              memory: {{ .Values.theHiveApp.statefulset.resources.requests.memory}}
+          volumeMounts:
+          - mountPath: /var/log/thehive
+            name: hive-volume
+          - mountPath: /config
+            name: configs-volume
+      volumes:
+      - name: hive-volume
+        persistentVolumeClaim:
+          claimName: {{ .Values.HivePersistentVolumeClaim.name }}
+      - name: configs-volume
+        configMap:
+          name: "{{ .Release.Name }}-{{ .Values.ConfigMap.name }}"
+          items:
+          - key: {{ .Values.theHiveApp.volumes.items.key}}
+            path: {{ .Values.theHiveApp.volumes.items.path}}

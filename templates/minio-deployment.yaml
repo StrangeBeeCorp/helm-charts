@@ -28,7 +28,7 @@ spec:
               value: minioadmin
           ports:
             - containerPort: {{ .Values.minio.statefulset.containers.ports.containerPort }}
-              name: {{ .Values.elasticSearch.statefulset.containers.ports.name }}
+              name: {{ .Values.minio.statefulset.containers.ports.name }}
           resources:
             limits:
               cpu: {{ .Values.minio.statefulset.containers.resources.limits.cpu }}
