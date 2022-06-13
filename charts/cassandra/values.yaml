@@ -22,10 +22,10 @@ global:
 
 ## @param nameOverride String to partially override common.names.fullname
 ##
-nameOverride: ""
+nameOverride: "cassandra"
 ## @param fullnameOverride String to fully override common.names.fullname
 ##
-fullnameOverride: ""
+fullnameOverride: "cassandra"
 ## @param kubeVersion Force target Kubernetes version (using Helm capabilities if not set)
 ##
 kubeVersion: ""

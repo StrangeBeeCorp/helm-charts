@@ -14,13 +14,9 @@
 *.swp
 *.bak
 *.tmp
-*.orig
 *~
 # Various IDEs
 .project
 .idea/
 *.tmproj
 .vscode/
-test
-./test
-cassandra-9.2.4.tgz

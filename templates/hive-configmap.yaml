@@ -11,8 +11,8 @@ data:
         # set cassandra hostnames
         hostname = ["cassandra"]
         # Cassandra authentication (if configured)
-        # username = "thehive"
-        # password = "password"
+        username = "thehive"
+        password = "password"
         cql {
           cluster-name = thp
           keyspace = thehive
