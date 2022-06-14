@@ -2,7 +2,7 @@ theHiveApp:
   service:
     port: 9000
     nodePort: 30001
-  deployments:
+  statefulset:
     replicas: 1
     containerPort: 9000
     name: http
@@ -15,6 +15,10 @@ theHiveApp:
     image: strangebee/thehive:latest
     cassandraHostname: "cassandra"
     elasticSearchHostname: "elasticSearch"
+  volumes:
+    items:
+      key: application.conf
+      path: application.conf
 
 cassandra:
   enabled: true
@@ -119,3 +123,28 @@ CortexHPA:
     metrics:
       averageUtilization: 90
       averageValue: 900Mi
+
+HiveStorageClass:
+  cloud: hive-local
+  name: hive-storageclass
+  reclaimPolicy: Retain
+
+HivePersistentVolumeClaim:
+  name: hive-pvc
+  spec:
+    accessModes: ReadWriteOnce
+    resources:
+      requests:
+        storage: 2Gi
+
+HivePersistentVolume:
+  name: hive-pv
+  spec:
+    accessModes: ReadWriteOnce
+    capacity:
+      storage: 5Gi
+    hostPath:
+      dirPath: /hive
+
+ConfigMap:
+  name: hive-svc

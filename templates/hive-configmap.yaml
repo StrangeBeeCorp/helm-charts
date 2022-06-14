@@ -1,0 +1,55 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "{{ .Release.Name }}-{{ .Values.ConfigMap.name }}"
+  namespace: {{ .Release.Namespace }}
+data:
+  application.conf: |
+    db.janusgraph {
+      storage {
+        backend = cql
+        # set cassandra hostnames
+        hostname = ["cassandra"]
+        # Cassandra authentication (if configured)
+        # username = "thehive"
+        # password = "password"
+        cql {
+          cluster-name = thp
+          keyspace = thehive
+        }
+      }
+      index.search {
+        backend = elasticsearch
+        # Set elasticsearch hostnames
+        hostname = ["elasticsearch"]
+        index-name = thehive
+      }
+    }
+
+    # Attachment storage configuration
+    storage {
+      provider = s3
+      # Minio endpoint
+      endpoint = "http://minio"
+      bucket = thehive
+      # Fill in credentials
+      accessKey = "accessKey"
+      secretKey = "secretKey"
+    }
+    # If using storage.provider = s3
+    alpakka.s3.access-style = path
+    alpakka.s3.endpoint-url = ${storage.endpoint}
+
+    # Service configuration
+    # baseUrl should be changed to reflect how the application is exposed
+    application.baseUrl = "http://localhost:9000"
+    play.http.context = "/"
+
+    # Additional modules
+    #
+    # TheHive is strongly integrated with Cortex and MISP.
+    # Both modules are enabled by default. If not used, each one can be disabled by
+    # commenting the configuration line.
+    scalligraph.modules += org.thp.thehive.connector.cortex.CortexModule
+    scalligraph.modules += org.thp.thehive.connector.misp.MispModule
+
