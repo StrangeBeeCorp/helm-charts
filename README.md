@@ -1,15 +1,16 @@
 # Helm Charts
 
+
 The canonical source for Helm charts is the [Helm Hub](https://hub.helm.sh/), an aggregator for distributed chart repos.
-
-This GitHub project is the source for Helm `stable` and `incubator` [Helm chart repositories](https://v3.helm.sh/docs/topics/chart_repository/), currently listed on the Hub.
-
 For more information about installing and using Helm, see the
 [Helm Docs](https://helm.sh/docs/). For a quick introduction to Charts, see the [Chart Guide](https://helm.sh/docs/topics/charts/).
 
-Step by step to install [Quick installation](#how-do-i-install-these-charts?)
+Step by step to install [Quick installation](##Install)
 
-## Status of the Project
+## Diagram
+![](https://res.cloudinary.com/drtwg9pdt/image/upload/v1655287944/diagram_iiqfzr.png "Text to show on mouseover").
+
+## Services
 
 This helm chart will install the following services on the kubernetes cluster:
 
@@ -40,7 +41,7 @@ For general Helm Chart discussions join the room in the [Slack channel](https://
 
 For issues and support for Helm and Charts see [Support Channels](CONTRIBUTING.md#support-channels).
 
-## How Do I Install These Charts?
+## Install
 
 **To Verify if the templates are correct**:
 
