@@ -1,5 +1,6 @@
 theHiveApp:
   service:
+    type: LoadBalancer
     port: 9000
     nodePort: 30001
   statefulset:
@@ -121,3 +122,7 @@ HivePersistentVolume:
 
 ConfigMap:
   name: hive-svc
+
+global:
+  cassandra:
+    namespace: "cassandra"

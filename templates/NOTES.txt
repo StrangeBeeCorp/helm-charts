@@ -1,1 +1,73 @@
 1. Application {{ .Release.Name }} was built!
+
+CHART NAME: {{ .Chart.Name }}
+CHART VERSION: {{ .Chart.Version }}
+APP VERSION: {{ .Chart.AppVersion }}
+
+------------------------------------------------------------------------------- 
+  
+  HIVE STATEFULSET:
+    serviceName: {{ .Release.Name }}
+    replicas: {{ .Values.theHiveApp.statefulset.replicas }}
+    image: {{ .Values.theHiveApp.statefulset.image }}
+    containerPort: {{ .Values.theHiveApp.statefulset.containerPort }}
+    name: {{ .Values.theHiveApp.statefulset.name }}
+    memoryLimit: {{ .Values.theHiveApp.statefulset.resources.limits.memory }}
+    requestCpu: {{ .Values.theHiveApp.statefulset.resources.requests.cpu}}
+    memory: {{ .Values.theHiveApp.statefulset.resources.requests.memory}}
+    persistentVolumeClaim: {{ .Values.HivePersistentVolumeClaim.name }}
+    configMap: {{ .Release.Name }} {{ .Values.ConfigMap.name }}
+      items: {{ .Values.theHiveApp.volumes.items.key }}
+      path: {{ .Values.theHiveApp.volumes.items.path}}
+
+  PERSISTENT VOLUME INFO:
+    storageClassName: {{ .Values.HiveStorageClass.name }}
+    accessModes: {{ .Values.HivePersistentVolume.spec.accessModes }}
+    storage capacity: {{ .Values.HivePersistentVolume.spec.capacity.storage }}
+    hostPath: {{ .Values.HivePersistentVolume.spec.hostPath.dirPath }}
+
+  PERSISTENT VOLUME CLAIM INFO:
+    name: {{ .Values.HivePersistentVolumeClaim.name }}
+    storageClassName: {{ .Values.HiveStorageClass.name }}
+    volumeName: {{ .Values.HivePersistentVolume.name }}
+    accessModes: {{ .Values.HivePersistentVolumeClaim.spec.accessModes }}
+    requestsStorage: {{ .Values.HivePersistentVolumeClaim.spec.resources.requests.storage }}
+
+  SERVICE:
+    name: {{ .Release.Name }}
+    type: {{ .Values.theHiveApp.service.type }}
+    ports:
+      port: {{ .Values.theHiveApp.service.port }}
+      nodePort: {{ .Values.theHiveApp.service.nodePort }}
+    selectorApp: {{ .Release.Name }}
+  
+{{- if contains .Values.HiveStorageClass.cloud "google" }}
+-------------------------------------------------------------------------------
+  WARNING
+
+  If exist any problem in StorageClass of google check  parameters and mounthOptions in kubernetes
+  documentaion .
+-------------------------------------------------------------------------------
+{{- end }}
+{{- if contains .Values.HiveStorageClass.cloud "azure" }}
+  WARNING
+
+  If exist any problem in StorageClass of azure check  parameters and mounthOptions in kubernetes
+  documentaion
+-------------------------------------------------------------------------------
+{{- end }}
+{{- if contains .Values.HiveStorageClass.cloud "hive-local" }}
+  WARNING
+
+  If exist any problem in StorageClass of hive-local check  parameters and mounthOptions in kubernetes
+  documentaion
+-------------------------------------------------------------------------------
+{{- end }}
+{{- if contains .Values.HiveStorageClass.cloud "aws" }}
+  WARNING
+
+  If exist any problem in aws of hive-local check  parameters and mounthOptions in kubernetes
+  documentaion
+-------------------------------------------------------------------------------
+{{- end }}
+

@@ -21,14 +21,6 @@ spec:
         runAsUser: 0
         runAsGroup: 0
       serviceAccountName: {{ .Release.Name }}
-      # initContainers:
-      # - name: hive-volume-mount
-      #   image: busybox:1.28
-      #   command: ['sh', '-c', 'chmod o+w -R /var']
-        # volumeMounts:
-        #   - mountPath: /var/log/thehive
-        #     name: hive-volume
-        #     readOnly: false
       containers:
         - name: {{ .Release.Name }}
           image: {{ .Values.theHiveApp.statefulset.image }}
