@@ -1,6 +1,6 @@
-# Helm Charts
+# The Hive
 
-
+## helm charts
 The canonical source for Helm charts is the [Helm Hub](https://hub.helm.sh/), an aggregator for distributed chart repos.
 For more information about installing and using Helm, see the
 [Helm Docs](https://helm.sh/docs/). For a quick introduction to Charts, see the [Chart Guide](https://helm.sh/docs/topics/charts/).
@@ -47,7 +47,7 @@ For issues and support for Helm and Charts see [Support Channels](CONTRIBUTING.m
 **To Verify if the templates are correct**:
 
 ```bash
-helm install thehive ./ --values values.yaml -n thehive --create-namespace --dry-run --debug
+helm install thehive ./ --values values.yaml -n thehive --create-namespace --dry-run --debug && helm lint
 ```
 
 **Deploy chart**:
@@ -60,6 +60,12 @@ helm install thehive ./ --values values.yaml -n thehive --create-namespace
 
 ```bash
 helm upgrade thehive ./ --values values.yaml -n thehive
+```
+
+**Update helm rollback**:
+
+```bash
+helm rollback thehive RELEASE_NUMBER -n thehive 
 ```
 
 **Delete helm deployment**:
