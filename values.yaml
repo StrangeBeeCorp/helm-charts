@@ -139,6 +139,15 @@ cortex:
           cpu: "100m"
           memory: 512Mi
 
+Secrets:
+  name: minio-secrets
+  
+  user: minioadmin
+  keyUser: MINIO_ROOT_USER
+  
+  password: minioadmin
+  keyPassword: MINIO_ROOT_PASSWORD
+
 CortexStorageClass:
   cloud: local
   name: cortex-storageclass

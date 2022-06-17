@@ -22,10 +22,17 @@ spec:
           image: {{ .Values.minio.statefulset.containers.image }}
           command: ["minio", "server", "/data", "--console-address", ":9001"]
           env:
-            - name: MINIO_ROOT_USER
-              value: minioadmin
-            - name: MINIO_ROOT_PASSWORD
-              value: minioadmin
+            - name: {{ .Values.Secrets.keyUser }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.Secrets.name }}
+                  key: {{ .Values.Secrets.keyUser }}
+            
+            - name: {{ .Values.Secrets.keyPassword }}
+              valueFrom:
+                secretKeyRef:
+                    name: {{ .Values.Secrets.name }}
+                    key: {{ .Values.Secrets.keyPassword }}
           ports:
             - containerPort: {{ .Values.minio.statefulset.containers.ports.apiContainerPort }}
               name: {{ .Values.minio.statefulset.containers.ports.apiName }}
