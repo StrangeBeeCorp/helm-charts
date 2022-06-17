@@ -97,6 +97,33 @@ cortex:
           cpu: "100m"
           memory: 512Mi
 
+CortexStorageClass:
+  cloud: local
+  name: cortex-storageclass
+  reclaimPolicy: Retain
+  accessModes: ReadWriteMany
+
+CortexPersistentVolume:
+  name: cortex-pv
+  accessModes: ReadWriteMany
+  capacity:
+    storage: 5Gi
+
+CortexPersistentVolumeClaim:
+  name: cortex-pvc
+  spec:
+    resources:
+      storage: 4G
+
+CortexHPA:
+  name: cortex-autoscale
+  spec:
+    minReplicas: 1
+    maxReplicas: 2
+    metrics:
+      averageUtilization: 90
+      averageValue: 900Mi
+
 HiveStorageClass:
   cloud: hive-local
   name: hive-storageclass
