@@ -9,5 +9,6 @@ spec:
   type: LoadBalancer
   ports:
     - port: {{ .Values.cortex.service.port }}
+      targetPort: {{ .Values.cortex.service.targetPort }}
   selector:
     app: {{ .Release.Name }}-cortex

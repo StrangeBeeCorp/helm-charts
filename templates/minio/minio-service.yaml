@@ -6,7 +6,15 @@ metadata:
   name: minio
   namespace: {{ .Release.Namespace }}
 spec:
+  type: {{ .Values.minio.service.type }}
   ports:
-    - port: {{ .Values.minio.service.port }}
+    - name: {{ .Values.minio.service.apiName }}
+      port: {{ .Values.minio.service.apiPort }}
+      targetPort: {{ .Values.minio.service.apitargetPort }}
+    - name: {{ .Values.minio.service.consoleName }}
+      port: {{ .Values.minio.service.consolePort }}
+      targetPort: {{ .Values.minio.service.consoletargetPort }}
+      nodePort: {{ .Values.minio.service.consoleNodePort }}
   selector:
     app: minio
+
