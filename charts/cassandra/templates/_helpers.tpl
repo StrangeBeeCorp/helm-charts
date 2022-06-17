@@ -45,7 +45,7 @@ Return the list of Cassandra seed nodes
 {{- define "cassandra.seeds" -}}
 {{- $seeds := list }}
 {{- $fullname := include "common.names.fullname" .  }}
-{{- $releaseNamespace := .Values.global.cassandra.namespace }}
+{{- $releaseNamespace := .Values.cassandraNamespace }}
 {{- $clusterDomain := .Values.clusterDomain }}
 {{- $seedCount := .Values.cluster.seedCount | int }}
 {{- range $e, $i := until $seedCount }}
@@ -198,7 +198,7 @@ otherwise it generates a random value.
     {{- if .Values.dbUser.password }}
         {{- .Values.dbUser.password }}
     {{- else if (not .Values.dbUser.forcePassword) }}
-        {{- include "getValueFromSecret" (dict "Namespace" .Values.global.cassandra.namespace "Name" (include "common.names.fullname" .) "Length" 10 "Key" "cassandra-password")  -}}
+        {{- include "getValueFromSecret" (dict "Namespace" .Values.cassandraNamespace "Name" (include "common.names.fullname" .) "Length" 10 "Key" "cassandra-password")  -}}
     {{- else }}
         {{ required "A Cassandra Password is required!" .Values.dbUser.password }}
     {{- end }}
@@ -208,7 +208,7 @@ otherwise it generates a random value.
     {{- if .Values.tls.keystorePassword }}
         {{- .Values.tls.keystorePassword }}
     {{- else }}
-        {{- include "getValueFromSecret" (dict "Namespace" .Values.global.cassandra.namespace "Name" (printf "%s-%s" (include "common.names.fullname" .) "tls-pass") "Length" 10 "Key" "keystore-password")  -}}
+        {{- include "getValueFromSecret" (dict "Namespace" .Values.cassandraNamespace "Name" (printf "%s-%s" (include "common.names.fullname" .) "tls-pass") "Length" 10 "Key" "keystore-password")  -}}
     {{- end }}
 {{- end -}}
 
@@ -216,7 +216,7 @@ otherwise it generates a random value.
     {{- if .Values.tls.truststorePassword }}
         {{- .Values.tls.truststorePassword }}
     {{- else }}
-        {{- include "getValueFromSecret" (dict "Namespace" .Values.global.cassandra.namespace "Name" (printf "%s-%s" (include "common.names.fullname" .) "tls-pass") "Length" 10 "Key" "truststore-password")  -}}
+        {{- include "getValueFromSecret" (dict "Namespace" .Values.cassandraNamespace "Name" (printf "%s-%s" (include "common.names.fullname" .) "tls-pass") "Length" 10 "Key" "truststore-password")  -}}
     {{- end }}
 {{- end -}}
 
@@ -230,7 +230,7 @@ otherwise it generates a new one.
     {{- $ca := "" -}}
     {{- $crt := "" -}}
     {{- $key := "" -}}
-    {{- $tlsCert := (lookup "v1" "Secret" .Values.global.cassandra.namespace (printf "%s-%s" (include "common.names.fullname" .) "crt")).data -}}
+    {{- $tlsCert := (lookup "v1" "Secret" .Values.cassandraNamespace (printf "%s-%s" (include "common.names.fullname" .) "crt")).data -}}
 
     {{- if $tlsCert }}
         {{- $ca = (get $tlsCert "ca.crt" | b64dec) -}}
@@ -239,7 +239,7 @@ otherwise it generates a new one.
     {{- else -}}
         {{- $caFull := genCA "cassandra-ca" 365 }}
         {{- $fullname := include "common.names.fullname" . }}
-        {{- $releaseNamespace := .Values.global.cassandra.namespace }}
+        {{- $releaseNamespace := .Values.cassandraNamespace }}
         {{- $clusterDomain := .Values.clusterDomain }}
         {{- $serviceName := include "common.names.fullname" . }}
         {{- $headlessServiceName := printf "%s-headless" (include "common.names.fullname" .) }}

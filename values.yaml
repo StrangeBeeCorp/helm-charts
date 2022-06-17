@@ -1,3 +1,4 @@
+################## HIVE CONFIGS
 theHiveApp:
   service:
     type: LoadBalancer
@@ -21,6 +22,33 @@ theHiveApp:
       key: application.conf
       path: application.conf
 
+
+HiveStorageClass:
+  cloud: hive-local
+  name: hive-storageclass
+  reclaimPolicy: Retain
+
+HivePersistentVolumeClaim:
+  name: hive-pvc
+  spec:
+    accessModes: ReadWriteOnce
+    resources:
+      requests:
+        storage: 2Gi
+
+HivePersistentVolume:
+  name: hive-pv
+  spec:
+    accessModes: ReadWriteOnce
+    capacity:
+      storage: 5Gi
+    hostPath:
+      dirPath: /hive
+
+ConfigMap:
+  name: hive-svc
+
+################## CASSANDRA CONFIG
 cassandra:
   enabled: true
   service:
@@ -37,6 +65,7 @@ cassandra:
         cpu: "100m"
         memory: 100Mi
 
+#################### ELASTICSEARCH
 elasticSearch:
   enabled: true
   service:
@@ -60,6 +89,7 @@ elasticSearch:
           cpu: "100m"
           memory: 100Mi
 
+####################### MINIO CONFIGS
 minio:
   service:
     port: 9000
@@ -79,6 +109,7 @@ minio:
           cpu: "100m"
           memory: 100Mi
 
+######################### CORTEX CONFIGS
 cortex:
   service:
     port: 9001
@@ -125,31 +156,10 @@ CortexHPA:
       averageUtilization: 90
       averageValue: 900Mi
 
-HiveStorageClass:
-  cloud: hive-local
-  name: hive-storageclass
-  reclaimPolicy: Retain
 
-HivePersistentVolumeClaim:
-  name: hive-pvc
-  spec:
-    accessModes: ReadWriteOnce
-    resources:
-      requests:
-        storage: 2Gi
-
-HivePersistentVolume:
-  name: hive-pv
-  spec:
-    accessModes: ReadWriteOnce
-    capacity:
-      storage: 5Gi
-    hostPath:
-      dirPath: /hive
-
-ConfigMap:
-  name: hive-svc
-
-global:
-  cassandra:
-    namespace: "cassandra"
+################ GLOBAL CONFIGS
+# global:
+  # cassandra:
+  #   namespace: "cassandra"
+  # elasticSearch:
+  #   namespace: "elasticsearch"

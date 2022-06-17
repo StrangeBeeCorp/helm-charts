@@ -20,28 +20,100 @@ APP VERSION: {{ .Chart.AppVersion }}
       items: {{ .Values.theHiveApp.volumes.items.key }}
       path: {{ .Values.theHiveApp.volumes.items.path}}
 
-  PERSISTENT VOLUME INFO:
+  HIVE PERSISTENT VOLUME INFO:
     storageClassName: {{ .Values.HiveStorageClass.name }}
     accessModes: {{ .Values.HivePersistentVolume.spec.accessModes }}
     storage capacity: {{ .Values.HivePersistentVolume.spec.capacity.storage }}
     hostPath: {{ .Values.HivePersistentVolume.spec.hostPath.dirPath }}
 
-  PERSISTENT VOLUME CLAIM INFO:
+  HIVE PERSISTENT VOLUME CLAIM INFO:
     name: {{ .Values.HivePersistentVolumeClaim.name }}
     storageClassName: {{ .Values.HiveStorageClass.name }}
     volumeName: {{ .Values.HivePersistentVolume.name }}
     accessModes: {{ .Values.HivePersistentVolumeClaim.spec.accessModes }}
     requestsStorage: {{ .Values.HivePersistentVolumeClaim.spec.resources.requests.storage }}
 
-  SERVICE:
+  HIVE SERVICE:
     name: {{ .Release.Name }}
     type: {{ .Values.theHiveApp.service.type }}
     ports:
       port: {{ .Values.theHiveApp.service.port }}
       nodePort: {{ .Values.theHiveApp.service.nodePort }}
     selectorApp: {{ .Release.Name }}
+
+-------------------------------------------------------------------------------
+
+  CORTEX STATEFULSET:
+    name: {{ .Release.Name }}-cortex
+    namespace: {{ .Release.Namespace }}
+    labels:
+      app: {{ .Release.Name }}-cortex
+    spec:
+      serviceName: {{ .Release.Name }}-cortex
+      replicas: {{ .Values.cortex.statefulset.replicas }}
+      selector:
+        matchLabels:
+          app: {{ .Release.Name }}-cortex
+      template:
+        metadata:
+          labels:
+            app: {{ .Release.Name }}-cortex
+        spec:
+          terminationGracePeriodSeconds: {{ .Values.cortex.statefulset.terminationGracePeriodSeconds }}
+          containers:
+            name: {{ .Release.Name }}-cortex
+            image: {{ .Values.cortex.statefulset.containers.image }}
+            ports:
+              containerPort: {{ .Values.cortex.statefulset.containers.ports.containerPort }}
+              name: {{ .Values.cortex.statefulset.containers.ports.name }}
+            resources:
+              limits:
+                cpu: {{ .Values.cortex.statefulset.containers.resources.limits.cpu }}
+                memory: {{ .Values.cortex.statefulset.containers.resources.limits.memory }}
+              requests:
+                cpu: {{ .Values.cortex.statefulset.containers.resources.requests.cpu }}
+                memory: {{ .Values.cortex.statefulset.containers.resources.requests.memory }}
   
-{{- if contains .Values.HiveStorageClass.cloud "google" }}
+  CORTEX PERSISTENT VOLUME INFO:
+    metadata:
+    name: {{ .Release.Name }}-{{ .Values.CortexPersistentVolume.name }}
+    namespace: {{ .Release.Namespace }}
+    spec:
+      storageClassName: {{ .Release.Name }}-{{ .Values.CortexStorageClass.name }}
+      accessModes: {{ .Values.CortexPersistentVolume.accessModes }}
+      capacity:
+        storage: {{ .Values.CortexPersistentVolume.capacity.storage }}
+      hostPath:
+        path: /cortex
+  
+  HIVE PERSISTENT VOLUME CLAIM INFO:
+    metadata:
+    name: {{ .Release.Name }}-{{ .Values.CortexPersistentVolumeClaim.name }}
+    namespace: {{ .Release.Namespace }}
+    spec:
+      storageClassName: {{ .Release.Name }}-{{ .Values.CortexStorageClass.name }}
+      volumeName: {{ .Release.Name }}-{{ .Values.CortexPersistentVolume.name }}
+      accessModes: {{ .Values.CortexStorageClass.accessModes }}
+      resources:
+        requests:
+          storage: {{ .Values.CortexPersistentVolumeClaim.spec.resources.storage }}
+  
+  SERVICE:
+    metadata:
+    labels:
+      app: {{ .Release.Name }}-cortex
+    name: {{ .Release.Name }}-cortex
+    namespace: {{ .Release.Namespace }}
+    spec:
+      type: LoadBalancer
+      ports:
+        port: {{ .Values.cortex.service.port }}
+      selector:
+        app: {{ .Release.Name }}-cortex
+
+-------------------------------------------------------------------------------
+
+  {{- if contains .Values.HiveStorageClass.cloud "google" }}
 -------------------------------------------------------------------------------
   WARNING
 

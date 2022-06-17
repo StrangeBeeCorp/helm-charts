@@ -58,7 +58,7 @@ Allow the release namespace to be overridden for multi-namespace deployments in 
 {{- if .Values.namespaceOverride -}}
 {{- .Values.namespaceOverride -}}
 {{- else -}}
-{{- .Values.global.cassandra.namespace -}}
+{{- .Values.cassandraNamespace -}}
 {{- end -}}
 {{- end -}}
 
