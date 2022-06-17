@@ -1,7 +1,20 @@
 apiVersion: v2
 name: thehive
 description: A Helm chart for Kubernetes
+dependencies:
+- name: cassandra
+  condition: cassandra.enable
+  repository: https://charts.bitnami.com/bitnami
+  tags:
+  - bitnami-cassandra
+  version: 9.2.4
 
+- name: elasticsearch
+  condition: elasticsearch.enable
+  repository: https://charts.bitnami.com/bitnami
+  tags:
+  - bitnami-elasticsearch
+  version: 18.0.4
 # A chart can be either an 'application' or a 'library' chart.
 #
 # Application charts are a collection of templates that can be packaged into versioned archives

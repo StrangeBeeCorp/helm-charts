@@ -6,8 +6,7 @@ For more information about installing and using Helm, see the
 [Helm Docs](https://helm.sh/docs/). For a quick introduction to Charts, see the [Chart Guide](https://helm.sh/docs/topics/charts/).
 
 
-Step by step to install [Quick installation](https://github.com/StrangeBeeCorp/helm-charts/tree/cortex-persistent#install)
-
+Step by step to install [Quick installation](https://github.com/StrangeBeeCorp/helm-charts/tree/main#install)
 
 ## Diagram
 ![](https://res.cloudinary.com/drtwg9pdt/image/upload/v1655287944/diagram_iiqfzr.png "Text to show on mouseover").
