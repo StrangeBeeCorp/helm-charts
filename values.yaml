@@ -1,4 +1,4 @@
-################## HIVE CONFIGS
+################## THEHIVE CONFIGS
 theHiveApp:
   service:
     type: LoadBalancer
@@ -23,12 +23,12 @@ theHiveApp:
       path: application.conf
 
 
-HiveStorageClass:
+TheHiveStorageClass:
   cloud: hive-local
   name: hive-storageclass
   reclaimPolicy: Retain
 
-HivePersistentVolumeClaim:
+TheHivePersistentVolumeClaim:
   name: hive-pvc
   spec:
     accessModes: ReadWriteOnce
@@ -36,7 +36,7 @@ HivePersistentVolumeClaim:
       requests:
         storage: 2Gi
 
-HivePersistentVolume:
+TheHivePersistentVolume:
   name: hive-pv
   spec:
     accessModes: ReadWriteOnce

@@ -15,23 +15,23 @@ APP VERSION: {{ .Chart.AppVersion }}
     memoryLimit: {{ .Values.theHiveApp.statefulset.resources.limits.memory }}
     requestCpu: {{ .Values.theHiveApp.statefulset.resources.requests.cpu}}
     memory: {{ .Values.theHiveApp.statefulset.resources.requests.memory}}
-    persistentVolumeClaim: {{ .Values.HivePersistentVolumeClaim.name }}
+    persistentVolumeClaim: {{ .Values.TheHivePersistentVolumeClaim.name }}
     configMap: {{ .Release.Name }} {{ .Values.ConfigMap.name }}
       items: {{ .Values.theHiveApp.volumes.items.key }}
       path: {{ .Values.theHiveApp.volumes.items.path}}
 
   HIVE PERSISTENT VOLUME INFO:
-    storageClassName: {{ .Values.HiveStorageClass.name }}
-    accessModes: {{ .Values.HivePersistentVolume.spec.accessModes }}
-    storage capacity: {{ .Values.HivePersistentVolume.spec.capacity.storage }}
-    hostPath: {{ .Values.HivePersistentVolume.spec.hostPath.dirPath }}
+    storageClassName: {{ .Values.TheHiveStorageClass.name }}
+    accessModes: {{ .Values.TheHivePersistentVolume.spec.accessModes }}
+    storage capacity: {{ .Values.TheHivePersistentVolume.spec.capacity.storage }}
+    hostPath: {{ .Values.TheHivePersistentVolume.spec.hostPath.dirPath }}
 
   HIVE PERSISTENT VOLUME CLAIM INFO:
-    name: {{ .Values.HivePersistentVolumeClaim.name }}
-    storageClassName: {{ .Values.HiveStorageClass.name }}
-    volumeName: {{ .Values.HivePersistentVolume.name }}
-    accessModes: {{ .Values.HivePersistentVolumeClaim.spec.accessModes }}
-    requestsStorage: {{ .Values.HivePersistentVolumeClaim.spec.resources.requests.storage }}
+    name: {{ .Values.TheHivePersistentVolumeClaim.name }}
+    storageClassName: {{ .Values.TheHiveStorageClass.name }}
+    volumeName: {{ .Values.TheHivePersistentVolume.name }}
+    accessModes: {{ .Values.TheHivePersistentVolumeClaim.spec.accessModes }}
+    requestsStorage: {{ .Values.TheHivePersistentVolumeClaim.spec.resources.requests.storage }}
 
   HIVE SERVICE:
     name: {{ .Release.Name }}
@@ -113,7 +113,7 @@ APP VERSION: {{ .Chart.AppVersion }}
 
 -------------------------------------------------------------------------------
 
-  {{- if contains .Values.HiveStorageClass.cloud "google" }}
+  {{- if contains .Values.TheHiveStorageClass.cloud "google" }}
 -------------------------------------------------------------------------------
   WARNING
 
@@ -121,21 +121,21 @@ APP VERSION: {{ .Chart.AppVersion }}
   documentaion .
 -------------------------------------------------------------------------------
 {{- end }}
-{{- if contains .Values.HiveStorageClass.cloud "azure" }}
+{{- if contains .Values.TheHiveStorageClass.cloud "azure" }}
   WARNING
 
   If exist any problem in StorageClass of azure check  parameters and mounthOptions in kubernetes
   documentaion
 -------------------------------------------------------------------------------
 {{- end }}
-{{- if contains .Values.HiveStorageClass.cloud "hive-local" }}
+{{- if contains .Values.TheHiveStorageClass.cloud "hive-local" }}
   WARNING
 
   If exist any problem in StorageClass of hive-local check  parameters and mounthOptions in kubernetes
   documentaion
 -------------------------------------------------------------------------------
 {{- end }}
-{{- if contains .Values.HiveStorageClass.cloud "aws" }}
+{{- if contains .Values.TheHiveStorageClass.cloud "aws" }}
   WARNING
 
   If exist any problem in aws of hive-local check  parameters and mounthOptions in kubernetes

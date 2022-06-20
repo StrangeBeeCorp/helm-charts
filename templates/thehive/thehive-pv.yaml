@@ -1,20 +1,20 @@
 apiVersion: v1
 kind: PersistentVolume
 metadata:
-  name: {{ .Values.HivePersistentVolume.name }}
+  name: {{ .Values.TheHivePersistentVolume.name }}
   namespace: {{ .Release.Namespace }}
   # annotations:
   #   volume.beta.kubernetes.io/mount-options: "uid:1000,gid:1000"
 spec:
   persistentVolumeReclaimPolicy: Retain
-  storageClassName: {{ .Values.HiveStorageClass.name }}
+  storageClassName: {{ .Values.TheHiveStorageClass.name }}
   accessModes:
-    - {{ .Values.HivePersistentVolume.spec.accessModes }}
+    - {{ .Values.TheHivePersistentVolume.spec.accessModes }}
   capacity:
-    storage: {{ .Values.HivePersistentVolume.spec.capacity.storage }}
+    storage: {{ .Values.TheHivePersistentVolume.spec.capacity.storage }}
   hostPath:
     type: DirectoryOrCreate
-    path: {{ .Values.HivePersistentVolume.spec.hostPath.dirPath }}
+    path: {{ .Values.TheHivePersistentVolume.spec.hostPath.dirPath }}
   # local:
   #   path: /data/hive
   # nodeAffinity:

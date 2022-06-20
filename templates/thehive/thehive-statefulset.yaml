@@ -53,7 +53,7 @@ spec:
       volumes:
       - name: hive-volume
         persistentVolumeClaim:
-          claimName: {{ .Values.HivePersistentVolumeClaim.name }}
+          claimName: {{ .Values.TheHivePersistentVolumeClaim.name }}
       - name: configs-volume
         configMap:
           name: "{{ .Release.Name }}-{{ .Values.ConfigMap.name }}"
