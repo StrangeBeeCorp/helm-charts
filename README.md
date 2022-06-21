@@ -24,16 +24,19 @@ This helm chart will install the following services on the kubernetes cluster:
 
 ### Update Timeline
 
-| Update                                                      | Status             |
-| ----------------------------------------------------------- | ------------------ |
-| **Refactor helm chart code**                                | :white_check_mark: |
-| **Fix connection between application and ES and Cassandra** | :white_check_mark: |
-| **Add configmap for custom settings**                       | :white_check_mark: |
-| **Configure persistence for thehive logs**                  | **review**         |
-| **Change thehive charge to statefulset**                    | **review**         |
-| **Change cortex chart to statefulset**                      | **review**         |
-| **Configure persistence for cortex logs**                   | **review**         |
-| **Separate services by namespace**                          | _pending_          |
+| Update                                               | Status             |
+| ---------------------------------------------------- | ------------------ |
+| **Refactor helm chart code**                         | :white_check_mark: |
+| **Fix connection between application and ES**        | :white_check_mark: |
+| **Add configmap for custom settings**                | :white_check_mark: |
+| **Configure persistence for thehive logs**           | :white_check_mark: |
+| **Change thehive charge to statefulset**             | :white_check_mark: |
+| **Change cortex chart to statefulset**               | :white_check_mark: |
+| **Configure persistence for cortex logs**            | :white_check_mark: |
+| **Separate services by namespace**                   | :white_check_mark: |
+| **Separate services by namespace**                   | :white_check_mark: |
+| **fix documentation and filenames**                  | :white_check_mark: |
+| **Fix connection between application and Cassandra** | _**pending**_      |
 
 Note that this project has been under active development for some time, so you might run into [issues](https://github.com/StrangeBeeCorp/helm-charts/issues). If you do, please don't be shy about letting us know, or better yet, contribute a fix or feature . any doubt you may [reach out](#where-to-find-us).
 
