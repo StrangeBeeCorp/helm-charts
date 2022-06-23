@@ -19,7 +19,7 @@ mountOptions:
 - uid=1000
 - gid=1000
 --- 
-{{ else if eq .Values.TheHiveStorageClass.cloud "hive-local" }}
+{{ else if eq .Values.TheHiveStorageClass.cloud "thehive-local" }}
 #==================                             =======================#
 #==================       Local Provisioner     =======================#
 #==================                             =======================#

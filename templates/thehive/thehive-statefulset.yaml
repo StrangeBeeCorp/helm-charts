@@ -24,8 +24,6 @@ spec:
       containers:
         - name: {{ .Release.Name }}
           image: {{ .Values.theHiveApp.statefulset.image }}
-            # {{ $cqlhost := ternary (printf "%s-cassandra" .Release.Name) .Values.theHiveApp.statefulset.cassandraHostname .Values.cassandra.enabled }}
-            # {{ $eshost := ternary (printf "%s-elasticsearch" .Release.Name) .Values.theHiveApp.statefulset.elasticSearchHostname .Values.elasticSearch.enabled }}
           command: ["/bin/sh", "-c"]
           args:
             - /opt/thehive/entrypoint --secret SuperSecretForKubernetes --cql-hostnames cassandra --no-cql-wait --no-config-cortex --kubernetes --index-backend thehive-elasticsearch --es-hostnames thehive-elasticsearch --s3-endpoint http://minio:9000 --s3-access-key minioadmin --s3-secret-key minioadmin --s3-use-path-access-style --cluster-min-nodes-count 0;
@@ -46,12 +44,12 @@ spec:
               memory: {{ .Values.theHiveApp.statefulset.resources.requests.memory}}
           volumeMounts:
           - mountPath: /var/log/thehive
-            name: hive-volume
+            name: thehive-volume
             readOnly: false
           - mountPath: /config
             name: configs-volume
       volumes:
-      - name: hive-volume
+      - name: thehive-volume
         persistentVolumeClaim:
           claimName: {{ .Values.TheHivePersistentVolumeClaim.name }}
       - name: configs-volume

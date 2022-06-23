@@ -3,7 +3,7 @@ theHiveApp:
   service:
     type: LoadBalancer
     port: 9000
-    nodePort: 30001
+    nodePort: 30021
   statefulset:
     replicas: 1
     containerPort: 9000
@@ -16,7 +16,7 @@ theHiveApp:
         memory: 100Mi
     image: strangebee/thehive:latest
     cassandraHostname: "cassandra"
-    elasticSearchHostname: "elasticSearch"
+    elasticSearchHostname: "elasticsearch"
   volumes:
     items:
       key: application.conf
@@ -24,12 +24,12 @@ theHiveApp:
 
 
 TheHiveStorageClass:
-  cloud: hive-local
-  name: hive-storageclass
+  cloud: thehive-local
+  name: thehive-storageclass
   reclaimPolicy: Retain
 
 TheHivePersistentVolumeClaim:
-  name: hive-pvc
+  name: thehive-pvc
   spec:
     accessModes: ReadWriteOnce
     resources:
@@ -37,7 +37,7 @@ TheHivePersistentVolumeClaim:
         storage: 2Gi
 
 TheHivePersistentVolume:
-  name: hive-pv
+  name: thehive-pv
   spec:
     accessModes: ReadWriteOnce
     capacity:
@@ -46,48 +46,7 @@ TheHivePersistentVolume:
       dirPath: /hive
 
 ConfigMap:
-  name: hive-svc
-
-################## CASSANDRA CONFIG
-cassandra:
-  enabled: true
-  service:
-    port: 9042
-  statefulset:
-    replicas: 1
-    terminationGracePeriodSeconds: 1800
-    image: cassandra:4.0
-    resources:
-      limits:
-        cpu: "500m"
-        memory: 1Gi
-      requests:
-        cpu: "100m"
-        memory: 100Mi
-
-#################### ELASTICSEARCH
-elasticSearch:
-  enabled: true
-  service:
-    port: 9200
-  statefulset:
-    replicas: 1
-    terminationGracePeriodSeconds: 1800
-    initContainers:
-      name: init
-      image: debian:stable-slim
-    containers:
-      image: docker.elastic.co/elasticsearch/elasticsearch:7.17.1
-      ports:
-        containerPort: 9200
-        name: http
-      resources:
-        limits:
-          cpu: "500m"
-          memory: 1Gi
-        requests:
-          cpu: "100m"
-          memory: 100Mi
+  name: thehive-svc
 
 ####################### MINIO CONFIGS
 minio:
@@ -170,7 +129,7 @@ CortexHPA:
   name: cortex-autoscale
   spec:
     minReplicas: 1
-    maxReplicas: 2
+    maxReplicas: 1
     metrics:
       averageUtilization: 90
       averageValue: 900Mi
