@@ -26,7 +26,7 @@ spec:
           image: {{ .Values.theHiveApp.statefulset.image }}
           command: ["/bin/sh", "-c"]
           args:
-            - /opt/thehive/entrypoint --secret SuperSecretForKubernetes --cql-hostnames cassandra --no-cql-wait --no-config-cortex --kubernetes --index-backend thehive-elasticsearch --es-hostnames thehive-elasticsearch --s3-endpoint http://minio:9000 --s3-access-key minioadmin --s3-secret-key minioadmin --s3-use-path-access-style --cluster-min-nodes-count 0;
+            - /opt/thehive/entrypoint  --cql-hostnames cassandra --no-cql-wait --no-config-cortex --kubernetes --index-backend thehive-elasticsearch --es-hostnames elasticsearch --s3-endpoint http://minio:9000 --s3-access-key minioadmin --s3-secret-key minioadmin --s3-use-path-access-style --cluster-min-nodes-count 0;
             # - chmod -R o+w /var/log/thehive
           ports:
             - containerPort: {{ .Values.theHiveApp.statefulset.containerPort }}
@@ -54,7 +54,7 @@ spec:
           claimName: {{ .Values.TheHivePersistentVolumeClaim.name }}
       - name: configs-volume
         configMap:
-          name: "{{ .Release.Name }}-{{ .Values.ConfigMap.name }}"
+          name: {{ .Release.Name }}
           items:
-          - key: {{ .Values.theHiveApp.volumes.items.key}}
-            path: {{ .Values.theHiveApp.volumes.items.path}}
+          - key: application.conf
+            path: application.conf

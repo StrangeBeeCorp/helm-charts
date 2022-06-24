@@ -17,10 +17,6 @@ theHiveApp:
     image: strangebee/thehive:latest
     cassandraHostname: "cassandra"
     elasticSearchHostname: "elasticsearch"
-  volumes:
-    items:
-      key: application.conf
-      path: application.conf
 
 
 TheHiveStorageClass:
@@ -44,9 +40,6 @@ TheHivePersistentVolume:
       storage: 5Gi
     hostPath:
       dirPath: /hive
-
-ConfigMap:
-  name: thehive-svc
 
 ####################### MINIO CONFIGS
 minio:
@@ -97,6 +90,12 @@ cortex:
         requests:
           cpu: "100m"
           memory: 512Mi
+    volumes:
+      configMap:
+        name: cortex-configmap
+        items:
+          key: application.conf
+          path: application.conf
 
 Secrets:
   name: minio-secrets

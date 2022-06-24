@@ -92,10 +92,10 @@ This helm chart will install the following services on the kubernetes cluster:
 **To Verify if the templates are correct**:
 
 ```bash
-helm install elasticsearch ./ --values ./elasticsearch/values.yaml -n elasticsearch --create-namespace --dry-run --debug && helm lint
+helm install elasticsearch ./elasticsearch --values ./elasticsearch/values.yaml -n elasticsearch --create-namespace --dry-run --debug && helm lint
 ```
 ```bash
-helm install cassandra ./cassandra --values ./cassandra/values.yaml -cassandra --create-namespace --dry-run --debug && helm lint
+helm install cassandra ./cassandra --values ./cassandra/values.yaml -n cassandra --create-namespace --dry-run --debug && helm lint
 ```
 ```bash
 helm install thehive ./ --values values.yaml -n thehive --create-namespace --dry-run --debug && helm lint
@@ -107,7 +107,7 @@ helm install thehive ./ --values values.yaml -n thehive --create-namespace --dry
   helm install elasticsearch ./elasticsearch --values ./elasticsearch/values.yaml -n elasticsearch --create-namespace
 ```
 ```bash
-  helm install cassandra ./cassandra --values ./cassandra/values.yaml -cassandra --create-namespace
+  helm install cassandra ./cassandra --values ./cassandra/values.yaml -n cassandra --create-namespace
 ```
 ```bash
   helm install thehive ./ --values values.yaml -n thehive --create-namespace
