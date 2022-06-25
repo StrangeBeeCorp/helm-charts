@@ -104,16 +104,16 @@ image:
 ## @param dbUser.existingSecret Use an existing secret object for `dbUser.user` password (will ignore `dbUser.password`)
 ##
 dbUser:
-  user: thehive
+  user: "cassandra"
   forcePassword: false
-  password: "password"
+  password: "cassandra"
   ## Use an existing secrets which already stores your password data.
   ## for backwards compatibility, existingSecret can be a simple string,
   ## referencing the secret by name.
-  ## existingSecret:
+  # existingSecret:
+  #   name: SuperSecretForKubernetes
   ##   ## Name of the existing secret
   ##   ##
-  ##   name: mySecret
   ##   ## Key mapping where <key> is the value which the deployment is expecting and
   ##   ## <value> is the name of the key in the existing secret.
   ##   ##
@@ -147,8 +147,8 @@ cluster:
   name: thp
   seedCount: 1
   numTokens: 256
-  datacenter: dc1
-  rack: rack1
+  datacenter: DC1-TheHive
+  rack: Rack1-TheHive
   endpointSnitch: SimpleSnitch
   ## NOTE: internodeEncryption requires tlsEncryptionSecretName
   ##
@@ -175,13 +175,13 @@ jvm:
   ## - calculate 1/4 ram and cap to 8192MB
   ## - pick the max
   ##
-  maxHeapSize: ""
+  maxHeapSize: "512M"
   ## newHeapSize:
   ## A good guideline is 100 MB per CPU core.
   ## - min(100 * num_cores, 1/4 * heap size)
   ## ref: https://docs.datastax.com/en/archived/cassandra/2.0/cassandra/operations/ops_tune_jvm_c.html
   ##
-  newHeapSize: ""
+  newHeapSize: "100M"
 ## @param command Command for running the container (set to default if not set). Use array form
 ##
 command: []
@@ -289,6 +289,9 @@ podSecurityContext:
 ## @param containerSecurityContext.runAsNonRoot Force the container to be run as non root
 ##
 containerSecurityContext:
+  capabilities:
+    add:
+      - IPC_LOCK
   enabled: true
   runAsUser: 1001
   runAsNonRoot: true

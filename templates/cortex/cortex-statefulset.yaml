@@ -35,6 +35,8 @@ spec:
             value: http://elasticsearch.elasticsearch.svc.cluster.local:9200
           - name: kubernetes_job_pvc
             value: hppvc
+          - name: ES_HOSTNAME
+            value: elasticsearch.elasticsearch.svc.cluster.local
         volumeMounts:
           - name: jobdir
             mountPath: /var/log/cortex

@@ -1,7 +1,7 @@
 annotations:
   category: Analytics
 apiVersion: v2
-appVersion: 8.2.0
+appVersion: 7.17.4
 dependencies:
 - condition: global.kibanaEnabled
   name: kibana

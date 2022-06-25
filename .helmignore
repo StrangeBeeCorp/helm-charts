@@ -27,3 +27,4 @@ test
 cassandra-9.2.4.tgz
 ./local
 local
+makefile

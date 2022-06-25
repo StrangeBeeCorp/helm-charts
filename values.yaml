@@ -73,7 +73,7 @@ minio:
 ######################### CORTEX CONFIGS
 cortex:
   service:
-    port: 9543
+    port: 9001
     targetPort: 9001
   statefulset:
     replicas: 1
