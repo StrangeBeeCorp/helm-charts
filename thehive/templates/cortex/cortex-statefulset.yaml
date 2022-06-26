@@ -31,12 +31,25 @@ spec:
             cpu: {{ .Values.cortex.statefulset.containers.resources.requests.cpu }}
             memory: {{ .Values.cortex.statefulset.containers.resources.requests.memory }}
         env:
+          {{ if eq .Values.cortex.elasticSearchEnabled true}}
           - name: es_uri
-            value: http://elasticsearch.elasticsearch.svc.cluster.local:9200
+            value: "http://{{ .Values.cortex.elasticSearchHostname }}:9200"
+          - name: ES_HOSTNAME
+            value: {{  .Values.cortex.elasticSearchHostname }}
+          {{ end }}
+
+          {{ if eq .Values.cortex.elasticSearchEnabled false}}
+          - name: es_uri
+            value: "http://(printf "%s-{{  .Values.cortex.elasticSearchHostname }}" {{ .Release.Name }}):9200"
+          - name: ES_HOSTNAME
+            value: printf "%s-{{  .Values.cortex.elasticSearchHostname }}" {{ .Release.Name }}
+          {{ end }}
+          # - name: es_uri
+          #   value: http://elasticsearch.elasticsearch.svc.cluster.local:9200
+          # - name: ES_HOSTNAME
+          #   value: elasticsearch.elasticsearch.svc.cluster.local
           - name: kubernetes_job_pvc
             value: hppvc
-          - name: ES_HOSTNAME
-            value: elasticsearch.elasticsearch.svc.cluster.local
         volumeMounts:
           - name: jobdir
             mountPath: /var/log/cortex

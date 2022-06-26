@@ -13,6 +13,10 @@ Step by step to install [Quick installation](https://github.com/StrangeBeeCorp/h
 - Kubernetes 1.19+
 - Helm 3.2.0+
 
+# More About 
+[_Cassandra_](https://github.com/StrangeBeeCorp/helm-charts/blob/main/charts/cassandra/README.md)  | [_ElasticSearch_](https://github.com/StrangeBeeCorp/helm-charts/blob/main/charts/cassandra/README.md)
+---
+
 ## Thehive Parameters
 
 | Name                                               | Description                         | Value                       |
@@ -84,9 +88,7 @@ This helm chart will install the following services on the kubernetes cluster:
 - **minio**
 
 
-# More About 
-[_Cassandra_](https://github.com/StrangeBeeCorp/helm-charts/blob/main/charts/cassandra/README.md)  | [_ElasticSearch_](https://github.com/StrangeBeeCorp/helm-charts/blob/main/charts/cassandra/README.md)
----
+
 ## Install
 
 **To Verify if the templates are correct**:
@@ -98,7 +100,7 @@ helm install elasticsearch ./elasticsearch --values ./elasticsearch/values.yaml 
 helm install cassandra ./cassandra --values ./cassandra/values.yaml -n cassandra --create-namespace --dry-run --debug && helm lint
 ```
 ```bash
-helm install thehive ./ --values values.yaml -n thehive --create-namespace --dry-run --debug && helm lint
+helm install thehive ./thehive --values ./thehive/values.yaml -n thehive --create-namespace --dry-run --debug && helm lint
 ```
 
 **Deploy charts**:
@@ -110,7 +112,7 @@ helm install thehive ./ --values values.yaml -n thehive --create-namespace --dry
   helm install cassandra ./cassandra --values ./cassandra/values.yaml -n cassandra --create-namespace
 ```
 ```bash
-  helm install thehive ./ --values values.yaml -n thehive --create-namespace
+  helm install thehive ./thehive --values ./thehive/values.yaml -n thehive --create-namespace
 ```
 
 **Update helm deployment**:
@@ -122,7 +124,7 @@ helm upgrade elasticsearch ./elasticsearch --values ./elasticsearch/values.yaml 
 helm upgrade cassandra ./cassandra --values ./cassandra/values.yaml -n cassandra
 ```
 ```bash
-helm upgrade thehive ./ --values values.yaml -n thehive
+helm upgrade thehive ./thehive --values ./thehive/values.yaml -n thehive
 ```
 
 **Update helm rollback**:

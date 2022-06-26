@@ -1,9 +1,15 @@
 ################## THEHIVE CONFIGS
 theHiveApp:
+  cassandraEnabled: true
+  cassandraHostname: "cassandra"
+  elasticSearchEnabled: true
+  elasticSearchHostname: "elasticsearch.elasticsearch.svc.cluster.local"
+  
   service:
     type: LoadBalancer
     port: 9000
     nodePort: 30021
+  
   statefulset:
     replicas: 1
     containerPort: 9000
@@ -15,8 +21,7 @@ theHiveApp:
         cpu: "100m"
         memory: 100Mi
     image: strangebee/thehive:latest
-    cassandraHostname: "cassandra"
-    elasticSearchHostname: "elasticsearch"
+
 
 
 TheHiveStorageClass:
@@ -96,6 +101,9 @@ cortex:
         items:
           key: application.conf
           path: application.conf
+
+  elasticSearchEnabled: true
+  elasticSearchHostname: "elasticsearch.elasticsearch.svc.cluster.local"
 
 Secrets:
   name: minio-secrets
