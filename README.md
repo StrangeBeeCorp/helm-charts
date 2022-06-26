@@ -13,26 +13,28 @@ Step by step to install [Quick installation](https://github.com/StrangeBeeCorp/h
 - Kubernetes 1.19+
 - Helm 3.2.0+
 
-# More About 
-[_Cassandra_](https://github.com/StrangeBeeCorp/helm-charts/blob/main/charts/cassandra/README.md)  | [_ElasticSearch_](https://github.com/StrangeBeeCorp/helm-charts/blob/main/charts/cassandra/README.md)
----
+# More About
+
+## [_Cassandra_](https://github.com/StrangeBeeCorp/helm-charts/blob/main/charts/cassandra/README.md) | [_ElasticSearch_](https://github.com/StrangeBeeCorp/helm-charts/blob/main/charts/cassandra/README.md)
 
 ## Thehive Parameters
 
-| Name                                               | Description                         | Value                       |
-| -------------------------------------------------- | ----------------------------------- | --------------------------- |
-| `theHiveApp.service.type`                          | type of thehive Service             | `LoadBalancer`              |
-| `theHiveApp.service.port`                          | port of service                     | `9000`                      |
-| `theHiveApp.service.nodePort`                      | node port of thehive service        | `30001`                     |
-| `theHiveApp.Statefulset.replicas`                  | number of thehive replicas          | `1`                         |
-| `theHiveApp.Statefulset.ContainerPort`             | Container port of thehive container | `9000`                      |
-| `theHiveApp.Statefulset.name`                      | name of thehive container           | `http`                      |
-| `theHiveApp.Statefulset.resources.limits.memory`   | memory limit of thehive container   | `2Gi`                       |
-| `theHiveApp.Statefulset.resources.requests.cpu`    | min cpu provisioneted by cluster    | `100m`                      |
-| `theHiveApp.Statefulset.resources.requests.memory` | min memoru provisioneted by clutes  | `100Mi`                     |
-| `theHiveApp.Statefulset.image`                     | thehive's image                     | `strangebee/thehive:latest` |
-| `theHiveApp.volumes.items.key`                     | key thehive's volumes config        | `application.conf`          |
-| `theHiveApp.volumes.items.path`                    | path thehive's volumes config       | `application.conf`          |
+| Name                                               | Description                         | Value                                           |
+| -------------------------------------------------- | ----------------------------------- | ----------------------------------------------- |
+| `theHiveApp.service.type`                          | type of thehive Service             | `LoadBalancer`                                  |
+| `theHiveApp.service.port`                          | port of service                     | `9000`                                          |
+| `theHiveApp.service.nodePort`                      | node port of thehive service        | `30001`                                         |
+| `theHiveApp.Statefulset.replicas`                  | number of thehive replicas          | `1`                                             |
+| `theHiveApp.Statefulset.ContainerPort`             | Container port of thehive container | `9000`                                          |
+| `theHiveApp.Statefulset.name`                      | name of thehive container           | `http`                                          |
+| `theHiveApp.Statefulset.resources.limits.memory`   | memory limit of thehive container   | `2Gi`                                           |
+| `theHiveApp.Statefulset.resources.requests.cpu`    | min cpu provisioneted by cluster    | `100m`                                          |
+| `theHiveApp.Statefulset.resources.requests.memory` | min memoru provisioneted by clutes  | `100Mi`                                         |
+| `theHiveApp.Statefulset.image`                     | thehive's image                     | `strangebee/thehive:latest`                     |
+| `theHiveApp.cassandraEnabled`                      | cassandra service                   | `true`                                          |
+| `theHiveApp.cassandraHostname`                     | elasticSearch hostname              | `cassandra`                                     |
+| `theHiveApp.elasticSearchEnabled`                  | cassandra service                   | `true`                                          |
+| `theHiveApp.elasticSearchHostname`                 | elasticSearch hostname              | `elasticsearch.elasticsearch.svc.cluster.local` |
 
 ## Cortex Parameters
 
@@ -87,8 +89,6 @@ This helm chart will install the following services on the kubernetes cluster:
 - **thehive**
 - **minio**
 
-
-
 ## Install
 
 **To Verify if the templates are correct**:
@@ -96,9 +96,11 @@ This helm chart will install the following services on the kubernetes cluster:
 ```bash
 helm install elasticsearch ./elasticsearch --values ./elasticsearch/values.yaml -n elasticsearch --create-namespace --dry-run --debug && helm lint
 ```
+
 ```bash
 helm install cassandra ./cassandra --values ./cassandra/values.yaml -n cassandra --create-namespace --dry-run --debug && helm lint
 ```
+
 ```bash
 helm install thehive ./thehive --values ./thehive/values.yaml -n thehive --create-namespace --dry-run --debug && helm lint
 ```
@@ -108,9 +110,11 @@ helm install thehive ./thehive --values ./thehive/values.yaml -n thehive --creat
 ```bash
   helm install elasticsearch ./elasticsearch --values ./elasticsearch/values.yaml -n elasticsearch --create-namespace
 ```
+
 ```bash
   helm install cassandra ./cassandra --values ./cassandra/values.yaml -n cassandra --create-namespace
 ```
+
 ```bash
   helm install thehive ./thehive --values ./thehive/values.yaml -n thehive --create-namespace
 ```
@@ -120,9 +124,11 @@ helm install thehive ./thehive --values ./thehive/values.yaml -n thehive --creat
 ```bash
 helm upgrade elasticsearch ./elasticsearch --values ./elasticsearch/values.yaml -n elasticsearch
 ```
+
 ```bash
 helm upgrade cassandra ./cassandra --values ./cassandra/values.yaml -n cassandra
 ```
+
 ```bash
 helm upgrade thehive ./thehive --values ./thehive/values.yaml -n thehive
 ```
@@ -132,9 +138,11 @@ helm upgrade thehive ./thehive --values ./thehive/values.yaml -n thehive
 ```bash
 helm rollback elasticsearch RELEASE_NUMBER -n elasticsearch
 ```
+
 ```bash
 helm rollback cassandra RELEASE_NUMBER -n cassandra
 ```
+
 ```bash
 helm rollback thehive RELEASE_NUMBER -n thehive
 ```
@@ -144,9 +152,11 @@ helm rollback thehive RELEASE_NUMBER -n thehive
 ```bash
 helm uninstall elasticsearch --namespace elasticsearch
 ```
+
 ```bash
 helm uninstall cassandra --namespace cassandra
 ```
+
 ```bash
 helm uninstall thehive --namespace thehive
 ```
