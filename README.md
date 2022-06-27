@@ -15,7 +15,7 @@ Step by step to install [Quick installation](https://github.com/StrangeBeeCorp/h
 
 # More About
 
-## [_Cassandra_](https://github.com/StrangeBeeCorp/helm-charts/blob/main/charts/cassandra/README.md) | [_ElasticSearch_](https://github.com/StrangeBeeCorp/helm-charts/blob/main/charts/cassandra/README.md)
+### [_TheHive_](http://docs.thehive-project.org/thehive/) | [_Cortex_](https://github.com/TheHive-Project/CortexDocs) | [_Cassandra_](https://github.com/StrangeBeeCorp/helm-charts/blob/main/charts/cassandra/README.md) | [_ElasticSearch_](https://github.com/StrangeBeeCorp/helm-charts/blob/main/charts/cassandra/README.md)
 
 <!-- TODO: CHECK BELOW DOCUMENTATION 21~43 -->
 ## Important Informations
@@ -31,17 +31,18 @@ Step by step to install [Quick installation](https://github.com/StrangeBeeCorp/h
   helm upgrade thehive ./thehive --values ./thehive/values.yaml -n thehive --set TheHiveStorageClass.cloud=local
   ```
   ### ElasticSearch and Canssandra
-  If you don't have elasticsearch or cassandra installed it is necessary to pass the hotname in the following variables.
-  
-  ElasticSeach hostname:
-  ```bash
-    helm upgrade thehive ./thehive --values ./thehive/values.yaml -n thehive --set .Values.hostnames.elasticSearch.value=HOSTNAME
-  ```
-  Cassandra hostname:
-  ```bash
-    helm upgrade thehive ./thehive --values ./thehive/values.yaml -n thehive --set .Values.hostnames.cassandra.value=HOSTNAME
-  ```
+  Cassandra and Elasticsearch are needed to run TheHive/Cortex stack.
+  If you don't have Cassandra and Elasticsearch installed, you can use the suggested charts:
+  [_Cassandra Helm Chart_](https://github.com/StrangeBeeCorp/helm-charts/blob/main/charts/cassandra/README.md) | [_ElasticSearch Helm Chart_](https://github.com/StrangeBeeCorp/helm-charts/blob/main/charts/cassandra/README.md)
 
+  Edit the  ./thehive/values.yaml file and pass the cassabdra/elasticsearch in the following parameters:
+  ```yaml
+  hostname:
+    cassandra:
+      value: "<cassandra host>"
+    elasticSearch:
+      value: "<elasticsearch host>"
+  ```
 ## Thehive Parameters
 
 | Name                                               | Description                         | Value                                           |
@@ -212,27 +213,5 @@ For information regarding the review procedure used by chart repository maintain
 
 This chart repository supports the latest and previous minor versions of Kubernetes. For example, if the latest minor release of Kubernetes is 1.24 then 1.23 and 1.22 are supported. Charts may still work on previous versions of Kubernertes even though they are outside the target supported window.
 
-### Update Timeline
-
-| Update                                                 | Status             |
-| ------------------------------------------------------ | ------------------ |
-| **Refactor helm chart code**                           | :white_check_mark: |
-| **Fix connection between application and ES**          | :white_check_mark: |
-| **Add configmap for custom settings**                  | :white_check_mark: |
-| **Configure persistence for thehive logs**             | :white_check_mark: |
-| **Change thehive charge to statefulset**               | :white_check_mark: |
-| **Change cortex chart to statefulset**                 | :white_check_mark: |
-| **Configure persistence for cortex logs**              | :white_check_mark: |
-| **Separate services by namespace**                     | :white_check_mark: |
-| **Separate services by namespace**                     | :white_check_mark: |
-| **fix documentation and filenames**                    | _**pending**_      |
-| **Fix connection between application and Cassandra**   | _**pending**_      |
-| **run elasticsearch and cassandra in diferent charts** | _**pending**_      |
 
 Note that this project has been under active development for some time, so you might run into [issues](https://github.com/StrangeBeeCorp/helm-charts/issues). If you do, please don't be shy about letting us know, or better yet, contribute a fix or feature . any doubt you may [reach out](#where-to-find-us).
-
-## Where to Find Us
-
-For general Helm Chart discussions join the room in the [Slack channel](https://ezops.slack.com/archives/C03DH7JBADR).
-
-For issues and support for Helm and Charts see [Support Channels](CONTRIBUTING.md#support-channels).

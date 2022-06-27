@@ -19,7 +19,7 @@ data:
         }
       }
       index.search {
-        backend = thehive-elasticsearch
+        backend = elasticsearch
         # Set elasticsearch hostnames
         hostname = ["elasticsearch.elasticsearch.svc.cluster.local:9200"]
         uri = http://elasticsearch.elasticsearch.svc.cluster.local:9200

@@ -71,7 +71,7 @@ diagnosticMode:
 
 ## @param clusterName Elasticsearch cluster name
 ##
-clusterName: es-docker-cluster
+clusterName: elastic
 ## @param containerPorts.restAPI Elasticsearch REST API port
 ## @param containerPorts.transport Elasticsearch Transport port
 ##
@@ -135,8 +135,6 @@ initScriptsSecret: ""
 extraEnvVars:
 - name: "node.name"
   value: es
-# - name: "cluster.name"
-#   value: es-docker-cluster
 - name: "discovery.type"
   value: single-node
 - name: "bootstrap.memory_lock"
