@@ -19,7 +19,7 @@ mountOptions:
 - uid=1000
 - gid=1000
 --- 
-{{ else if eq .Values.TheHiveStorageClass.cloud "thehive-local" }}
+{{ else if eq .Values.TheHiveStorageClass.cloud "local" }}
 #==================                             =======================#
 #==================       Local Provisioner     =======================#
 #==================                             =======================#
@@ -30,17 +30,8 @@ metadata:
   namespace: {{ .Release.Namespace }}
 provisioner: kubernetes.io/no-provisioner
 volumeBindingMode: WaitForFirstConsumer
-# volumeBindingMode: Immediate
 allowVolumeExpansion: true
-# mountOptions:
-# - uid=1000
-# - gid=1000
-# - debug
 reclaimPolicy: {{ .Values.TheHiveStorageClass.reclaimPolicy }}
-# parameters:
-#   type: pd-standard
-#   fstype: ext4
-#   replication-type: none
 ---
 {{ else if eq .Values.TheHiveStorageClass.cloud "azure"}}
 #==================                             =======================#

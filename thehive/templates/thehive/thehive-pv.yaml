@@ -3,8 +3,6 @@ kind: PersistentVolume
 metadata:
   name: {{ .Values.TheHivePersistentVolume.name }}
   namespace: {{ .Release.Namespace }}
-  # annotations:
-  #   volume.beta.kubernetes.io/mount-options: "uid:1000,gid:1000"
 spec:
   persistentVolumeReclaimPolicy: Retain
   storageClassName: {{ .Values.TheHiveStorageClass.name }}
@@ -15,13 +13,3 @@ spec:
   hostPath:
     type: DirectoryOrCreate
     path: {{ .Values.TheHivePersistentVolume.spec.hostPath.dirPath }}
-  # local:
-  #   path: /data/hive
-  # nodeAffinity:
-  #   required:
-  #     nodeSelectorTerms:
-  #     - matchExpressions:
-  #       - key: kubernetes.io/hostname
-  #         operator: In
-  #         values:
-  #         - minikube

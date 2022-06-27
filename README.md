@@ -17,6 +17,31 @@ Step by step to install [Quick installation](https://github.com/StrangeBeeCorp/h
 
 ## [_Cassandra_](https://github.com/StrangeBeeCorp/helm-charts/blob/main/charts/cassandra/README.md) | [_ElasticSearch_](https://github.com/StrangeBeeCorp/helm-charts/blob/main/charts/cassandra/README.md)
 
+<!-- TODO: CHECK BELOW DOCUMENTATION 21~43 -->
+## Important Informations
+  ### Storage
+  Change the value of TheHiveStorageClass.cloud according to the cloud where the cluster is running.
+  ```bash
+    helm upgrade thehive ./thehive --values ./thehive/values.yaml -n thehive --set TheHiveStorageClass.cloud=google
+  ```
+
+  If it is running locally, set this parameter to the value "local".
+   
+  ```bash
+  helm upgrade thehive ./thehive --values ./thehive/values.yaml -n thehive --set TheHiveStorageClass.cloud=local
+  ```
+  ### ElasticSearch and Canssandra
+  If you don't have elasticsearch or cassandra installed it is necessary to pass the hotname in the following variables.
+  
+  ElasticSeach hostname:
+  ```bash
+    helm upgrade thehive ./thehive --values ./thehive/values.yaml -n thehive --set .Values.hostnames.elasticSearch.value=HOSTNAME
+  ```
+  Cassandra hostname:
+  ```bash
+    helm upgrade thehive ./thehive --values ./thehive/values.yaml -n thehive --set .Values.hostnames.cassandra.value=HOSTNAME
+  ```
+
 ## Thehive Parameters
 
 | Name                                               | Description                         | Value                                           |
@@ -31,9 +56,7 @@ Step by step to install [Quick installation](https://github.com/StrangeBeeCorp/h
 | `theHiveApp.Statefulset.resources.requests.cpu`    | min cpu provisioneted by cluster    | `100m`                                          |
 | `theHiveApp.Statefulset.resources.requests.memory` | min memoru provisioneted by clutes  | `100Mi`                                         |
 | `theHiveApp.Statefulset.image`                     | thehive's image                     | `strangebee/thehive:latest`                     |
-| `theHiveApp.cassandraEnabled`                      | cassandra service                   | `true`                                          |
 | `theHiveApp.cassandraHostname`                     | elasticSearch hostname              | `cassandra`                                     |
-| `theHiveApp.elasticSearchEnabled`                  | cassandra service                   | `true`                                          |
 | `theHiveApp.elasticSearchHostname`                 | elasticSearch hostname              | `elasticsearch.elasticsearch.svc.cluster.local` |
 
 ## Cortex Parameters

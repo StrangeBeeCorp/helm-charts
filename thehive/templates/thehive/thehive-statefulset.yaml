@@ -25,8 +25,8 @@ spec:
         - name: {{ .Release.Name }}
           image: {{ .Values.theHiveApp.statefulset.image }}
           command: ["/bin/sh", "-c"]
-          {{ $cqlhost := ternary .Values.theHiveApp.cassandraHostname  (printf "%s-cassandra" .Release.Name) .Values.theHiveApp.cassandraEnabled }}
-          {{ $eshost := ternary .Values.theHiveApp.elasticSearchHostname (printf "%s-elasticsearch" .Release.Name) .Values.theHiveApp.elasticSearchEnabled }}
+          {{ $cqlhost := .Values.hostname.cassandra.value }}
+          {{ $eshost :=  .Values.hostname.elasticSearch.value }}
           args:
             - /opt/thehive/entrypoint  --cql-hostnames \
               {{ $cqlhost }} --no-cql-wait --no-config-cortex --kubernetes --index-backend thehive-elasticsearch --es-hostnames \
