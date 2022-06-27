@@ -13,22 +13,52 @@ Step by step to install [Quick installation](https://github.com/StrangeBeeCorp/h
 - Kubernetes 1.19+
 - Helm 3.2.0+
 
+# More About
+
+### [_TheHive_](http://docs.thehive-project.org/thehive/) | [_Cortex_](https://github.com/TheHive-Project/CortexDocs) | [_Cassandra_](https://github.com/StrangeBeeCorp/helm-charts/blob/main/charts/cassandra/README.md) | [_ElasticSearch_](https://github.com/StrangeBeeCorp/helm-charts/blob/main/charts/cassandra/README.md)
+
+<!-- TODO: CHECK BELOW DOCUMENTATION 21~43 -->
+## Important Informations
+  ### Storage
+  Change the value of TheHiveStorageClass.cloud according to the cloud where the cluster is running.
+  ```bash
+    helm upgrade thehive ./thehive --values ./thehive/values.yaml -n thehive --set TheHiveStorageClass.cloud=google
+  ```
+
+  If it is running locally, set this parameter to the value "local".
+   
+  ```bash
+  helm upgrade thehive ./thehive --values ./thehive/values.yaml -n thehive --set TheHiveStorageClass.cloud=local
+  ```
+  ### ElasticSearch and Canssandra
+  Cassandra and Elasticsearch are needed to run TheHive/Cortex stack.
+  If you don't have Cassandra and Elasticsearch installed, you can use the suggested charts:
+  [_Cassandra Helm Chart_](https://github.com/StrangeBeeCorp/helm-charts/blob/main/charts/cassandra/README.md) | [_ElasticSearch Helm Chart_](https://github.com/StrangeBeeCorp/helm-charts/blob/main/charts/cassandra/README.md)
+
+  Edit the  ./thehive/values.yaml file and pass the cassabdra/elasticsearch in the following parameters:
+  ```yaml
+  hostname:
+    cassandra:
+      value: "<cassandra host>"
+    elasticSearch:
+      value: "<elasticsearch host>"
+  ```
 ## Thehive Parameters
 
-| Name                                               | Description                         | Value                       |
-| -------------------------------------------------- | ----------------------------------- | --------------------------- |
-| `theHiveApp.service.type`                          | type of thehive Service             | `LoadBalancer`              |
-| `theHiveApp.service.port`                          | port of service                     | `9000`                      |
-| `theHiveApp.service.nodePort`                      | node port of thehive service        | `30001`                     |
-| `theHiveApp.Statefulset.replicas`                  | number of thehive replicas          | `1`                         |
-| `theHiveApp.Statefulset.ContainerPort`             | Container port of thehive container | `9000`                      |
-| `theHiveApp.Statefulset.name`                      | name of thehive container           | `http`                      |
-| `theHiveApp.Statefulset.resources.limits.memory`   | memory limit of thehive container   | `2Gi`                       |
-| `theHiveApp.Statefulset.resources.requests.cpu`    | min cpu provisioneted by cluster    | `100m`                      |
-| `theHiveApp.Statefulset.resources.requests.memory` | min memoru provisioneted by clutes  | `100Mi`                     |
-| `theHiveApp.Statefulset.image`                     | thehive's image                     | `strangebee/thehive:latest` |
-| `theHiveApp.volumes.items.key`                     | key thehive's volumes config        | `application.conf`          |
-| `theHiveApp.volumes.items.path`                    | path thehive's volumes config       | `application.conf`          |
+| Name                                               | Description                         | Value                                           |
+| -------------------------------------------------- | ----------------------------------- | ----------------------------------------------- |
+| `theHiveApp.service.type`                          | type of thehive Service             | `LoadBalancer`                                  |
+| `theHiveApp.service.port`                          | port of service                     | `9000`                                          |
+| `theHiveApp.service.nodePort`                      | node port of thehive service        | `30001`                                         |
+| `theHiveApp.Statefulset.replicas`                  | number of thehive replicas          | `1`                                             |
+| `theHiveApp.Statefulset.ContainerPort`             | Container port of thehive container | `9000`                                          |
+| `theHiveApp.Statefulset.name`                      | name of thehive container           | `http`                                          |
+| `theHiveApp.Statefulset.resources.limits.memory`   | memory limit of thehive container   | `2Gi`                                           |
+| `theHiveApp.Statefulset.resources.requests.cpu`    | min cpu provisioneted by cluster    | `100m`                                          |
+| `theHiveApp.Statefulset.resources.requests.memory` | min memoru provisioneted by clutes  | `100Mi`                                         |
+| `theHiveApp.Statefulset.image`                     | thehive's image                     | `strangebee/thehive:latest`                     |
+| `theHiveApp.cassandraHostname`                     | elasticSearch hostname              | `cassandra`                                     |
+| `theHiveApp.elasticSearchHostname`                 | elasticSearch hostname              | `elasticsearch.elasticsearch.svc.cluster.local` |
 
 ## Cortex Parameters
 
@@ -83,22 +113,20 @@ This helm chart will install the following services on the kubernetes cluster:
 - **thehive**
 - **minio**
 
-
-# More About 
-[_Cassandra_](https://github.com/StrangeBeeCorp/helm-charts/blob/main/charts/cassandra/README.md)  | [_ElasticSearch_](https://github.com/StrangeBeeCorp/helm-charts/blob/main/charts/cassandra/README.md)
----
 ## Install
 
 **To Verify if the templates are correct**:
 
 ```bash
-helm install elasticsearch ./ --values ./elasticsearch/values.yaml -n elasticsearch --create-namespace --dry-run --debug && helm lint
+helm install elasticsearch ./elasticsearch --values ./elasticsearch/values.yaml -n elasticsearch --create-namespace --dry-run --debug && helm lint
 ```
+
 ```bash
-helm install cassandra ./cassandra --values ./cassandra/values.yaml -cassandra --create-namespace --dry-run --debug && helm lint
+helm install cassandra ./cassandra --values ./cassandra/values.yaml -n cassandra --create-namespace --dry-run --debug && helm lint
 ```
+
 ```bash
-helm install thehive ./ --values values.yaml -n thehive --create-namespace --dry-run --debug && helm lint
+helm install thehive ./thehive --values ./thehive/values.yaml -n thehive --create-namespace --dry-run --debug && helm lint
 ```
 
 **Deploy charts**:
@@ -106,11 +134,13 @@ helm install thehive ./ --values values.yaml -n thehive --create-namespace --dry
 ```bash
   helm install elasticsearch ./elasticsearch --values ./elasticsearch/values.yaml -n elasticsearch --create-namespace
 ```
+
 ```bash
-  helm install cassandra ./cassandra --values ./cassandra/values.yaml -cassandra --create-namespace
+  helm install cassandra ./cassandra --values ./cassandra/values.yaml -n cassandra --create-namespace
 ```
+
 ```bash
-  helm install thehive ./ --values values.yaml -n thehive --create-namespace
+  helm install thehive ./thehive --values ./thehive/values.yaml -n thehive --create-namespace
 ```
 
 **Update helm deployment**:
@@ -118,11 +148,13 @@ helm install thehive ./ --values values.yaml -n thehive --create-namespace --dry
 ```bash
 helm upgrade elasticsearch ./elasticsearch --values ./elasticsearch/values.yaml -n elasticsearch
 ```
+
 ```bash
 helm upgrade cassandra ./cassandra --values ./cassandra/values.yaml -n cassandra
 ```
+
 ```bash
-helm upgrade thehive ./ --values values.yaml -n thehive
+helm upgrade thehive ./thehive --values ./thehive/values.yaml -n thehive
 ```
 
 **Update helm rollback**:
@@ -130,9 +162,11 @@ helm upgrade thehive ./ --values values.yaml -n thehive
 ```bash
 helm rollback elasticsearch RELEASE_NUMBER -n elasticsearch
 ```
+
 ```bash
 helm rollback cassandra RELEASE_NUMBER -n cassandra
 ```
+
 ```bash
 helm rollback thehive RELEASE_NUMBER -n thehive
 ```
@@ -142,9 +176,11 @@ helm rollback thehive RELEASE_NUMBER -n thehive
 ```bash
 helm uninstall elasticsearch --namespace elasticsearch
 ```
+
 ```bash
 helm uninstall cassandra --namespace cassandra
 ```
+
 ```bash
 helm uninstall thehive --namespace thehive
 ```
@@ -177,27 +213,5 @@ For information regarding the review procedure used by chart repository maintain
 
 This chart repository supports the latest and previous minor versions of Kubernetes. For example, if the latest minor release of Kubernetes is 1.24 then 1.23 and 1.22 are supported. Charts may still work on previous versions of Kubernertes even though they are outside the target supported window.
 
-### Update Timeline
-
-| Update                                                 | Status             |
-| ------------------------------------------------------ | ------------------ |
-| **Refactor helm chart code**                           | :white_check_mark: |
-| **Fix connection between application and ES**          | :white_check_mark: |
-| **Add configmap for custom settings**                  | :white_check_mark: |
-| **Configure persistence for thehive logs**             | :white_check_mark: |
-| **Change thehive charge to statefulset**               | :white_check_mark: |
-| **Change cortex chart to statefulset**                 | :white_check_mark: |
-| **Configure persistence for cortex logs**              | :white_check_mark: |
-| **Separate services by namespace**                     | :white_check_mark: |
-| **Separate services by namespace**                     | :white_check_mark: |
-| **fix documentation and filenames**                    | _**pending**_      |
-| **Fix connection between application and Cassandra**   | _**pending**_      |
-| **run elasticsearch and cassandra in diferent charts** | _**pending**_      |
 
 Note that this project has been under active development for some time, so you might run into [issues](https://github.com/StrangeBeeCorp/helm-charts/issues). If you do, please don't be shy about letting us know, or better yet, contribute a fix or feature . any doubt you may [reach out](#where-to-find-us).
-
-## Where to Find Us
-
-For general Helm Chart discussions join the room in the [Slack channel](https://ezops.slack.com/archives/C03DH7JBADR).
-
-For issues and support for Helm and Charts see [Support Channels](CONTRIBUTING.md#support-channels).

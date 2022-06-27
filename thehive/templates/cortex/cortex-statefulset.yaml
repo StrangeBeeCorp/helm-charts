@@ -32,7 +32,9 @@ spec:
             memory: {{ .Values.cortex.statefulset.containers.resources.requests.memory }}
         env:
           - name: es_uri
-            value: http://elasticsearch.elasticsearch.svc.cluster.local:9200
+            value: "http://{{ .Values.hostname.elasticSearch.value }}:9200"
+          - name: ES_HOSTNAME
+            value: {{ .Values.hostname.elasticSearch.value }}
           - name: kubernetes_job_pvc
             value: hppvc
         volumeMounts:

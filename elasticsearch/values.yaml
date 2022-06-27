@@ -132,9 +132,17 @@ initScriptsCM: ""
 initScriptsSecret: ""
 ## @param extraEnvVars Array containing extra env vars to be added to all pods (evaluated as a template)
 ## For example:
-## extraEnvVars:
-##  - name: MY_ENV_VAR
-##    value: env_var_value
+extraEnvVars:
+- name: "node.name"
+  value: es
+- name: "discovery.type"
+  value: single-node
+- name: "bootstrap.memory_lock"
+  value: "true"
+- name: ES_JAVA_OPTS
+  value: "-Xms512m -Xmx512m"
+- name: "xpack.security.enabled"
+  value: "false"
 ##
 extraEnvVars: []
 ## @param extraEnvVarsCM ConfigMap containing extra env vars to be added to all pods (evaluated as a template)
@@ -176,7 +184,7 @@ initContainers: []
 image:
   registry: docker.io
   repository: bitnami/elasticsearch
-  tag: 8.2.0-debian-10-r1
+  tag: 7.17.4-debian-10-r1
   ## Specify a imagePullPolicy
   ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
   ## ref: http://kubernetes.io/docs/user-guide/images/#pre-pulling-images
@@ -385,7 +393,7 @@ ingress:
   ## @param ingress.extraRules An array with additional ingress rules, evaluated as a template.
   ##
   extraRules: []
-  ## @param ingress.extraHosts An array with additional hostname(s) to be covered with the ingress record
+  ## @param ingress.extraHosts Ania array with additional hostname(s) to be covered with the ingress record
   ## e.g:
   ## extraHosts:
   ##   - name: elasticsearch.local
@@ -442,10 +450,10 @@ master:
   replicaCount: 1
   ## @param master.nameOverride String to partially override elasticsearch.master.fullname
   ##
-  nameOverride: "thehive-elasticsearch"
+  nameOverride: "elasticsearch"
   ## @param master.fullnameOverride String to fully override elasticsearch.master.fullname
   ##
-  fullnameOverride: "thehive-elasticsearch"
+  fullnameOverride: "elasticsearch"
   ## @param master.updateStrategy.type Master-elegible nodes statefulset stategy type
   ## ref: https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/#update-strategies
   ##

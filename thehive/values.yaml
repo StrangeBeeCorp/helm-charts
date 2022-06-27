@@ -1,9 +1,17 @@
+################ GLOBAL CONFIGS
+hostname:
+  cassandra:
+    value: "cassandra.cassandra.svc.cluster.local"
+  elasticSearch:
+    value: "elasticsearch.elasticsearch.svc.cluster.local"
+
 ################## THEHIVE CONFIGS
 theHiveApp:
   service:
     type: LoadBalancer
     port: 9000
     nodePort: 30021
+  
   statefulset:
     replicas: 1
     containerPort: 9000
@@ -15,13 +23,6 @@ theHiveApp:
         cpu: "100m"
         memory: 100Mi
     image: strangebee/thehive:latest
-    cassandraHostname: "cassandra"
-    elasticSearchHostname: "elasticsearch"
-  volumes:
-    items:
-      key: application.conf
-      path: application.conf
-
 
 TheHiveStorageClass:
   cloud: thehive-local
@@ -44,9 +45,6 @@ TheHivePersistentVolume:
       storage: 5Gi
     hostPath:
       dirPath: /hive
-
-ConfigMap:
-  name: thehive-svc
 
 ####################### MINIO CONFIGS
 minio:
@@ -80,7 +78,7 @@ minio:
 ######################### CORTEX CONFIGS
 cortex:
   service:
-    port: 9543
+    port: 9001
     targetPort: 9001
   statefulset:
     replicas: 1
@@ -97,6 +95,12 @@ cortex:
         requests:
           cpu: "100m"
           memory: 512Mi
+    volumes:
+      configMap:
+        name: cortex-configmap
+        items:
+          key: application.conf
+          path: application.conf
 
 Secrets:
   name: minio-secrets
@@ -133,11 +137,3 @@ CortexHPA:
     metrics:
       averageUtilization: 90
       averageValue: 900Mi
-
-
-################ GLOBAL CONFIGS
-# global:
-  # cassandra:
-  #   namespace: "cassandra"
-  # elasticSearch:
-  #   namespace: "elasticsearch"
