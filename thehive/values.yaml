@@ -46,35 +46,6 @@ TheHivePersistentVolume:
     hostPath:
       dirPath: /hive
 
-####################### MINIO CONFIGS
-minio:
-  service:
-    type: LoadBalancer
-    apiName: api
-    apiPort: 9017
-    apitargetPort: 9000
-    consoleName: console
-    consolePort: 9018
-    consoletargetPort: 9001
-    consoleNodePort: 30018
-  statefulset:
-    replicas: 1
-    terminationGracePeriodSeconds: 1800
-    containers:
-      image: quay.io/minio/minio
-      ports:
-        apiContainerPort: 9000
-        apiName: api
-        consoleContainerPort: 9001
-        consoleName: console
-      resources:
-        limits:
-          cpu: "500m"
-          memory: 512Mi
-        requests:
-          cpu: "100m"
-          memory: 100Mi
-
 ######################### CORTEX CONFIGS
 cortex:
   service:
@@ -101,15 +72,6 @@ cortex:
         items:
           key: application.conf
           path: application.conf
-
-Secrets:
-  name: minio-secrets
-  
-  user: minioadmin
-  keyUser: MINIO_ROOT_USER
-  
-  password: minioadmin
-  keyPassword: MINIO_ROOT_PASSWORD
 
 CortexStorageClass:
   cloud: local

@@ -2,19 +2,16 @@ apiVersion: v1
 kind: Service
 metadata:
   labels:
-    app: minio
-  name: minio
+    app: {{ .Release.Name }}
+  name: {{ .Release.Name }}
   namespace: {{ .Release.Namespace }}
 spec:
   type: {{ .Values.minio.service.type }}
   ports:
-    - name: {{ .Values.minio.service.apiName }}
-      port: {{ .Values.minio.service.apiPort }}
-      targetPort: {{ .Values.minio.service.apitargetPort }}
     - name: {{ .Values.minio.service.consoleName }}
       port: {{ .Values.minio.service.consolePort }}
       targetPort: {{ .Values.minio.service.consoletargetPort }}
       nodePort: {{ .Values.minio.service.consoleNodePort }}
   selector:
-    app: minio
+    app: {{ .Release.Name }}
 

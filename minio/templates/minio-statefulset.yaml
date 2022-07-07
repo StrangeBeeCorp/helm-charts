@@ -1,20 +1,20 @@
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: minio
+  name: {{ .Release.Name }}
   namespace: {{ .Release.Namespace }}
   labels:
-    app: minio
+    app: {{ .Release.Name }}
 spec:
-  serviceName: minio
+  serviceName: {{ .Release.Name }}
   replicas: {{ .Values.minio.statefulset.replicas }}
   selector:
     matchLabels:
-      app: minio
+      app: {{ .Release.Name }}
   template:
     metadata:
       labels:
-        app: minio
+        app: {{ .Release.Name }}
     spec:
       terminationGracePeriodSeconds: {{ .Values.minio.statefulset.terminationGracePeriodSeconds }}
       containers:
@@ -34,8 +34,6 @@ spec:
                     name: {{ .Values.Secrets.name }}
                     key: {{ .Values.Secrets.keyPassword }}
           ports:
-            - containerPort: {{ .Values.minio.statefulset.containers.ports.apiContainerPort }}
-              name: {{ .Values.minio.statefulset.containers.ports.apiName }}
             - containerPort: {{ .Values.minio.statefulset.containers.ports.consoleContainerPort }}
               name: {{ .Values.minio.statefulset.containers.ports.consoleName }}
           resources:
@@ -50,4 +48,5 @@ spec:
               mountPath: /data
       volumes:
         - name: s3-data
-          emptyDir: {}
+          persistentVolumeClaim:
+            claimName: {{ .Values.MinioPersistentVolumeClaim.name }}

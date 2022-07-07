@@ -31,11 +31,11 @@ data:
     storage {
       provider = s3
       # Minio endpoint
-      endpoint = "http://minio"
+      endpoint = "minio.minio.svc.cluster.local:9001"
       bucket = thehive
       # Fill in credentials
-      accessKey = "accessKey"
-      secretKey = "secretKey"
+      accessKey = minioadmin
+      secretKey = minioadmin
     }
     # If using storage.provider = s3
     alpakka.s3.access-style = path

@@ -1,0 +1,39 @@
+1. Application {{ .Release.Name }} was built!
+
+CHART NAME: {{ .Chart.Name }}
+CHART VERSION: {{ .Chart.Version }}
+APP VERSION: {{ .Chart.AppVersion }}
+
+
+-------------------------------------------------------------------------------
+
+  {{- if contains .Values.MinioStorageClass.cloud "google" }}
+-------------------------------------------------------------------------------
+  WARNING
+
+  If exist any problem in StorageClass of google check  parameters and mounthOptions in kubernetes
+  documentaion .
+-------------------------------------------------------------------------------
+{{- end }}
+{{- if contains .Values.MinioStorageClass.cloud "azure" }}
+  WARNING
+
+  If exist any problem in StorageClass of azure check  parameters and mounthOptions in kubernetes
+  documentaion
+-------------------------------------------------------------------------------
+{{- end }}
+{{- if contains .Values.MinioStorageClass.cloud "hive-local" }}
+  WARNING
+
+  If exist any problem in StorageClass of hive-local check  parameters and mounthOptions in kubernetes
+  documentaion
+-------------------------------------------------------------------------------
+{{- end }}
+{{- if contains .Values.MinioStorageClass.cloud "aws" }}
+  WARNING
+
+  If exist any problem in aws of hive-local check  parameters and mounthOptions in kubernetes
+  documentaion
+-------------------------------------------------------------------------------
+{{- end }}
+
