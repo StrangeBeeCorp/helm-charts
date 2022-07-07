@@ -24,6 +24,9 @@ spec:
       containers:
         - name: {{ .Release.Name }}
           image: {{ .Values.theHiveApp.statefulset.image }}
+          command: ["/bin/sh", "-c"]
+          args:
+            - /opt/thehive/entrypoint --no-config --config-file /config/application.conf
           ports:
             - containerPort: {{ .Values.theHiveApp.statefulset.containerPort }}
               name: {{ .Values.theHiveApp.statefulset.name }}
