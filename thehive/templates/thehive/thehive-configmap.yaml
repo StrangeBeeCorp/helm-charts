@@ -1,29 +1,29 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ .Release.Name }}
-  namespace: {{ .Release.Namespace }}
+  name: { { .Release.Name } }
+  namespace: { { .Release.Namespace } }
 data:
   application.conf: |
+    play.http.secret = "{{ .Values.thehiveApp.secret }}"
     db.janusgraph {
       storage {
         backend = cql
         # set cassandra hostnames
-        hostname = ["cassandra.cassandra.svc.cluster.local:9042"]
+        hostname = ["{{ .Values.hostname.cassandra.value }}"]
         # Cassandra authentication (if configured)
-        username = "thehive"
-        password = "password"
+        username = "{{ .Values.hostname.cassandra.username }}"
+        password = "{{ .Values.hostname.cassandra.password }}"
         cql {
-          cluster-name = thp
-          keyspace = thehive
+          cluster-name = "{{ .Values.hostname.cassandra.clustername }}"
+          keyspace = "{{ .Values.hostname.cassandra.keyspace }}"
         }
       }
       index.search {
         backend = elasticsearch
         # Set elasticsearch hostnames
-        hostname = ["elasticsearch.elasticsearch.svc.cluster.local:9200"]
-        uri = http://elasticsearch.elasticsearch.svc.cluster.local:9200
-        index-name = thehive
+        hostname = ["{{ .Values.hostname.elasticSearch.value }}"]
+        index-name = "{{ .Values.hostname.elasticSearch.index }}"
       }
     }
 
@@ -31,11 +31,11 @@ data:
     storage {
       provider = s3
       # Minio endpoint
-      endpoint = "http://minio"
-      bucket = thehive
+      endpoint = "{{ .Values.hostname.minio.value }}"
+      bucket = "{{ .Values.hostname.minio.bucket }}"
       # Fill in credentials
-      accessKey = "accessKey"
-      secretKey = "secretKey"
+      accessKey = "{{ .Values.hostname.minio.accessKey }}"
+      secretKey = "{{ .Values.hostname.minio.secretKey }}"
     }
     # If using storage.provider = s3
     alpakka.s3.access-style = path
@@ -43,7 +43,7 @@ data:
 
     # Service configuration
     # baseUrl should be changed to reflect how the application is exposed
-    application.baseUrl = "http://localhost:9000"
+    application.baseUrl = "{{ .Values.theHiveApp.baseUrl }}"
     play.http.context = "/"
 
     # Additional modules
@@ -54,3 +54,20 @@ data:
     scalligraph.modules += org.thp.thehive.connector.cortex.CortexModule
     scalligraph.modules += org.thp.thehive.connector.misp.MispModule
 
+    # Kubernetes config for cluster discovery
+    singleInstance = false
+    akka.management {
+      cluster.bootstrap {
+        contact-point-discovery {
+          discovery-method = kubernetes-api
+          required-contact-point-nr = 0
+        }
+      }
+    }
+    akka.extensions = ["akka.management.cluster.bootstrap.ClusterBootstrap"]
+
+    akka.discovery {
+      kubernetes-api {
+        pod-label-selector = "app={{ .Release.Name }}"
+      }
+    }

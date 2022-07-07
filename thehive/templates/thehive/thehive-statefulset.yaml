@@ -25,12 +25,8 @@ spec:
         - name: {{ .Release.Name }}
           image: {{ .Values.theHiveApp.statefulset.image }}
           command: ["/bin/sh", "-c"]
-          {{ $cqlhost := .Values.hostname.cassandra.value }}
-          {{ $eshost :=  .Values.hostname.elasticSearch.value }}
           args:
-            - /opt/thehive/entrypoint  --cql-hostnames \
-              {{ $cqlhost }} --no-cql-wait --no-config-cortex --kubernetes --index-backend thehive-elasticsearch --es-hostnames \
-              {{ $eshost }} --s3-endpoint http://minio:9000 --s3-access-key minioadmin --s3-secret-key minioadmin --s3-use-path-access-style --cluster-min-nodes-count 0;
+            - /opt/thehive/entrypoint --no-config --config-file /config/application.conf
           ports:
             - containerPort: {{ .Values.theHiveApp.statefulset.containerPort }}
               name: {{ .Values.theHiveApp.statefulset.name }}

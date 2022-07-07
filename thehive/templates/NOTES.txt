@@ -11,28 +11,28 @@ APP VERSION: {{ .Chart.AppVersion }}
 -------------------------------------------------------------------------------
   WARNING
 
-  If exist any problem in StorageClass of google check  parameters and mounthOptions in kubernetes
+  If exist any problem in StorageClass of google check  parameters and mountOptions in kubernetes
   documentaion .
 -------------------------------------------------------------------------------
 {{- end }}
 {{- if contains .Values.TheHiveStorageClass.cloud "azure" }}
   WARNING
 
-  If exist any problem in StorageClass of azure check  parameters and mounthOptions in kubernetes
+  If exist any problem in StorageClass of azure check  parameters and mountOptions in kubernetes
   documentaion
 -------------------------------------------------------------------------------
 {{- end }}
 {{- if contains .Values.TheHiveStorageClass.cloud "hive-local" }}
   WARNING
 
-  If exist any problem in StorageClass of hive-local check  parameters and mounthOptions in kubernetes
+  If exist any problem in StorageClass of hive-local check  parameters and mountOptions in kubernetes
   documentaion
 -------------------------------------------------------------------------------
 {{- end }}
 {{- if contains .Values.TheHiveStorageClass.cloud "aws" }}
   WARNING
 
-  If exist any problem in aws of hive-local check  parameters and mounthOptions in kubernetes
+  If exist any problem in aws of hive-local check  parameters and mountOptions in kubernetes
   documentaion
 -------------------------------------------------------------------------------
 {{- end }}
