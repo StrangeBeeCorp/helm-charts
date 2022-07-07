@@ -2,16 +2,33 @@
 hostname:
   cassandra:
     value: "cassandra.cassandra.svc.cluster.local"
+    user: cassandra
+    password: cassandra
+    clustername: thp
+    keyspace: thehive
+
   elasticSearch:
     value: "elasticsearch.elasticsearch.svc.cluster.local"
+    index: thehive
+    
+  minio:
+    value: "minio.minio.svc.cluster.local"
+    accessKey: minioadmin
+    secretKey: minioadmin
+    bucket: thehive
 
 ################## THEHIVE CONFIGS
 theHiveApp:
+  # baseUrl should be changed to reflect how the application is exposed
+  baseUrl: "http://localhost:9000"
+  # Change application secret
+  secret: QCY?tAnfk?aZ?iwrNwnxIlR6CTf:G3gf:90Latabg@5241AB`R5W:1uDFN];Ik@n
+
   service:
     type: LoadBalancer
     port: 9000
     nodePort: 30021
-  
+
   statefulset:
     replicas: 1
     containerPort: 9000
@@ -55,7 +72,7 @@ cortex:
     replicas: 1
     terminationGracePeriodSeconds: 1800
     containers:
-      image: thehiveproject/cortex:3.1.1-1
+      image: thehiveproject/cortex:latest
       ports:
         containerPort: 9001
         name: http

@@ -38,10 +38,10 @@ spec:
           - name: kubernetes_job_pvc
             value: hppvc
         volumeMounts:
-          - name: jobdir
+          - name: logdir
             mountPath: /var/log/cortex
             subPath:  
       volumes:
-        - name: jobdir
+        - name: logdir
           persistentVolumeClaim:
             claimName: "{{ .Release.Name }}-{{ .Values.CortexPersistentVolumeClaim.name }}"
