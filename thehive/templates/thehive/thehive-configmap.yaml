@@ -1,18 +1,18 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: { { .Release.Name } }
-  namespace: { { .Release.Namespace } }
+  name: {{ .Release.Name }}
+  namespace: {{ .Release.Namespace }}
 data:
   application.conf: |
-    play.http.secret = "{{ .Values.thehiveApp.secret }}"
+    play.http.secret.key = "{{ .Values.theHiveApp.secret }}"
     db.janusgraph {
       storage {
         backend = cql
         # set cassandra hostnames
         hostname = ["{{ .Values.hostname.cassandra.value }}"]
         # Cassandra authentication (if configured)
-        username = "{{ .Values.hostname.cassandra.username }}"
+        username = "{{ .Values.hostname.cassandra.user }}"
         password = "{{ .Values.hostname.cassandra.password }}"
         cql {
           cluster-name = "{{ .Values.hostname.cassandra.clustername }}"
@@ -26,20 +26,21 @@ data:
         index-name = "{{ .Values.hostname.elasticSearch.index }}"
       }
     }
-
     # Attachment storage configuration
     storage {
       provider = s3
       # Minio endpoint
-      endpoint = "{{ .Values.hostname.minio.value }}"
-      bucket = "{{ .Values.hostname.minio.bucket }}"
-      # Fill in credentials
-      accessKey = "{{ .Values.hostname.minio.accessKey }}"
-      secretKey = "{{ .Values.hostname.minio.secretKey }}"
+      s3 {
+        endpoint = "{{ .Values.hostname.minio.value }}"
+        bucket = "{{ .Values.hostname.minio.bucket }}"
+        # Fill in credentials
+        accessKey = "{{ .Values.hostname.minio.accessKey }}"
+        secretKey = "{{ .Values.hostname.minio.secretKey }}"
+      }
     }
     # If using storage.provider = s3
     alpakka.s3.access-style = path
-    alpakka.s3.endpoint-url = ${storage.endpoint}
+    alpakka.s3.endpoint-url = ${storage.s3.endpoint}
 
     # Service configuration
     # baseUrl should be changed to reflect how the application is exposed

@@ -3,12 +3,14 @@ hostname:
   cassandra:
     value: "cassandra.cassandra.svc.cluster.local"
     user: cassandra
-    password: password
+    password: cassandra
     clustername: thp
     keyspace: thehive
+
   elasticSearch:
     value: "elasticsearch.elasticsearch.svc.cluster.local"
     index: thehive
+    
   minio:
     value: "minio.minio.svc.cluster.local"
     accessKey: minioadmin
@@ -20,7 +22,7 @@ theHiveApp:
   # baseUrl should be changed to reflect how the application is exposed
   baseUrl: "http://localhost:9000"
   # Change application secret
-  secret: changeme
+  secret: QCY?tAnfk?aZ?iwrNwnxIlR6CTf:G3gf:90Latabg@5241AB`R5W:1uDFN];Ik@n
 
   service:
     type: LoadBalancer
@@ -61,35 +63,6 @@ TheHivePersistentVolume:
     hostPath:
       dirPath: /hive
 
-####################### MINIO CONFIGS
-minio:
-  service:
-    type: LoadBalancer
-    apiName: api
-    apiPort: 9017
-    apitargetPort: 9000
-    consoleName: console
-    consolePort: 9018
-    consoletargetPort: 9001
-    consoleNodePort: 30018
-  statefulset:
-    replicas: 1
-    terminationGracePeriodSeconds: 1800
-    containers:
-      image: quay.io/minio/minio
-      ports:
-        apiContainerPort: 9000
-        apiName: api
-        consoleContainerPort: 9001
-        consoleName: console
-      resources:
-        limits:
-          cpu: "500m"
-          memory: 512Mi
-        requests:
-          cpu: "100m"
-          memory: 100Mi
-
 ######################### CORTEX CONFIGS
 cortex:
   service:
@@ -99,7 +72,7 @@ cortex:
     replicas: 1
     terminationGracePeriodSeconds: 1800
     containers:
-      image: thehiveproject/cortex:3.1.1-1
+      image: thehiveproject/cortex:latest
       ports:
         containerPort: 9001
         name: http
@@ -116,15 +89,6 @@ cortex:
         items:
           key: application.conf
           path: application.conf
-
-Secrets:
-  name: minio-secrets
-
-  user: minioadmin
-  keyUser: MINIO_ROOT_USER
-
-  password: minioadmin
-  keyPassword: MINIO_ROOT_PASSWORD
 
 CortexStorageClass:
   cloud: local
