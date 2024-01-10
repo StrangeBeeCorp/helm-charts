@@ -1,11 +1,11 @@
-# Default values for thehive.
+# Default values for cortex.
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
 replicaCount: 1
 
 image:
-  repository: strangebee/thehive
+  repository: nginx
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
   tag: ""
@@ -13,41 +13,6 @@ image:
 imagePullSecrets: []
 nameOverride: ""
 fullnameOverride: ""
-
-k8ssandra:
-  enabled: false
-
-elasticsearch:
-  enabled: false
-
-minio-operator:
-  enabled: false
-
-thehive:
-  #kubernetes: true
-  
-  secret: "SuperSecretForKubernetes"
-  clusterMinNodesCount: 0
-  cortex: 
-    enabled: false
-    hostnames:
-      - "thehive-cortex"
-    keys: ""
-  cql:
-    hostnames:
-      - "thehive-cassandra"
-    wait: true
-  indexBackend:
-    type: elasticsearch
-    hostnames: 
-      - "thehive-elasticsearch"
-  s3:
-    endpoint: "http://thehive-minio:9000"
-    accessKey: "minioadmin"
-    usePathAccessStyle: true
-  
-
-
 
 serviceAccount:
   # Specifies whether a service account should be created

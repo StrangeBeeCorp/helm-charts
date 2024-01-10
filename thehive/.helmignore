@@ -10,7 +10,6 @@
 .hg/
 .hgignore
 .svn/
-.editorconfig
 # Common backup files
 *.swp
 *.bak
@@ -22,8 +21,3 @@
 .idea/
 *.tmproj
 .vscode/
-test
-./test
-cassandra-9.2.4.tgz
-./local
-local

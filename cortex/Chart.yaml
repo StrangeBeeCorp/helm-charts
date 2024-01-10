@@ -1,9 +1,6 @@
 apiVersion: v2
-name: thehive
-description: TheHive official Helm chart for Kubernetes
-maintainers:
-  - name: TheHive Project
-    url: https://thehive-project.org/
+name: cortex
+description: A Helm chart for Kubernetes
 
 # A chart can be either an 'application' or a 'library' chart.
 #
@@ -24,19 +21,4 @@ version: 0.1.0
 # incremented each time you make changes to the application. Versions are not expected to
 # follow Semantic Versioning. They should reflect the version the application is using.
 # It is recommended to use it with quotes.
-appVersion: "5.2"
-icon: https://www.strangebee.com/images/logos/strangebee.svg
-
-dependencies:
-  - name: k8ssandra
-    version: 0.37.0
-    repository: https://helm.k8ssandra.io/stable
-    condition: k8ssandra.enabled
-  - name: elasticsearch
-    version: 7.17.3
-    repository: https://helm.elastic.co
-    condition: elasticsearch.enabled
-  - name: minio-operator
-    version: 4.3.7
-    repository: https://operator.min.io
-    condition: minio-operator.enabled
+appVersion: "1.16.0"
