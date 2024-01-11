@@ -36,9 +36,31 @@ spec:
             {{- toYaml .Values.securityContext | nindent 12 }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command:
+            - "/opt/thehive/entrypoint"
+            - "--secret"
+            - "{{ .Values.thehive.secret }}"
+            - "--cql-hostnames"
+            - "{{- range $i, $hostname := $.Values.thehive.cql.hostnames }}{{- if and (gt (len $.Values.thehive.cql.hostnames) 0) (gt $i 0) }},{{- end -}}{{ $hostname }}{{- end -}}"
+            {{ if .Values.thehive.cql.wait -}}- "--no-cql-wait"{{- end }}
+            {{ if not .Values.thehive.cortex.enabled -}}- "--no-config-cortex"{{- end }}
+            - "--kubernetes"
+            - "--index-backend"
+            - "{{ .Values.thehive.indexBackend.type }}"
+            - "--es-hostnames"
+            - "{{- range $i, $hostname := $.Values.thehive.indexBackend.hostnames }}{{- if and (gt (len $.Values.thehive.indexBackend.hostnames) 0) (gt $i 0) }},{{- end -}}{{ $hostname }}{{- end -}}"
+            - "--s3-endpoint"
+            - "{{ .Values.thehive.s3.endpoint }}"
+            - "--s3-access-key"
+            - "{{ .Values.thehive.s3.accessKey }}"
+            - "--s3-secret-key"
+            - "{{ .Values.thehive.s3.secretKey }}"
+            {{ if .Values.thehive.s3.usePathAccessStyle -}}- "--s3-use-path-access-style"{{- end }}
+            - "--cluster-min-nodes-count"
+            - "{{ .Values.thehive.clusterMinNodesCount }}"
           ports:
             - name: http
-              containerPort: {{ .Values.service.port }}
+              containerPort: 9000
               protocol: TCP
           livenessProbe:
             httpGet:

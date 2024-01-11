@@ -1,0 +1,15 @@
+dependencies:
+- name: k8ssandra-operator
+  repository: https://helm.k8ssandra.io/stable
+  version: 1.11.0
+- name: cert-manager
+  repository: https://charts.jetstack.io
+  version: v1.13.3
+- name: elasticsearch
+  repository: https://helm.elastic.co
+  version: 7.17.3
+- name: minio-operator
+  repository: https://operator.min.io
+  version: 4.3.7
+digest: sha256:d76daa4000eb233b6a08e490329198a25ad0d01e9f38dc11279a21398692dbe9
+generated: "2024-01-11T10:33:58.467459+01:00"

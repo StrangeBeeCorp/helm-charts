@@ -14,18 +14,20 @@ imagePullSecrets: []
 nameOverride: ""
 fullnameOverride: ""
 
+# https://docs.k8ssandra.io/reference/helm-chart/k8ssandra-operator/
 k8ssandra:
   enabled: false
 
 elasticsearch:
   enabled: false
 
+# https://min.io/docs/minio/kubernetes/upstream/operations/install-deploy-manage/deploy-operator-helm.html
 minio-operator:
   enabled: false
 
 thehive:
-  #kubernetes: true
-  
+  additionnalConfig: 
+    configMapRef: ""
   secret: "SuperSecretForKubernetes"
   clusterMinNodesCount: 0
   cortex: 
@@ -44,6 +46,7 @@ thehive:
   s3:
     endpoint: "http://thehive-minio:9000"
     accessKey: "minioadmin"
+    secretKey: "minioadmin"
     usePathAccessStyle: true
   
 
@@ -59,6 +62,10 @@ serviceAccount:
   # The name of the service account to use.
   # If not set and create is true, a name is generated using the fullname template
   name: ""
+  # Attach pod reader role to service account
+  podReader:
+    attach: true
+    serviceAccountName: ""
 
 podAnnotations: {}
 podLabels: {}
