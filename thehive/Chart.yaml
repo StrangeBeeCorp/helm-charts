@@ -28,14 +28,6 @@ appVersion: "5.2"
 icon: https://www.strangebee.com/images/logos/strangebee.svg
 
 dependencies:
-  - name: k8ssandra-operator
-    version: 1.11.0
-    repository: https://helm.k8ssandra.io/stable
-    condition: k8ssandra.enabled
-  - name: cert-manager
-    version: 1.13.3
-    repository: https://charts.jetstack.io
-    condition: k8ssandra.enabled
   - name: elasticsearch
     version: 7.17.3
     repository: https://helm.elastic.co

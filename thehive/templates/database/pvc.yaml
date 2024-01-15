@@ -1,0 +1,15 @@
+{{- if and .Values.cassandra.enabled .Values.cassandra.persistence.enabled -}}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ .Values.cassandra.persistence.claimName }}
+spec:
+  resources:
+    requests:
+      storage: {{ .Values.cassandra.persistence.size }}
+  volumeMode: {{ .Values.cassandra.persistence.volumeMode }}
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: {{ .Values.cassandra.persistence.storageClass }}
+  volumeName: {{ .Values.cassandra.persistence.volumeName }}
+{{- end}}

@@ -14,9 +14,42 @@ imagePullSecrets: []
 nameOverride: ""
 fullnameOverride: ""
 
-# https://docs.k8ssandra.io/reference/helm-chart/k8ssandra-operator/
-k8ssandra:
-  enabled: false
+cassandra:
+  enabled: true
+  version: "4.1"
+  clusterName: "TheHive"
+  dcName: "DC1-TheHive"
+  rackName: "Rack1-TheHive"
+  resources: 
+    limits:
+      cpu: "1000m"
+      memory: 1600Mi
+    requests:
+      cpu: "500m"
+      memory: 1600Mi
+  maxHeapSize: "1024M"
+  heapNewSize: "1024M"
+  persistence:
+    enabled: true
+    claimName: "cassandra-pvc"
+    volumeName: "cassandra-pv"
+    storageClass: "standard"
+    size: 2Gi
+    volumeMode: Block
+    reclaimPolicy: Retain
+    volumeType: 
+      local:
+        path: /data/cassandra
+    # NodeAffinity is required for local storage
+    nodeAffinity:  
+      required:
+        nodeSelectorTerms:
+        - matchExpressions:
+          - key: kubernetes.io/hostname
+            operator: In
+            values:
+            - thehive-control-plane
+  
 
 elasticsearch:
   enabled: false
