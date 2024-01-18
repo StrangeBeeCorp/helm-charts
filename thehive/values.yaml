@@ -35,7 +35,7 @@ cassandra:
     volumeName: "cassandra-pv"
     storageClass: "standard"
     size: 2Gi
-    volumeMode: Block
+    volumeMode: Filesystem
     reclaimPolicy: Retain
     volumeType: 
       local:
@@ -50,13 +50,36 @@ cassandra:
             values:
             - thehive-control-plane
   
-
+#https://www.elastic.co/guide/en/cloud-on-k8s/current/k8s-stack-helm-chart.html
 elasticsearch:
-  enabled: false
+  enabled: true
+  # Permit co-located instances for solitary minikube virtual machines.
+  antiAffinity: "soft"
+
+  # Shrink default JVM heap.
+  esJavaOpts: "-Xmx128m -Xms128m"
+
+  # Allocate smaller chunks of memory per pod.
+  resources:
+    requests:
+      cpu: "100m"
+      memory: "512M"
+    limits:
+      cpu: "1000m"
+      memory: "512M"
+
+  # Request smaller persistent volumes.
+  volumeClaimTemplate:
+    accessModes: [ "ReadWriteOnce" ]
+    storageClassName: "standard"
+    resources:
+      requests:
+        storage: 100M
 
 # https://min.io/docs/minio/kubernetes/upstream/operations/install-deploy-manage/deploy-operator-helm.html
-minio-operator:
-  enabled: false
+# MinIO
+operator:
+  enabled: true
 
 thehive:
   additionnalConfig: 

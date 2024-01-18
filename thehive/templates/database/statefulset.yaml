@@ -59,9 +59,15 @@ spec:
               valueFrom:
                 fieldRef:
                   fieldPath: status.podIP
+          {{- if eq .Values.cassandra.persistence.volumeMode "Block" }}
+          volumeDevices:
+            - name: cassandra-data
+              devicePath: /var/lib/cassandra
+          {{- else }}
           volumeMounts:
             - name: cassandra-data
               mountPath: /var/lib/cassandra
+          {{- end }}
       volumes:
         - name: cassandra-data
         {{- if .Values.cassandra.persistence.enabled }}
