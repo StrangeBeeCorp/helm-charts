@@ -60,3 +60,23 @@ Create the name of the service account to use
 {{- default "default" .Values.serviceAccount.name }}
 {{- end }}
 {{- end }}
+
+{{/*
+Minio labels
+*/}}
+{{- define "thehive.minioLabels" -}}
+helm.sh/chart: {{ include "thehive.chart" . }}
+{{ include "thehive.minioSelectorLabels" . }}
+{{- if .Chart.AppVersion }}
+app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+{{- end }}
+app.kubernetes.io/managed-by: {{ .Release.Service }}
+{{- end }}
+
+{{/*
+Selector Minio labels
+*/}}
+{{- define "thehive.minioSelectorLabels" -}}
+app.kubernetes.io/name: {{ printf "%s-minio" .Release.Name }}
+app.kubernetes.io/instance: {{ .Release.Name }}
+{{- end }}

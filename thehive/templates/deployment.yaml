@@ -79,10 +79,20 @@ spec:
             {{- toYaml .Values.resources | nindent 12 }}
           {{- with .Values.volumeMounts }}
           volumeMounts:
+            {{- with .Values.thehive.extraConfig }}
+            - name: config
+              mountPath: /etc/thehive
+              readOnly: true
+            {{- end -}}
             {{- toYaml . | nindent 12 }}
           {{- end }}
       {{- with .Values.volumes }}
       volumes:
+        {{- with .Values.thehive.extraConfig }}
+        - name: config
+          configMap:
+            name: {{ include "thehive.fullname" . }}-config
+        {{- end -}}
         {{- toYaml . | nindent 8 }}
       {{- end }}
       {{- with .Values.nodeSelector }}

@@ -2,8 +2,5 @@ dependencies:
 - name: elasticsearch
   repository: https://helm.elastic.co
   version: 7.17.3
-- name: operator
-  repository: https://operator.min.io
-  version: 5.0.11
-digest: sha256:60943706950c5f445a0559a91d8a18bc25ac310be3648fd5d1180ec07c617778
-generated: "2024-01-18T11:11:58.952853+01:00"
+digest: sha256:5603ff8185f4a14b9a1bf190e3839e6f1875aa99c4e199bbb64ee183df072708
+generated: "2024-01-19T16:36:03.173448+01:00"

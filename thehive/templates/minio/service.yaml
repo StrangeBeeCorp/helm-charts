@@ -1,0 +1,18 @@
+{{- if .Values.minio.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include  "thehive.fullname" . }}-minio
+  labels:
+    {{ include "thehive.minioLabels" . | nindent 4 }}
+  annotations:
+    helm.sh/hook: pre-install
+    helm.sh/hook-weight: "-1"
+spec:
+  ports:
+    - port: 9000
+      targetPort: 9000
+      protocol: TCP
+  selector:
+    {{ include "thehive.minioSelectorLabels" . | nindent 4 }}
+{{ end }}

@@ -32,7 +32,3 @@ dependencies:
     version: 7.17.3
     repository: https://helm.elastic.co
     condition: elasticsearch.enabled
-  - name: operator
-    version: 5.0.11
-    repository: https://operator.min.io
-    condition: operator.enabled

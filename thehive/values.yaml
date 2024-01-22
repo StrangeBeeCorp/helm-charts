@@ -76,12 +76,25 @@ elasticsearch:
       requests:
         storage: 100M
 
-# https://min.io/docs/minio/kubernetes/upstream/operations/install-deploy-manage/deploy-operator-helm.html
-# MinIO
-operator:
+minio:
   enabled: true
+  endpoint: http://thehive-minio:9000
+
+  image:
+    repository: minio/minio
+    tag: RELEASE.2024-01-18T22-51-28Z
+
+  auth:
+    rootUser: minio
+    rootPassword: minio123
+  storage:
+    volumeClaimValue: 500Mi
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
 
 thehive:
+  maxUnavailable: 1
   additionnalConfig: 
     configMapRef: ""
   secret: "SuperSecretForKubernetes"
@@ -101,9 +114,14 @@ thehive:
       - "thehive-elasticsearch"
   s3:
     endpoint: "http://thehive-minio:9000"
-    accessKey: "minioadmin"
-    secretKey: "minioadmin"
+    accessKey: "minio"
+    secretKey: "minio123"
     usePathAccessStyle: true
+  #extraConfig: |
+  #  example application conf
+  extraCommand: 
+    - "--debug"
+
   
 
 
