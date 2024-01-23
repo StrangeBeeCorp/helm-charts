@@ -30,6 +30,16 @@ spec:
       serviceAccountName: {{ include "thehive.serviceAccountName" . }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      {{ if .Values.thehive.initContainers.enabled }}
+      # See https://kubernetes.io/docs/concepts/workloads/pods/init-containers/#init-containers-in-use
+      initContainers:
+        - name: init-cassandra
+          image: busybox:1.28
+          command: ['sh', '-c', "until nslookup {{ index .Values.thehive.cql.hostnames 0 }}.$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace).svc.cluster.local; do echo waiting for cassandra; sleep 2; done"]
+        - name: init-elastic
+          image: busybox:1.28
+          command: ['sh', '-c', "until nslookup {{ index .Values.thehive.indexBackend.hostnames 0 }}.$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace).svc.cluster.local; do echo waiting for elasticsearch; sleep 2; done"]
+      {{- end }}
       containers:
         - name: {{ .Chart.Name }}
           securityContext:
@@ -45,6 +55,8 @@ spec:
             {{ if .Values.thehive.cql.wait -}}- "--no-cql-wait"{{- end }}
             {{ if not .Values.thehive.cortex.enabled -}}- "--no-config-cortex"{{- end }}
             - "--kubernetes"
+            - "--kubernetes-pod-label-selector"
+            - "app.kubernetes.io/name={{ include "thehive.name" . }}"
             - "--index-backend"
             - "{{ .Values.thehive.indexBackend.type }}"
             - "--es-hostnames"
@@ -67,14 +79,18 @@ spec:
             - name: http
               containerPort: 9000
               protocol: TCP
+          {{- if .Values.thehive.livenessProbe.enabled }}
           livenessProbe:
             httpGet:
               path: /
               port: http
+          {{- end }}
+          {{- if .Values.thehive.readinessProbe.enabled }}
           readinessProbe:
             httpGet:
               path: /
               port: http
+          {{- end }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
           {{- with .Values.volumeMounts }}

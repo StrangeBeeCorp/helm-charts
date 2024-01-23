@@ -50,9 +50,18 @@ cassandra:
             values:
             - thehive-control-plane
   
-#https://www.elastic.co/guide/en/cloud-on-k8s/current/k8s-stack-helm-chart.html
 elasticsearch:
   enabled: true
+  replicas: 2
+  minimumMasterNodes: 1
+  createCert: false
+  secret:
+    enabled: false # WARNING: In production you should enable this
+  esConfig:
+    elasticsearch.yml: |
+      xpack.security.enabled: false
+      xpack.security.transport.ssl.enabled: false
+      xpack.security.http.ssl.enabled: false
   # Permit co-located instances for solitary minikube virtual machines.
   antiAffinity: "soft"
 
@@ -74,7 +83,7 @@ elasticsearch:
     storageClassName: "standard"
     resources:
       requests:
-        storage: 100M
+        storage: 500M
 
 minio:
   enabled: true
@@ -88,12 +97,14 @@ minio:
     rootUser: minio
     rootPassword: minio123
   storage:
-    volumeClaimValue: 500Mi
+    volumeClaimValue: 2Gi
   nodeSelector: {}
   tolerations: []
   affinity: {}
 
 thehive:
+  initContainers:
+    enabled: true
   maxUnavailable: 1
   additionnalConfig: 
     configMapRef: ""
@@ -111,7 +122,7 @@ thehive:
   indexBackend:
     type: elasticsearch
     hostnames: 
-      - "thehive-elasticsearch"
+      - "elasticsearch-master"
   s3:
     endpoint: "http://thehive-minio:9000"
     accessKey: "minio"
@@ -119,9 +130,12 @@ thehive:
     usePathAccessStyle: true
   #extraConfig: |
   #  example application conf
-  extraCommand: 
-    - "--debug"
-
+  #extraCommand: 
+  #  - "--debug"
+  livenessProbe:
+    enabled: true
+  readinessProbe:
+    enabled: true
   
 
 
