@@ -107,6 +107,8 @@ TheHive official Helm chart for Kubernetes
 | thehive.cortex.keys | string | `""` |  |
 | thehive.cql.hostnames[0] | string | `"thehive-cassandra"` |  |
 | thehive.cql.wait | bool | `true` |  |
+| thehive.extraCommand | list | `[]` |  |
+| thehive.extraConfig | string | `""` |  |
 | thehive.indexBackend.hostnames[0] | string | `"elasticsearch-master"` |  |
 | thehive.indexBackend.type | string | `"elasticsearch"` |  |
 | thehive.initContainers.enabled | bool | `true` |  |
