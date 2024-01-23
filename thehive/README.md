@@ -48,14 +48,19 @@ TheHive official Helm chart for Kubernetes
 | cassandra.resources.requests.memory | string | `"1600Mi"` |  |
 | cassandra.version | string | `"4.1"` |  |
 | elasticsearch.antiAffinity | string | `"soft"` |  |
+| elasticsearch.createCert | bool | `false` |  |
 | elasticsearch.enabled | bool | `true` |  |
+| elasticsearch.esConfig."elasticsearch.yml" | string | `"xpack.security.enabled: false\nxpack.security.transport.ssl.enabled: false\nxpack.security.http.ssl.enabled: false\n"` |  |
 | elasticsearch.esJavaOpts | string | `"-Xmx128m -Xms128m"` |  |
+| elasticsearch.minimumMasterNodes | int | `1` |  |
+| elasticsearch.replicas | int | `2` |  |
 | elasticsearch.resources.limits.cpu | string | `"1000m"` |  |
 | elasticsearch.resources.limits.memory | string | `"512M"` |  |
 | elasticsearch.resources.requests.cpu | string | `"100m"` |  |
 | elasticsearch.resources.requests.memory | string | `"512M"` |  |
+| elasticsearch.secret.enabled | bool | `false` |  |
 | elasticsearch.volumeClaimTemplate.accessModes[0] | string | `"ReadWriteOnce"` |  |
-| elasticsearch.volumeClaimTemplate.resources.requests.storage | string | `"100M"` |  |
+| elasticsearch.volumeClaimTemplate.resources.requests.storage | string | `"500M"` |  |
 | elasticsearch.volumeClaimTemplate.storageClassName | string | `"standard"` |  |
 | fullnameOverride | string | `""` |  |
 | image.pullPolicy | string | `"IfNotPresent"` |  |
@@ -77,7 +82,7 @@ TheHive official Helm chart for Kubernetes
 | minio.image.repository | string | `"minio/minio"` |  |
 | minio.image.tag | string | `"RELEASE.2024-01-18T22-51-28Z"` |  |
 | minio.nodeSelector | object | `{}` |  |
-| minio.storage.volumeClaimValue | string | `"500Mi"` |  |
+| minio.storage.volumeClaimValue | string | `"2Gi"` |  |
 | minio.tolerations | list | `[]` |  |
 | nameOverride | string | `""` |  |
 | nodeSelector | object | `{}` |  |
@@ -102,10 +107,12 @@ TheHive official Helm chart for Kubernetes
 | thehive.cortex.keys | string | `""` |  |
 | thehive.cql.hostnames[0] | string | `"thehive-cassandra"` |  |
 | thehive.cql.wait | bool | `true` |  |
-| thehive.extraCommand[0] | string | `"--debug"` |  |
-| thehive.indexBackend.hostnames[0] | string | `"thehive-elasticsearch"` |  |
+| thehive.indexBackend.hostnames[0] | string | `"elasticsearch-master"` |  |
 | thehive.indexBackend.type | string | `"elasticsearch"` |  |
+| thehive.initContainers.enabled | bool | `true` |  |
+| thehive.livenessProbe.enabled | bool | `true` |  |
 | thehive.maxUnavailable | int | `1` |  |
+| thehive.readinessProbe.enabled | bool | `true` |  |
 | thehive.s3.accessKey | string | `"minio"` |  |
 | thehive.s3.endpoint | string | `"http://thehive-minio:9000"` |  |
 | thehive.s3.secretKey | string | `"minio123"` |  |
