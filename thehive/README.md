@@ -109,6 +109,7 @@ TheHive official Helm chart for Kubernetes
 | thehive.cql.wait | bool | `true` |  |
 | thehive.extraCommand | list | `[]` |  |
 | thehive.extraConfig | string | `""` |  |
+| thehive.extraEnv | list | `[]` |  |
 | thehive.indexBackend.hostnames[0] | string | `"elasticsearch-master"` |  |
 | thehive.indexBackend.type | string | `"elasticsearch"` |  |
 | thehive.initContainers.enabled | bool | `true` |  |

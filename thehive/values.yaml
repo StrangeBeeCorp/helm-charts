@@ -132,6 +132,9 @@ thehive:
   #extraConfig: |-
   #  # TheHive configuration file
   extraCommand: []
+  extraEnv: []
+  #- name: "EXAMPLE"
+  #  value: "example"
   livenessProbe:
     enabled: true
   readinessProbe:
