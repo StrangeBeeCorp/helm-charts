@@ -1,10 +1,10 @@
-{{- with .Values.thehive.extraConfig  }}
+{{- if .Values.thehive.extraConfig  }}
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ template "thehive.fullname" . }}-config
+  name: {{ include "thehive.fullname" . }}-config
   labels:
     {{- include "thehive.labels" . | nindent 4 }}
-data:
+data: |
   {{- toYaml .Values.thehive.extraConfig | nindent 2 }}
 {{- end -}}

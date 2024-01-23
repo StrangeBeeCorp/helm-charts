@@ -70,6 +70,9 @@ spec:
             {{ if .Values.thehive.s3.usePathAccessStyle -}}- "--s3-use-path-access-style"{{- end }}
             - "--cluster-min-nodes-count"
             - "{{ .Values.thehive.clusterMinNodesCount }}"
+          {{- with .Values.thehive.extraCommand }}
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
           env:
             - name: POD_IP
               valueFrom:
@@ -93,23 +96,27 @@ spec:
           {{- end }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
-          {{- with .Values.volumeMounts }}
+          {{- if or .Values.volumeMounts .Values.thehive.extraConfig }}
           volumeMounts:
-            {{- with .Values.thehive.extraConfig }}
+          {{- if .Values.thehive.extraConfig }}
             - name: config
               mountPath: /etc/thehive
               readOnly: true
-            {{- end -}}
+          {{- end -}}
+          {{- with .Values.volumeMounts }}
             {{- toYaml . | nindent 12 }}
           {{- end }}
-      {{- with .Values.volumes }}
+          {{- end }}
+      {{- if or .Values.volumes .Values.thehive.extraConfig }}
       volumes:
-        {{- with .Values.thehive.extraConfig }}
+      {{- if .Values.thehive.extraConfig }}
         - name: config
           configMap:
             name: {{ include "thehive.fullname" . }}-config
-        {{- end -}}
+      {{- end -}}
+      {{- with .Values.volumes }}
         {{- toYaml . | nindent 8 }}
+      {{- end }}
       {{- end }}
       {{- with .Values.nodeSelector }}
       nodeSelector:

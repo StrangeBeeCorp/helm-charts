@@ -128,10 +128,10 @@ thehive:
     accessKey: "minio"
     secretKey: "minio123"
     usePathAccessStyle: true
-  #extraConfig: |
-  #  example application conf
-  #extraCommand: 
-  #  - "--debug"
+  extraConfig: ""
+  #extraConfig: |-
+  #  # TheHive configuration file
+  extraCommand: []
   livenessProbe:
     enabled: true
   readinessProbe:
