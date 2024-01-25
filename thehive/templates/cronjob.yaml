@@ -1,0 +1,104 @@
+{{- if .Values.backup.enabled -}}
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: {{ include "thehive.fullname" . }}-backup
+  labels:
+    {{- include "thehive.labels" . | nindent 4 }}
+spec:
+  schedule: "{{ .Values.backup.schedule }}"
+  successfulJobsHistoryLimit: {{ .Values.backup.successfulJobsHistoryLimit }}
+  failedJobsHistoryLimit: {{ .Values.backup.failedJobsHistoryLimit }}
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          serviceAccountName: {{ include "thehive.serviceAccountName" . }}-backup
+          containers:
+            - name: stop-thehive
+              image: bitnami/kubectl:1.26.13
+              imagePullPolicy: IfNotPresent
+              command:
+                - /bin/sh
+                - -c
+                - "echo 'Stopping TheHive'; kubectl scale deployment.apps/{{ include "thehive.fullname" . }} --replicas=0; echo 'Backup Cassandra'; kubectl exec -it {{ include "thehive.fullname" . }}-cassandra-0 -- 'BACKUP=thehive-$(date +%F); nodetool cleanup thehive; nodetool snapshot thehive -t ${BACKUP}; tar cjf  /tmp/backup.tbz /var/lib/cassandra/data/thehive/*/snapshots/${BACKUP}/;'; mkdir -p /data/cassandra ; kubectl cp {{ include "thehive.fullname" . }}-cassandra-0:/tmp/backup.tbz /data/cassandra/backup-$(date +%F).tbz; echo 'Starting TheHive'; kubectl scale deployment.apps/{{ include "thehive.fullname" . }} --replicas=1"
+              volumeMounts:
+                - name: thehive-backups
+                  mountPath: /data
+          restartPolicy: OnFailure
+          volumes:
+            - name: thehive-backups
+              persistentVolumeClaim:
+                claimName: {{ include "thehive.fullname" . }}-backup
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ include "thehive.fullname" . }}-backup
+  labels:
+    {{- include "thehive.labels" . | nindent 4 }}
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: {{ .Values.backup.volume.size }}
+  storageClassName: {{ .Values.backup.storageClass }}
+  volumeMode: {{ .Values.backup.volumeMode }}
+  volumeName: {{ include "thehive.fullname" . }}-backup
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: {{ include "thehive.fullname" . }}-backup
+spec:
+  capacity:
+    storage: {{ .Values.backup.volume.size }}
+  volumeMode: {{ .Values.backup.volumeMode }}
+  accessModes:
+    - ReadWriteMany
+  persistentVolumeReclaimPolicy: {{ .Values.backup.volume.reclaimPolicy }}
+  storageClassName: {{ .Values.backup.volume.storageClass }}
+  {{- toYaml .Values.backup.volume.volumeType | nindent 2 }}
+  {{- with .Values.backup.volume.nodeAffinity }}
+  nodeAffinity:
+  {{- toYaml $.Values.backup.volume.nodeAffinity | nindent 4 }}
+  {{- end }}
+
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: {{ include "thehive.serviceAccountName" . }}-backup
+  labels:
+    {{- include "thehive.labels" . | nindent 4 }}
+automountServiceAccountToken: true
+---
+kind: Role
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: {{ include "thehive.serviceAccountName" . }}-backup
+  labels:
+    {{- include "thehive.labels" . | nindent 4 }}
+rules:
+  - apiGroups: ["apps", ""] # "" indicates the core API group
+    resources: ["deployments", "statefulsets", "deployments/scale", "statefulsets/scale", "pods"]
+    verbs: ["get", "list", "watch", "scale", "patch", "update", "exec"]
+
+---
+kind: RoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: {{ include "thehive.serviceAccountName" . }}-backup
+  labels:
+    {{- include "thehive.labels" . | nindent 4 }}
+subjects:
+  - kind: ServiceAccount
+    name: {{ include "thehive.serviceAccountName" . }}-backup
+roleRef:
+  kind: Role
+  name: {{ include "thehive.serviceAccountName" . }}-backup
+  apiGroup: rbac.authorization.k8s.io
+
+{{- end }}

@@ -25,6 +25,18 @@ TheHive official Helm chart for Kubernetes
 | autoscaling.maxReplicas | int | `100` |  |
 | autoscaling.minReplicas | int | `1` |  |
 | autoscaling.targetCPUUtilizationPercentage | int | `80` |  |
+| backup.enabled | bool | `true` |  |
+| backup.failedJobsHistoryLimit | int | `1` |  |
+| backup.schedule | string | `"*/5 * * * *"` |  |
+| backup.successfulJobsHistoryLimit | int | `1` |  |
+| backup.volume.nodeAffinity.required.nodeSelectorTerms[0].matchExpressions[0].key | string | `"kubernetes.io/hostname"` |  |
+| backup.volume.nodeAffinity.required.nodeSelectorTerms[0].matchExpressions[0].operator | string | `"In"` |  |
+| backup.volume.nodeAffinity.required.nodeSelectorTerms[0].matchExpressions[0].values[0] | string | `"thehive-control-plane"` |  |
+| backup.volume.reclaimPolicy | string | `"Retain"` |  |
+| backup.volume.size | string | `"2Gi"` |  |
+| backup.volume.storageClass | string | `"standard"` |  |
+| backup.volume.volumeMode | string | `"Filesystem"` |  |
+| backup.volume.volumeType.local.path | string | `"/data/backup"` |  |
 | cassandra.clusterName | string | `"TheHive"` |  |
 | cassandra.dcName | string | `"DC1-TheHive"` |  |
 | cassandra.enabled | bool | `true` |  |
