@@ -14,29 +14,6 @@ imagePullSecrets: []
 nameOverride: ""
 fullnameOverride: ""
 
-backup:
-  enabled: true
-  schedule: "*/5 * * * *"
-  successfulJobsHistoryLimit: 1
-  failedJobsHistoryLimit: 1
-  volume:
-    storageClass: "standard"
-    size: 2Gi
-    volumeMode: Filesystem
-    reclaimPolicy: Retain
-    volumeType: 
-      local:
-        path: /data/backup
-    nodeAffinity:  
-      required:
-        nodeSelectorTerms:
-        - matchExpressions:
-          - key: kubernetes.io/hostname
-            operator: In
-            values:
-            - thehive-control-plane
-
-
 cassandra:
   enabled: true
   version: "4.1"
@@ -162,9 +139,6 @@ thehive:
     enabled: true
   readinessProbe:
     enabled: true
-  
-
-
 
 serviceAccount:
   # Specifies whether a service account should be created

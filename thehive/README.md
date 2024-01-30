@@ -25,18 +25,6 @@ TheHive official Helm chart for Kubernetes
 | autoscaling.maxReplicas | int | `100` |  |
 | autoscaling.minReplicas | int | `1` |  |
 | autoscaling.targetCPUUtilizationPercentage | int | `80` |  |
-| backup.enabled | bool | `true` |  |
-| backup.failedJobsHistoryLimit | int | `1` |  |
-| backup.schedule | string | `"*/5 * * * *"` |  |
-| backup.successfulJobsHistoryLimit | int | `1` |  |
-| backup.volume.nodeAffinity.required.nodeSelectorTerms[0].matchExpressions[0].key | string | `"kubernetes.io/hostname"` |  |
-| backup.volume.nodeAffinity.required.nodeSelectorTerms[0].matchExpressions[0].operator | string | `"In"` |  |
-| backup.volume.nodeAffinity.required.nodeSelectorTerms[0].matchExpressions[0].values[0] | string | `"thehive-control-plane"` |  |
-| backup.volume.reclaimPolicy | string | `"Retain"` |  |
-| backup.volume.size | string | `"2Gi"` |  |
-| backup.volume.storageClass | string | `"standard"` |  |
-| backup.volume.volumeMode | string | `"Filesystem"` |  |
-| backup.volume.volumeType.local.path | string | `"/data/backup"` |  |
 | cassandra.clusterName | string | `"TheHive"` |  |
 | cassandra.dcName | string | `"DC1-TheHive"` |  |
 | cassandra.enabled | bool | `true` |  |
@@ -104,7 +92,7 @@ TheHive official Helm chart for Kubernetes
 | replicaCount | int | `1` |  |
 | resources | object | `{}` |  |
 | securityContext | object | `{}` |  |
-| service.port | int | `80` |  |
+| service.port | int | `9000` |  |
 | service.type | string | `"ClusterIP"` |  |
 | serviceAccount.annotations | object | `{}` |  |
 | serviceAccount.automount | bool | `true` |  |
@@ -112,7 +100,6 @@ TheHive official Helm chart for Kubernetes
 | serviceAccount.name | string | `""` |  |
 | serviceAccount.podReader.attach | bool | `true` |  |
 | serviceAccount.podReader.serviceAccountName | string | `""` |  |
-| thehive.additionnalConfig.configMapRef | string | `""` |  |
 | thehive.clusterMinNodesCount | int | `0` |  |
 | thehive.cortex.enabled | bool | `false` |  |
 | thehive.cortex.hostnames[0] | string | `"thehive-cortex"` |  |
