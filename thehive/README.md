@@ -25,43 +25,32 @@ TheHive official Helm chart for Kubernetes
 | autoscaling.maxReplicas | int | `100` |  |
 | autoscaling.minReplicas | int | `1` |  |
 | autoscaling.targetCPUUtilizationPercentage | int | `80` |  |
-| cassandra.clusterName | string | `"TheHive"` |  |
-| cassandra.dcName | string | `"DC1-TheHive"` |  |
-| cassandra.enabled | bool | `true` |  |
-| cassandra.heapNewSize | string | `"1024M"` |  |
-| cassandra.maxHeapSize | string | `"1024M"` |  |
-| cassandra.persistence.claimName | string | `"cassandra-pvc"` |  |
-| cassandra.persistence.enabled | bool | `true` |  |
-| cassandra.persistence.nodeAffinity.required.nodeSelectorTerms[0].matchExpressions[0].key | string | `"kubernetes.io/hostname"` |  |
-| cassandra.persistence.nodeAffinity.required.nodeSelectorTerms[0].matchExpressions[0].operator | string | `"In"` |  |
-| cassandra.persistence.nodeAffinity.required.nodeSelectorTerms[0].matchExpressions[0].values[0] | string | `"thehive-control-plane"` |  |
-| cassandra.persistence.reclaimPolicy | string | `"Retain"` |  |
-| cassandra.persistence.size | string | `"2Gi"` |  |
-| cassandra.persistence.storageClass | string | `"standard"` |  |
-| cassandra.persistence.volumeMode | string | `"Filesystem"` |  |
-| cassandra.persistence.volumeName | string | `"cassandra-pv"` |  |
-| cassandra.persistence.volumeType.local.path | string | `"/data/cassandra"` |  |
-| cassandra.rackName | string | `"Rack1-TheHive"` |  |
+| cassandra.clusterName | string | `"TheHive"` | Cassandra cluster name |
+| cassandra.dcName | string | `"DC1-TheHive"` | Cassandra datacenter name |
+| cassandra.enabled | bool | `true` | Enable Cassandra database |
+| cassandra.heapNewSize | string | `"1024M"` | Cassandra heap new size |
+| cassandra.maxHeapSize | string | `"1024M"` | Cassandra max heap size |
+| cassandra.persistence.enabled | bool | `true` | Enable Cassandra persistence |
+| cassandra.persistence.size | string | `"2Gi"` | Cassandra persistent volume size |
+| cassandra.persistence.storageClass | string | `"standard"` | Cassandra storageClass |
+| cassandra.persistence.volumeMode | string | `"Filesystem"` | Cassandra volume mode (Filesystem or Block)  |
+| cassandra.rackName | string | `"Rack1-TheHive"` | Cassandra rack name |
 | cassandra.resources.limits.cpu | string | `"1000m"` |  |
 | cassandra.resources.limits.memory | string | `"1600Mi"` |  |
 | cassandra.resources.requests.cpu | string | `"500m"` |  |
 | cassandra.resources.requests.memory | string | `"1600Mi"` |  |
 | cassandra.version | string | `"4.1"` |  |
-| elasticsearch.antiAffinity | string | `"soft"` |  |
-| elasticsearch.createCert | bool | `false` |  |
-| elasticsearch.enabled | bool | `true` |  |
-| elasticsearch.esConfig."elasticsearch.yml" | string | `"xpack.security.enabled: false\nxpack.security.transport.ssl.enabled: false\nxpack.security.http.ssl.enabled: false\n"` |  |
-| elasticsearch.esJavaOpts | string | `"-Xmx128m -Xms128m"` |  |
-| elasticsearch.minimumMasterNodes | int | `1` |  |
-| elasticsearch.replicas | int | `2` |  |
-| elasticsearch.resources.limits.cpu | string | `"1000m"` |  |
-| elasticsearch.resources.limits.memory | string | `"512M"` |  |
-| elasticsearch.resources.requests.cpu | string | `"100m"` |  |
-| elasticsearch.resources.requests.memory | string | `"512M"` |  |
-| elasticsearch.secret.enabled | bool | `false` |  |
-| elasticsearch.volumeClaimTemplate.accessModes[0] | string | `"ReadWriteOnce"` |  |
-| elasticsearch.volumeClaimTemplate.resources.requests.storage | string | `"500M"` |  |
-| elasticsearch.volumeClaimTemplate.storageClassName | string | `"standard"` |  |
+| elasticsearch | object | `{"antiAffinity":"soft","createCert":false,"enabled":true,"esConfig":{"elasticsearch.yml":"xpack.security.enabled: false\nxpack.security.transport.ssl.enabled: false\nxpack.security.http.ssl.enabled: false\n"},"esJavaOpts":"-Xmx128m -Xms128m","minimumMasterNodes":1,"replicas":2,"resources":{"limits":{"cpu":"1000m","memory":"512M"},"requests":{"cpu":"100m","memory":"512M"}},"secret":{"enabled":false},"volumeClaimTemplate":{"accessModes":["ReadWriteOnce"],"resources":{"requests":{"storage":"500M"}},"storageClassName":"standard"}}` | For more information: https://github.com/elastic/helm-charts/tree/main/elasticsearch |
+| elasticsearch.antiAffinity | string | `"soft"` | Permit co-located instances for solitary minikube virtual machines. |
+| elasticsearch.createCert | bool | `false` | Set to true in production  |
+| elasticsearch.enabled | bool | `true` | Enable Elasticsearch  |
+| elasticsearch.esConfig | object | `{"elasticsearch.yml":"xpack.security.enabled: false\nxpack.security.transport.ssl.enabled: false\nxpack.security.http.ssl.enabled: false\n"}` | Disable xpack security |
+| elasticsearch.esJavaOpts | string | `"-Xmx128m -Xms128m"` | Shrink default JVM heap. |
+| elasticsearch.minimumMasterNodes | int | `1` | Master nodes |
+| elasticsearch.replicas | int | `2` | Replicas count |
+| elasticsearch.resources | object | `{"limits":{"cpu":"1000m","memory":"512M"},"requests":{"cpu":"100m","memory":"512M"}}` | Allocate smaller chunks of memory per pod. |
+| elasticsearch.secret | object | `{"enabled":false}` | Set to true in production |
+| elasticsearch.volumeClaimTemplate | object | `{"accessModes":["ReadWriteOnce"],"resources":{"requests":{"storage":"500M"}},"storageClassName":"standard"}` | Request smaller persistent volumes. |
 | fullnameOverride | string | `""` |  |
 | image.pullPolicy | string | `"IfNotPresent"` |  |
 | image.repository | string | `"strangebee/thehive"` |  |
@@ -75,14 +64,13 @@ TheHive official Helm chart for Kubernetes
 | ingress.hosts[0].paths[0].pathType | string | `"ImplementationSpecific"` |  |
 | ingress.tls | list | `[]` |  |
 | minio.affinity | object | `{}` |  |
-| minio.auth.rootPassword | string | `"minio123"` |  |
-| minio.auth.rootUser | string | `"minio"` |  |
-| minio.enabled | bool | `true` |  |
-| minio.endpoint | string | `"http://thehive-minio:9000"` |  |
+| minio.auth | object | `{"rootPassword":"minio123","rootUser":"minio"}` | Minio authentification configuration |
+| minio.enabled | bool | `true` | Enable Minio |
+| minio.endpoint | string | `"http://thehive-minio:9000"` | Minio endpoint |
 | minio.image.repository | string | `"minio/minio"` |  |
 | minio.image.tag | string | `"RELEASE.2024-01-18T22-51-28Z"` |  |
 | minio.nodeSelector | object | `{}` |  |
-| minio.storage.volumeClaimValue | string | `"2Gi"` |  |
+| minio.storage | object | `{"volumeClaimValue":"2Gi"}` | Minio storage configuration |
 | minio.tolerations | list | `[]` |  |
 | nameOverride | string | `""` |  |
 | nodeSelector | object | `{}` |  |
@@ -94,35 +82,30 @@ TheHive official Helm chart for Kubernetes
 | securityContext | object | `{}` |  |
 | service.port | int | `9000` |  |
 | service.type | string | `"ClusterIP"` |  |
-| serviceAccount.annotations | object | `{}` |  |
-| serviceAccount.automount | bool | `true` |  |
-| serviceAccount.create | bool | `true` |  |
-| serviceAccount.name | string | `""` |  |
-| serviceAccount.podReader.attach | bool | `true` |  |
-| serviceAccount.podReader.serviceAccountName | string | `""` |  |
+| serviceAccount.annotations | object | `{}` | Annotations to add to the service account |
+| serviceAccount.automount | bool | `true` | Automatically mount a ServiceAccount's API credentials? |
+| serviceAccount.create | bool | `true` | Specifies whether a service account should be created |
+| serviceAccount.name | string | `""` | If not set and create is true, a name is generated using the fullname template |
+| serviceAccount.podReader | object | `{"attach":true,"serviceAccountName":""}` | Attach pod reader role to service account |
 | thehive.clusterMinNodesCount | int | `0` |  |
-| thehive.cortex.enabled | bool | `false` |  |
-| thehive.cortex.hostnames[0] | string | `"thehive-cortex"` |  |
-| thehive.cortex.keys | string | `""` |  |
-| thehive.cql.hostnames[0] | string | `"thehive-cassandra"` |  |
-| thehive.cql.wait | bool | `true` |  |
-| thehive.extraCommand | list | `[]` |  |
-| thehive.extraConfig | string | `""` |  |
-| thehive.extraEnv | list | `[]` |  |
-| thehive.indexBackend.hostnames[0] | string | `"elasticsearch-master"` |  |
-| thehive.indexBackend.type | string | `"elasticsearch"` |  |
-| thehive.initContainers.enabled | bool | `true` |  |
-| thehive.livenessProbe.enabled | bool | `true` |  |
-| thehive.maxUnavailable | int | `1` |  |
-| thehive.readinessProbe.enabled | bool | `true` |  |
-| thehive.s3.accessKey | string | `"minio"` |  |
-| thehive.s3.endpoint | string | `"http://thehive-minio:9000"` |  |
-| thehive.s3.secretKey | string | `"minio123"` |  |
-| thehive.s3.usePathAccessStyle | bool | `true` |  |
-| thehive.secret | string | `"SuperSecretForKubernetes"` |  |
+| thehive.cortex | object | `{"enabled":false,"hostnames":["thehive-cortex"],"keys":""}` | Cortex configuration |
+| thehive.cql | object | `{"hostnames":["thehive-cassandra"],"wait":true}` | Cassandra configuration |
+| thehive.extraCommand | list | `[]` | Extra entrypoint arguments. See: https://docs.strangebee.com/thehive/setup/installation/docker/#all-options |
+| thehive.extraConfig | string | `""` | Custom application.conf file for TheHive |
+| thehive.extraEnv | list | `[]` | Extra environment variables |
+| thehive.indexBackend | object | `{"hostnames":["elasticsearch-master"],"type":"elasticsearch"}` | Index Backend configuration |
+| thehive.indexBackend.type | string | `"elasticsearch"` | Elasticsearch is the only supported backend for now |
+| thehive.initContainers | object | `{"enabled":true}` | Init containers will execute nslookup to resolve the hostnames of cassandra and elasticsearch |
+| thehive.initContainers.enabled | bool | `true` | Enable init containers |
+| thehive.livenessProbe | object | `{"enabled":true}` | Liveness probes |
+| thehive.maxUnavailable | int | `1` | PodDisruptionBudget configuration |
+| thehive.readinessProbe | object | `{"enabled":true}` | Readiness probes |
+| thehive.s3 | object | `{"accessKey":"minio","endpoint":"http://thehive-minio:9000","secretKey":"minio123","usePathAccessStyle":true}` | Object Storage configuration |
+| thehive.s3.endpoint | string | `"http://thehive-minio:9000"` | S3 Endpoint |
+| thehive.secret | string | `"SuperSecretForKubernetes"` | TheHive Secret  |
 | tolerations | list | `[]` |  |
-| volumeMounts | list | `[]` |  |
-| volumes | list | `[]` |  |
+| volumeMounts | list | `[]` | Additional volumeMounts on the output Deployment definition. |
+| volumes | list | `[]` | Additional volumes on the output Deployment definition. |
 
 ----------------------------------------------
 Autogenerated from chart metadata using [helm-docs v1.12.0](https://github.com/norwoodj/helm-docs/releases/v1.12.0)

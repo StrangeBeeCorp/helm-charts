@@ -15,10 +15,14 @@ nameOverride: ""
 fullnameOverride: ""
 
 cassandra:
+  # -- Enable Cassandra database
   enabled: true
   version: "4.1"
+  # -- Cassandra cluster name
   clusterName: "TheHive"
+  # -- Cassandra datacenter name
   dcName: "DC1-TheHive"
+  # -- Cassandra rack name
   rackName: "Rack1-TheHive"
   resources: 
     limits:
@@ -27,48 +31,46 @@ cassandra:
     requests:
       cpu: "500m"
       memory: 1600Mi
+  # -- Cassandra max heap size
   maxHeapSize: "1024M"
+  # -- Cassandra heap new size
   heapNewSize: "1024M"
   persistence:
+    # -- Enable Cassandra persistence
     enabled: true
-    claimName: "cassandra-pvc"
-    volumeName: "cassandra-pv"
+    # -- Cassandra storageClass
     storageClass: "standard"
+    # -- Cassandra persistent volume size
     size: 2Gi
+    # -- Cassandra volume mode (Filesystem or Block) 
     volumeMode: Filesystem
-    reclaimPolicy: Retain
-    volumeType: 
-      local:
-        path: /data/cassandra
-    # NodeAffinity is required for local storage
-    nodeAffinity:  
-      required:
-        nodeSelectorTerms:
-        - matchExpressions:
-          - key: kubernetes.io/hostname
-            operator: In
-            values:
-            - thehive-control-plane
-  
+    
+# -- For more information: https://github.com/elastic/helm-charts/tree/main/elasticsearch
 elasticsearch:
+  # -- Enable Elasticsearch 
   enabled: true
+  # -- Replicas count
   replicas: 2
+  # -- Master nodes
   minimumMasterNodes: 1
+  # -- Set to true in production 
   createCert: false
+  # -- Set to true in production
   secret:
     enabled: false # WARNING: In production you should enable this
+  # -- Disable xpack security
   esConfig:
     elasticsearch.yml: |
       xpack.security.enabled: false
       xpack.security.transport.ssl.enabled: false
       xpack.security.http.ssl.enabled: false
-  # Permit co-located instances for solitary minikube virtual machines.
+  # -- Permit co-located instances for solitary minikube virtual machines.
   antiAffinity: "soft"
 
-  # Shrink default JVM heap.
+  # -- Shrink default JVM heap.
   esJavaOpts: "-Xmx128m -Xms128m"
 
-  # Allocate smaller chunks of memory per pod.
+  # -- Allocate smaller chunks of memory per pod.
   resources:
     requests:
       cpu: "100m"
@@ -77,7 +79,7 @@ elasticsearch:
       cpu: "1000m"
       memory: "512M"
 
-  # Request smaller persistent volumes.
+  # -- Request smaller persistent volumes.
   volumeClaimTemplate:
     accessModes: [ "ReadWriteOnce" ]
     storageClassName: "standard"
@@ -85,19 +87,21 @@ elasticsearch:
       requests:
         storage: 500M
 
-
-
 minio:
+  # -- Enable Minio
   enabled: true
+  # -- Minio endpoint
   endpoint: http://thehive-minio:9000
 
   image:
     repository: minio/minio
     tag: RELEASE.2024-01-18T22-51-28Z
 
+  # -- Minio authentification configuration
   auth:
     rootUser: minio
     rootPassword: minio123
+  # -- Minio storage configuration
   storage:
     volumeClaimValue: 2Gi
   nodeSelector: {}
@@ -105,52 +109,67 @@ minio:
   affinity: {}
 
 thehive:
+  # -- Init containers will execute nslookup to resolve the hostnames of cassandra and elasticsearch
   initContainers:
+    # -- Enable init containers
     enabled: true
+  # -- PodDisruptionBudget configuration
   maxUnavailable: 1
+  # -- TheHive Secret 
   secret: "SuperSecretForKubernetes"
   clusterMinNodesCount: 0
+  # -- Cortex configuration
   cortex: 
     enabled: false
     hostnames:
       - "thehive-cortex"
     keys: ""
+  # -- Cassandra configuration
   cql:
     hostnames:
       - "thehive-cassandra"
     wait: true
+  # -- Index Backend configuration
   indexBackend:
+    # -- Elasticsearch is the only supported backend for now
     type: elasticsearch
     hostnames: 
       - "elasticsearch-master"
+  # -- Object Storage configuration
   s3:
+    # -- S3 Endpoint
     endpoint: "http://thehive-minio:9000"
     accessKey: "minio"
     secretKey: "minio123"
     usePathAccessStyle: true
+  # -- Custom application.conf file for TheHive
   extraConfig: ""
   #extraConfig: |-
   #  # TheHive configuration file
+  # -- Extra entrypoint arguments. See: https://docs.strangebee.com/thehive/setup/installation/docker/#all-options
   extraCommand: []
+  # -- Extra environment variables
   extraEnv: []
   #- name: "EXAMPLE"
   #  value: "example"
+  # -- Liveness probes
   livenessProbe:
     enabled: true
+  # -- Readiness probes
   readinessProbe:
     enabled: true
 
 serviceAccount:
-  # Specifies whether a service account should be created
+  # -- Specifies whether a service account should be created
   create: true
-  # Automatically mount a ServiceAccount's API credentials?
+  # -- Automatically mount a ServiceAccount's API credentials?
   automount: true
-  # Annotations to add to the service account
+  # -- Annotations to add to the service account
   annotations: {}
-  # The name of the service account to use.
-  # If not set and create is true, a name is generated using the fullname template
+  # -- The name of the service account to use.
+  # -- If not set and create is true, a name is generated using the fullname template
   name: ""
-  # Attach pod reader role to service account
+  # -- Attach pod reader role to service account
   podReader:
     attach: true
     serviceAccountName: ""
@@ -208,14 +227,14 @@ autoscaling:
   targetCPUUtilizationPercentage: 80
   # targetMemoryUtilizationPercentage: 80
 
-# Additional volumes on the output Deployment definition.
+# -- Additional volumes on the output Deployment definition.
 volumes: []
 # - name: foo
 #   secret:
 #     secretName: mysecret
 #     optional: false
 
-# Additional volumeMounts on the output Deployment definition.
+# -- Additional volumeMounts on the output Deployment definition.
 volumeMounts: []
 # - name: foo
 #   mountPath: "/etc/foo"
