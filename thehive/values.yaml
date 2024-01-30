@@ -60,6 +60,7 @@ elasticsearch:
   secret:
     enabled: false # WARNING: In production you should enable this
   # -- Disable xpack security
+  # @default -- {esConfig: {}}
   esConfig:
     elasticsearch.yml: |
       xpack.security.enabled: false
@@ -81,6 +82,7 @@ elasticsearch:
       memory: "512M"
 
   # -- Request smaller persistent volumes.
+  # @default -- {}
   volumeClaimTemplate:
     accessModes: [ "ReadWriteOnce" ]
     storageClassName: "standard"
@@ -142,6 +144,7 @@ thehive:
     hostnames: 
       - "elasticsearch-master"
   # -- Object Storage configuration
+  # @default -- {}
   s3:
     # -- S3 Endpoint
     endpoint: "http://thehive-minio:9000"

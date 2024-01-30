@@ -44,13 +44,13 @@ TheHive official Helm chart for Kubernetes
 | elasticsearch.antiAffinity | string | `"soft"` | Permit co-located instances for solitary minikube virtual machines. |
 | elasticsearch.createCert | bool | `false` | Set to true in production  |
 | elasticsearch.enabled | bool | `true` | Enable Elasticsearch  |
-| elasticsearch.esConfig | object | `{"elasticsearch.yml":"xpack.security.enabled: false\nxpack.security.transport.ssl.enabled: false\nxpack.security.http.ssl.enabled: false\n"}` | Disable xpack security |
+| elasticsearch.esConfig | object | {esConfig: {}} | Disable xpack security |
 | elasticsearch.esJavaOpts | string | `"-Xmx128m -Xms128m"` | Shrink default JVM heap. |
 | elasticsearch.minimumMasterNodes | int | `1` | Master nodes |
 | elasticsearch.replicas | int | `2` | Replicas count |
 | elasticsearch.resources | object | `{"limits":{"cpu":"1000m","memory":"512M"},"requests":{"cpu":"100m","memory":"512M"}}` | Allocate smaller chunks of memory per pod. |
 | elasticsearch.secret | object | `{"enabled":false}` | Set to true in production |
-| elasticsearch.volumeClaimTemplate | object | `{"accessModes":["ReadWriteOnce"],"resources":{"requests":{"storage":"500M"}},"storageClassName":"standard"}` | Request smaller persistent volumes. |
+| elasticsearch.volumeClaimTemplate | object | {} | Request smaller persistent volumes. |
 | fullnameOverride | string | `""` |  |
 | image.pullPolicy | string | `"IfNotPresent"` |  |
 | image.repository | string | `"strangebee/thehive"` |  |
@@ -106,7 +106,7 @@ TheHive official Helm chart for Kubernetes
 | thehive.livenessProbe | object | `{"enabled":true}` | Liveness probes |
 | thehive.maxUnavailable | int | `1` | PodDisruptionBudget configuration |
 | thehive.readinessProbe | object | `{"enabled":true}` | Readiness probes |
-| thehive.s3 | object | `{"accessKey":"minio","endpoint":"http://thehive-minio:9000","secretKey":"minio123","usePathAccessStyle":true}` | Object Storage configuration |
+| thehive.s3 | object | {} | Object Storage configuration |
 | thehive.s3.accessKey | string | `"minio"` | S3 Access key |
 | thehive.s3.endpoint | string | `"http://thehive-minio:9000"` | S3 Endpoint |
 | thehive.s3.secretKey | string | `"minio123"` | S3 Secret key |
