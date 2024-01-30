@@ -8,6 +8,18 @@ metadata:
     {{- include "thehive.labels" . | nindent 4 }}
 spec:
   serviceName: {{ include "thehive.fullname" . }}-cassandra
+  {{- if .Values.cassandra.persistence.enabled }}
+  volumeClaimTemplates:
+      - metadata:
+          name: thehive-cassandra-pv-claim
+        spec:
+          accessModes: [ "ReadWriteOnce" ]
+          storageClassName: {{ .Values.cassandra.persistence.storageClass }}
+          volumeMode: {{ .Values.cassandra.persistence.volumeMode }}
+          resources:
+            requests:
+              storage: {{ .Values.cassandra.persistence.size }}
+  {{- end }}
   replicas: 1
   selector:
     matchLabels:
@@ -61,19 +73,16 @@ spec:
                   fieldPath: status.podIP
           {{- if eq .Values.cassandra.persistence.volumeMode "Block" }}
           volumeDevices:
-            - name: cassandra-data
+            - name: thehive-cassandra-pv-claim
               devicePath: /var/lib/cassandra
           {{- else }}
           volumeMounts:
-            - name: cassandra-data
+            - name: thehive-cassandra-pv-claim
               mountPath: /var/lib/cassandra
           {{- end }}
+      {{- if not .Values.cassandra.persistence.enabled }}
       volumes:
         - name: cassandra-data
-        {{- if .Values.cassandra.persistence.enabled }}
-          persistentVolumeClaim:
-            claimName: cassandra-pvc
-        {{ else }}
           emptyDir: {}
-        {{- end }}
+      {{- end }}
 {{- end}}
