@@ -131,8 +131,6 @@ thehive:
   initContainers:
     enabled: true
   maxUnavailable: 1
-  additionnalConfig: 
-    configMapRef: ""
   secret: "SuperSecretForKubernetes"
   clusterMinNodesCount: 0
   cortex: 
@@ -199,7 +197,7 @@ securityContext: {}
 
 service:
   type: ClusterIP
-  port: 80
+  port: 9000
 
 ingress:
   enabled: false
