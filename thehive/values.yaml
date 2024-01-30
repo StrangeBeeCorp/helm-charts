@@ -46,6 +46,7 @@ cassandra:
     volumeMode: Filesystem
     
 # -- For more information: https://github.com/elastic/helm-charts/tree/main/elasticsearch
+# @default -- {}
 elasticsearch:
   # -- Enable Elasticsearch 
   enabled: true
@@ -117,30 +118,38 @@ thehive:
   maxUnavailable: 1
   # -- TheHive Secret 
   secret: "SuperSecretForKubernetes"
+  # -- TheHive Nodes count
   clusterMinNodesCount: 0
   # -- Cortex configuration
   cortex: 
     enabled: false
+    # -- Cortex hostnames
     hostnames:
       - "thehive-cortex"
     keys: ""
   # -- Cassandra configuration
   cql:
+    # -- Cassandra hostnames
     hostnames:
       - "thehive-cassandra"
+    # -- Wait for Cassandra
     wait: true
   # -- Index Backend configuration
   indexBackend:
     # -- Elasticsearch is the only supported backend for now
     type: elasticsearch
+    # -- Elasticsearch hostnames
     hostnames: 
       - "elasticsearch-master"
   # -- Object Storage configuration
   s3:
     # -- S3 Endpoint
     endpoint: "http://thehive-minio:9000"
+    # -- S3 Access key
     accessKey: "minio"
+    # -- S3 Secret key
     secretKey: "minio123"
+    # -- S3 Access Style
     usePathAccessStyle: true
   # -- Custom application.conf file for TheHive
   extraConfig: ""
@@ -171,7 +180,9 @@ serviceAccount:
   name: ""
   # -- Attach pod reader role to service account
   podReader:
+    # -- Specifies whether a pod reader role should be attached. Required to running thehive in cluster mode
     attach: true
+    # -- The name of the service account to map pod reader role.
     serviceAccountName: ""
 
 podAnnotations: {}

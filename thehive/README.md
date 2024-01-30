@@ -40,7 +40,7 @@ TheHive official Helm chart for Kubernetes
 | cassandra.resources.requests.cpu | string | `"500m"` |  |
 | cassandra.resources.requests.memory | string | `"1600Mi"` |  |
 | cassandra.version | string | `"4.1"` |  |
-| elasticsearch | object | `{"antiAffinity":"soft","createCert":false,"enabled":true,"esConfig":{"elasticsearch.yml":"xpack.security.enabled: false\nxpack.security.transport.ssl.enabled: false\nxpack.security.http.ssl.enabled: false\n"},"esJavaOpts":"-Xmx128m -Xms128m","minimumMasterNodes":1,"replicas":2,"resources":{"limits":{"cpu":"1000m","memory":"512M"},"requests":{"cpu":"100m","memory":"512M"}},"secret":{"enabled":false},"volumeClaimTemplate":{"accessModes":["ReadWriteOnce"],"resources":{"requests":{"storage":"500M"}},"storageClassName":"standard"}}` | For more information: https://github.com/elastic/helm-charts/tree/main/elasticsearch |
+| elasticsearch | object | {} | For more information: https://github.com/elastic/helm-charts/tree/main/elasticsearch |
 | elasticsearch.antiAffinity | string | `"soft"` | Permit co-located instances for solitary minikube virtual machines. |
 | elasticsearch.createCert | bool | `false` | Set to true in production  |
 | elasticsearch.enabled | bool | `true` | Enable Elasticsearch  |
@@ -87,13 +87,19 @@ TheHive official Helm chart for Kubernetes
 | serviceAccount.create | bool | `true` | Specifies whether a service account should be created |
 | serviceAccount.name | string | `""` | If not set and create is true, a name is generated using the fullname template |
 | serviceAccount.podReader | object | `{"attach":true,"serviceAccountName":""}` | Attach pod reader role to service account |
-| thehive.clusterMinNodesCount | int | `0` |  |
+| serviceAccount.podReader.attach | bool | `true` | Specifies whether a pod reader role should be attached. Required to running thehive in cluster mode |
+| serviceAccount.podReader.serviceAccountName | string | `""` | The name of the service account to map pod reader role. |
+| thehive.clusterMinNodesCount | int | `0` | TheHive Nodes count |
 | thehive.cortex | object | `{"enabled":false,"hostnames":["thehive-cortex"],"keys":""}` | Cortex configuration |
+| thehive.cortex.hostnames | list | `["thehive-cortex"]` | Cortex hostnames |
 | thehive.cql | object | `{"hostnames":["thehive-cassandra"],"wait":true}` | Cassandra configuration |
+| thehive.cql.hostnames | list | `["thehive-cassandra"]` | Cassandra hostnames |
+| thehive.cql.wait | bool | `true` | Wait for Cassandra |
 | thehive.extraCommand | list | `[]` | Extra entrypoint arguments. See: https://docs.strangebee.com/thehive/setup/installation/docker/#all-options |
 | thehive.extraConfig | string | `""` | Custom application.conf file for TheHive |
 | thehive.extraEnv | list | `[]` | Extra environment variables |
 | thehive.indexBackend | object | `{"hostnames":["elasticsearch-master"],"type":"elasticsearch"}` | Index Backend configuration |
+| thehive.indexBackend.hostnames | list | `["elasticsearch-master"]` | Elasticsearch hostnames |
 | thehive.indexBackend.type | string | `"elasticsearch"` | Elasticsearch is the only supported backend for now |
 | thehive.initContainers | object | `{"enabled":true}` | Init containers will execute nslookup to resolve the hostnames of cassandra and elasticsearch |
 | thehive.initContainers.enabled | bool | `true` | Enable init containers |
@@ -101,7 +107,10 @@ TheHive official Helm chart for Kubernetes
 | thehive.maxUnavailable | int | `1` | PodDisruptionBudget configuration |
 | thehive.readinessProbe | object | `{"enabled":true}` | Readiness probes |
 | thehive.s3 | object | `{"accessKey":"minio","endpoint":"http://thehive-minio:9000","secretKey":"minio123","usePathAccessStyle":true}` | Object Storage configuration |
+| thehive.s3.accessKey | string | `"minio"` | S3 Access key |
 | thehive.s3.endpoint | string | `"http://thehive-minio:9000"` | S3 Endpoint |
+| thehive.s3.secretKey | string | `"minio123"` | S3 Secret key |
+| thehive.s3.usePathAccessStyle | bool | `true` | S3 Access Style |
 | thehive.secret | string | `"SuperSecretForKubernetes"` | TheHive Secret  |
 | tolerations | list | `[]` |  |
 | volumeMounts | list | `[]` | Additional volumeMounts on the output Deployment definition. |
