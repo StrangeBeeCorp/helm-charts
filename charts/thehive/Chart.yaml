@@ -5,6 +5,13 @@ maintainers:
   - name: StrangeBee
     url: https://strangebee.com/
 
+keywords:
+  - thehive
+  - sirp
+  - incident response
+  - case management
+  - strangebee
+
 # A chart can be either an 'application' or a 'library' chart.
 #
 # Application charts are a collection of templates that can be packaged into versioned archives
@@ -30,6 +37,9 @@ version: 0.1.4
 appVersion: "5.2"
 
 icon: https://strangebeecorp.github.io/helm-charts/assets/thehive-icon.svg
+home: https://github.com/StrangeBeeCorp/helm-charts
+sources:
+  - https://github.com/StrangeBeeCorp/helm-charts/tree/main/charts/thehive
 
 dependencies:
   - name: elasticsearch

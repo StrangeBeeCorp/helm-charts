@@ -2,7 +2,7 @@
 
 # Overview
 
-This is a collection of charts for StrangeBee projects:
+This is a collection of charts for [StrangeBee](https://strangebee.com) products:
 
 * [TheHive](./charts/thehive/)
 * Cortex (TBD)
