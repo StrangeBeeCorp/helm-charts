@@ -49,7 +49,7 @@ cassandra:
 # @default -- {}
 elasticsearch:
   # -- Enable Elasticsearch 
-  enabled: true
+  enabled: false
   # -- Replicas count
   replicas: 2
   # -- Master nodes
