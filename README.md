@@ -1,3 +1,5 @@
+[![Artifact Hub](https://img.shields.io/endpoint?url=https://artifacthub.io/badge/repository/strangebee-helm)](https://artifacthub.io/packages/search?repo=strangebee-helm)
+
 # Overview
 
 This is a collection of charts for StrangeBee projects:
