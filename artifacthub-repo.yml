@@ -13,3 +13,5 @@ repositoryID: 6915dd9b-ae1a-41bc-85e5-dabdee470cfd
 owners: # (optional, used to claim repository ownership)
   - name: StrangeBee
     email: contact@strangebee.com
+  - name: Nabil
+    email: nabil@strangebee.com
