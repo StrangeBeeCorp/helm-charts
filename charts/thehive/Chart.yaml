@@ -8,8 +8,8 @@ maintainers:
 keywords:
   - thehive
   - sirp
-  - incident response
-  - case management
+  - incident-response
+  - case-management
   - strangebee
 
 # A chart can be either an 'application' or a 'library' chart.
@@ -26,7 +26,6 @@ type: application
 # to the chart and its templates, including the app version.
 # Versions are expected to follow Semantic Versioning (https://semver.org/)
 version: 0.1.4
-
 
 # This is the version number of the application being deployed. This version number should be
 # incremented each time you make changes to the application. Versions are not expected to
@@ -46,6 +45,9 @@ dependencies:
     version: 7.17.3
     repository: https://helm.elastic.co
     condition: elasticsearch.enabled
+
+annotations:
+  artifacthub.io/license: AGPL-3.0
 
 
 ## For reference: https://helm.sh/docs/topics/charts/#the-chartyaml-file
