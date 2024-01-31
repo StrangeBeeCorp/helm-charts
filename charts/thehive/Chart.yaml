@@ -1,9 +1,9 @@
 apiVersion: v2
 name: thehive
-description: TheHive official Helm chart for Kubernetes
+description: The official Helm chart of TheHive for Kubernetes.
 maintainers:
-  - name: TheHive Project
-    url: https://thehive-project.org/
+  - name: StrangeBee
+    url: https://strangebee.com/
 
 # A chart can be either an 'application' or a 'library' chart.
 #
@@ -24,7 +24,10 @@ version: 0.1.0
 # incremented each time you make changes to the application. Versions are not expected to
 # follow Semantic Versioning. They should reflect the version the application is using.
 # It is recommended to use it with quotes.
+
+## appVersion is the tag of the docker image of TheHive
 appVersion: "5.2"
+
 icon: https://www.strangebee.com/images/logos/strangebee.svg
 
 dependencies:
@@ -32,3 +35,6 @@ dependencies:
     version: 7.17.3
     repository: https://helm.elastic.co
     condition: elasticsearch.enabled
+
+
+## For reference: https://helm.sh/docs/topics/charts/#the-chartyaml-file
