@@ -28,7 +28,7 @@ spec:
     metadata:
       labels:
         app: thehive-cassandra
-        {{- include "thehive.labels" . | nindent 4 }}
+        {{- include "thehive.labels" . | nindent 8 }}
     spec:
       terminationGracePeriodSeconds: 1800
       containers:
@@ -45,10 +45,10 @@ spec:
               name: cql
           resources:
             {{- toYaml .Values.cassandra.resources | nindent 12 }}
-          securityContext:
-            capabilities:
-              add:
-                - IPC_LOCK
+          #securityContext:
+          #  capabilities:
+          #    add:
+          #      - IPC_LOCK
           lifecycle:
             preStop:
               exec:
