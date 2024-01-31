@@ -1,8 +1,9 @@
-# TheHive Helm Charts
+# Overview
 
-## Overview
+This is a collection of charts for StrangeBee projects:
 
-TheHive Helm is a collection of charts for StrangeBee projects (TheHive and Cortex).
+* [TheHive](./charts/thehive/)
+* Cortex (TBD)
 
 ## :warning: Disclamer: Work in Progress
 
