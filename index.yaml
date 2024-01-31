@@ -1,0 +1,23 @@
+apiVersion: v1
+entries:
+  thehive:
+  - apiVersion: v2
+    appVersion: "5.2"
+    created: "2024-01-31T14:52:21.311492125Z"
+    dependencies:
+    - condition: elasticsearch.enabled
+      name: elasticsearch
+      repository: https://helm.elastic.co
+      version: 7.17.3
+    description: The official Helm chart of TheHive for Kubernetes.
+    digest: 7a850f9cd011aebb656f3466a2300a0915029dff24776b66d69343a2d53fb59b
+    icon: https://www.strangebee.com/images/logos/strangebee.svg
+    maintainers:
+    - name: StrangeBee
+      url: https://strangebee.com/
+    name: thehive
+    type: application
+    urls:
+    - https://github.com/StrangeBeeCorp/helm-charts/releases/download/thehive-0.1.1/thehive-0.1.1.tgz
+    version: 0.1.1
+generated: "2024-01-31T14:52:21.311502073Z"
