@@ -1,7 +1,7 @@
 {{/*
 Expand the name of the chart.
 */}}
-{{- define "thehive.name" -}}
+{{- define "cortex.name" -}}
 {{- default .Chart.Name .Values.nameOverride | trunc 63 | trimSuffix "-" }}
 {{- end }}
 
@@ -10,7 +10,7 @@ Create a default fully qualified app name.
 We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
 If release name contains chart name it will be used as a full name.
 */}}
-{{- define "thehive.fullname" -}}
+{{- define "cortex.fullname" -}}
 {{- if .Values.fullnameOverride }}
 {{- .Values.fullnameOverride | trunc 63 | trimSuffix "-" }}
 {{- else }}
@@ -26,16 +26,16 @@ If release name contains chart name it will be used as a full name.
 {{/*
 Create chart name and version as used by the chart label.
 */}}
-{{- define "thehive.chart" -}}
+{{- define "cortex.chart" -}}
 {{- printf "%s-%s" .Chart.Name .Chart.Version | replace "+" "_" | trunc 63 | trimSuffix "-" }}
 {{- end }}
 
 {{/*
 Common labels
 */}}
-{{- define "thehive.labels" -}}
-helm.sh/chart: {{ include "thehive.chart" . }}
-{{ include "thehive.selectorLabels" . }}
+{{- define "cortex.labels" -}}
+helm.sh/chart: {{ include "cortex.chart" . }}
+{{ include "cortex.selectorLabels" . }}
 {{- if .Chart.AppVersion }}
 app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
 {{- end }}
@@ -45,38 +45,18 @@ app.kubernetes.io/managed-by: {{ .Release.Service }}
 {{/*
 Selector labels
 */}}
-{{- define "thehive.selectorLabels" -}}
-app.kubernetes.io/name: {{ include "thehive.name" . }}
+{{- define "cortex.selectorLabels" -}}
+app.kubernetes.io/name: {{ include "cortex.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end }}
 
 {{/*
 Create the name of the service account to use
 */}}
-{{- define "thehive.serviceAccountName" -}}
+{{- define "cortex.serviceAccountName" -}}
 {{- if .Values.serviceAccount.create }}
-{{- default (include "thehive.fullname" .) .Values.serviceAccount.name }}
+{{- default (include "cortex.fullname" .) .Values.serviceAccount.name }}
 {{- else }}
 {{- default "default" .Values.serviceAccount.name }}
 {{- end }}
-{{- end }}
-
-{{/*
-Minio labels
-*/}}
-{{- define "thehive.minioLabels" -}}
-helm.sh/chart: {{ include "thehive.chart" . }}
-{{ include "thehive.minioSelectorLabels" . }}
-{{- if .Chart.AppVersion }}
-app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
-{{- end }}
-app.kubernetes.io/managed-by: {{ .Release.Service }}
-{{- end }}
-
-{{/*
-Selector Minio labels
-*/}}
-{{- define "thehive.minioSelectorLabels" -}}
-app.kubernetes.io/name: {{ printf "%s-minio" .Release.Name }}
-app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end }}

@@ -1,118 +1,261 @@
-################ GLOBAL CONFIGS
-hostname:
-  cassandra:
-    value: "cassandra.cassandra.svc.cluster.local"
-    user: cassandra
-    password: cassandra
-    clustername: thp
-    keyspace: thehive
+# Default values for thehive.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
 
-  elasticSearch:
-    value: "elasticsearch.elasticsearch.svc.cluster.local"
-    index: thehive
+replicaCount: 1
+
+image:
+  repository: strangebee/thehive
+  pullPolicy: IfNotPresent
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: ""
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+cassandra:
+  # -- Enable Cassandra database
+  enabled: true
+  version: "4.1"
+  # -- Cassandra cluster name
+  clusterName: "TheHive"
+  # -- Cassandra datacenter name
+  dcName: "DC1-TheHive"
+  # -- Cassandra rack name
+  rackName: "Rack1-TheHive"
+  resources: 
+    limits:
+      cpu: "1000m"
+      memory: 1600Mi
+    requests:
+      cpu: "500m"
+      memory: 1600Mi
+  # -- Cassandra max heap size
+  maxHeapSize: "1024M"
+  # -- Cassandra heap new size
+  heapNewSize: "1024M"
+  persistence:
+    # -- Enable Cassandra persistence
+    enabled: true
+    # -- Cassandra storageClass
+    storageClass: "standard"
+    # -- Cassandra persistent volume size
+    size: 2Gi
+    # -- Cassandra volume mode (Filesystem or Block) 
+    volumeMode: Filesystem
     
-  minio:
-    value: "minio.minio.svc.cluster.local"
-    accessKey: minioadmin
-    secretKey: minioadmin
-    bucket: thehive
+# -- For more information: https://github.com/elastic/helm-charts/tree/main/elasticsearch
+# @default -- {}
+elasticsearch:
+  # -- Enable Elasticsearch 
+  enabled: true
+  # -- Replicas count
+  replicas: 2
+  # -- Master nodes
+  minimumMasterNodes: 1
+  # -- Set to true in production 
+  createCert: false
+  # -- Set to true in production
+  secret:
+    enabled: false # WARNING: In production you should enable this
+  # -- Disable xpack security
+  # @default -- {esConfig: {}}
+  esConfig:
+    elasticsearch.yml: |
+      xpack.security.enabled: false
+      xpack.security.transport.ssl.enabled: false
+      xpack.security.http.ssl.enabled: false
+  # -- Permit co-located instances for solitary minikube virtual machines.
+  antiAffinity: "soft"
 
-################## THEHIVE CONFIGS
-theHiveApp:
-  # baseUrl should be changed to reflect how the application is exposed
-  baseUrl: "http://localhost:9000"
-  # Change application secret
-  secret: QCY?tAnfk?aZ?iwrNwnxIlR6CTf:G3gf:90Latabg@5241AB`R5W:1uDFN];Ik@n
+  # -- Shrink default JVM heap.
+  esJavaOpts: "-Xmx128m -Xms128m"
 
-  service:
-    type: LoadBalancer
-    port: 9000
-    nodePort: 30021
+  # -- Allocate smaller chunks of memory per pod.
+  resources:
+    requests:
+      cpu: "100m"
+      memory: "512M"
+    limits:
+      cpu: "1000m"
+      memory: "512M"
 
-  statefulset:
-    replicas: 1
-    containerPort: 9000
-    name: http
+  # -- Request smaller persistent volumes.
+  # @default -- {}
+  volumeClaimTemplate:
+    accessModes: [ "ReadWriteOnce" ]
+    storageClassName: "standard"
     resources:
-      limits:
-        memory: 2Gi
       requests:
-        cpu: "100m"
-        memory: 100Mi
-    image: strangebee/thehive:latest
+        storage: 500M
 
-TheHiveStorageClass:
-  cloud: thehive-local
-  name: thehive-storageclass
-  reclaimPolicy: Retain
+minio:
+  # -- Enable Minio
+  enabled: true
+  # -- Minio endpoint
+  endpoint: http://thehive-minio:9000
 
-TheHivePersistentVolumeClaim:
-  name: thehive-pvc
-  spec:
-    accessModes: ReadWriteOnce
-    resources:
-      requests:
-        storage: 2Gi
+  image:
+    repository: minio/minio
+    tag: RELEASE.2024-01-18T22-51-28Z
 
-TheHivePersistentVolume:
-  name: thehive-pv
-  spec:
-    accessModes: ReadWriteOnce
-    capacity:
-      storage: 5Gi
-    hostPath:
-      dirPath: /hive
+  # -- Minio authentification configuration
+  auth:
+    rootUser: minio
+    rootPassword: minio123
+  # -- Minio storage configuration
+  storage:
+    volumeClaimValue: 2Gi
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
 
-######################### CORTEX CONFIGS
-cortex:
-  service:
-    port: 9001
-    targetPort: 9001
-  statefulset:
-    replicas: 1
-    terminationGracePeriodSeconds: 1800
-    containers:
-      image: thehiveproject/cortex:latest
-      ports:
-        containerPort: 9001
-        name: http
-      resources:
-        limits:
-          cpu: "500m"
-          memory: 1Gi
-        requests:
-          cpu: "100m"
-          memory: 512Mi
-    volumes:
-      configMap:
-        name: cortex-configmap
-        items:
-          key: application.conf
-          path: application.conf
+thehive:
+  # -- Init containers will execute nslookup to resolve the hostnames of cassandra and elasticsearch
+  initContainers:
+    # -- Enable init containers
+    enabled: true
+  # -- PodDisruptionBudget configuration
+  maxUnavailable: 1
+  # -- TheHive Secret 
+  secret: "SuperSecretForKubernetes"
+  # -- TheHive Nodes count
+  clusterMinNodesCount: 0
+  # -- Cortex configuration
+  cortex: 
+    enabled: false
+    # -- Cortex hostnames
+    hostnames:
+      - "thehive-cortex"
+    keys: ""
+  # -- Cassandra configuration
+  cql:
+    # -- Cassandra hostnames
+    hostnames:
+      - "thehive-cassandra"
+    # -- Wait for Cassandra
+    wait: true
+  # -- Index Backend configuration
+  indexBackend:
+    # -- Elasticsearch is the only supported backend for now
+    type: elasticsearch
+    # -- Elasticsearch hostnames
+    hostnames: 
+      - "elasticsearch-master"
+  # -- Object Storage configuration
+  # @default -- {}
+  s3:
+    # -- S3 Endpoint
+    endpoint: "http://thehive-minio:9000"
+    # -- S3 Access key
+    accessKey: "minio"
+    # -- S3 Secret key
+    secretKey: "minio123"
+    # -- S3 Access Style
+    usePathAccessStyle: true
+  # -- Custom application.conf file for TheHive
+  extraConfig: ""
+  #extraConfig: |-
+  #  # TheHive configuration file
+  # -- Extra entrypoint arguments. See: https://docs.strangebee.com/thehive/setup/installation/docker/#all-options
+  extraCommand: []
+  # -- Extra environment variables
+  extraEnv: []
+  #- name: "EXAMPLE"
+  #  value: "example"
+  # -- Liveness probes
+  livenessProbe:
+    enabled: true
+  # -- Readiness probes
+  readinessProbe:
+    enabled: true
 
-CortexStorageClass:
-  cloud: local
-  name: cortex-storageclass
-  reclaimPolicy: Retain
-  accessModes: ReadWriteMany
+serviceAccount:
+  # -- Specifies whether a service account should be created
+  create: true
+  # -- Automatically mount a ServiceAccount's API credentials?
+  automount: true
+  # -- Annotations to add to the service account
+  annotations: {}
+  # -- The name of the service account to use.
+  # -- If not set and create is true, a name is generated using the fullname template
+  name: ""
+  # -- Attach pod reader role to service account
+  podReader:
+    # -- Specifies whether a pod reader role should be attached. Required to running thehive in cluster mode
+    attach: true
+    # -- The name of the service account to map pod reader role.
+    serviceAccountName: ""
 
-CortexPersistentVolume:
-  name: cortex-pv
-  accessModes: ReadWriteMany
-  capacity:
-    storage: 5Gi
+podAnnotations: {}
+podLabels: {}
 
-CortexPersistentVolumeClaim:
-  name: cortex-pvc
-  spec:
-    resources:
-      storage: 4G
+podSecurityContext: {}
+  # fsGroup: 2000
 
-CortexHPA:
-  name: cortex-autoscale
-  spec:
-    minReplicas: 1
-    maxReplicas: 1
-    metrics:
-      averageUtilization: 90
-      averageValue: 900Mi
+securityContext: {}
+  # capabilities:
+  #   drop:
+  #   - ALL
+  # readOnlyRootFilesystem: true
+  # runAsNonRoot: true
+  # runAsUser: 1000
+
+service:
+  type: ClusterIP
+  port: 9000
+
+ingress:
+  enabled: false
+  className: ""
+  annotations: {}
+    # kubernetes.io/ingress.class: nginx
+    # kubernetes.io/tls-acme: "true"
+  hosts:
+    - host: chart-example.local
+      paths:
+        - path: /
+          pathType: ImplementationSpecific
+  tls: []
+  #  - secretName: chart-example-tls
+  #    hosts:
+  #      - chart-example.local
+
+resources: {}
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources, such as Minikube. If you do want to specify resources, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  # limits:
+  #   cpu: 100m
+  #   memory: 128Mi
+  # requests:
+  #   cpu: 100m
+  #   memory: 128Mi
+
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 100
+  targetCPUUtilizationPercentage: 80
+  # targetMemoryUtilizationPercentage: 80
+
+# -- Additional volumes on the output Deployment definition.
+volumes: []
+# - name: foo
+#   secret:
+#     secretName: mysecret
+#     optional: false
+
+# -- Additional volumeMounts on the output Deployment definition.
+volumeMounts: []
+# - name: foo
+#   mountPath: "/etc/foo"
+#   readOnly: true
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
