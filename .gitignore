@@ -1,0 +1,9 @@
+# Ignore IDE files
+.idea
+.vscode
+
+# Ignore Mac files
+.DS_Store
+
+# Ignore dependency charts downloaded by Helm
+/charts/*/charts
