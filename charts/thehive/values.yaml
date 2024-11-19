@@ -24,7 +24,7 @@ cassandra:
   dcName: "DC1-TheHive"
   # -- Cassandra rack name
   rackName: "Rack1-TheHive"
-  resources: 
+  resources:
     limits:
       cpu: "1000m"
       memory: 1600Mi
@@ -42,19 +42,19 @@ cassandra:
     storageClass: "standard"
     # -- Cassandra persistent volume size
     size: 2Gi
-    # -- Cassandra volume mode (Filesystem or Block) 
+    # -- Cassandra volume mode (Filesystem or Block)
     volumeMode: Filesystem
-    
+
 # -- For more information: https://github.com/elastic/helm-charts/tree/main/elasticsearch
 # @default -- {}
 elasticsearch:
-  # -- Enable Elasticsearch 
+  # -- Enable Elasticsearch
   enabled: true
   # -- Replicas count
   replicas: 2
   # -- Master nodes
   minimumMasterNodes: 1
-  # -- Set to true in production 
+  # -- Set to true in production
   createCert: false
   # -- Set to true in production
   secret:
@@ -84,7 +84,7 @@ elasticsearch:
   # -- Request smaller persistent volumes.
   # @default -- {}
   volumeClaimTemplate:
-    accessModes: [ "ReadWriteOnce" ]
+    accessModes: ["ReadWriteOnce"]
     storageClassName: "standard"
     resources:
       requests:
@@ -118,12 +118,12 @@ thehive:
     enabled: true
   # -- PodDisruptionBudget configuration
   maxUnavailable: 1
-  # -- TheHive Secret 
+  # -- TheHive Secret
   secret: "SuperSecretForKubernetes"
   # -- TheHive Nodes count
   clusterMinNodesCount: 0
   # -- Cortex configuration
-  cortex: 
+  cortex:
     enabled: false
     # -- Cortex hostnames
     hostnames:
@@ -141,7 +141,7 @@ thehive:
     # -- Elasticsearch is the only supported backend for now
     type: elasticsearch
     # -- Elasticsearch hostnames
-    hostnames: 
+    hostnames:
       - "elasticsearch-master"
   # -- Object Storage configuration
   # @default -- {}
