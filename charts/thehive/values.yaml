@@ -24,37 +24,43 @@ cassandra:
   dcName: "DC1-TheHive"
   # -- Cassandra rack name
   rackName: "Rack1-TheHive"
-  resources: 
+  resources:
     limits:
       cpu: "1000m"
-      memory: 1600Mi
+      memory: "2Gi"
     requests:
-      cpu: "500m"
-      memory: 1600Mi
+      cpu: "1000m"
+      memory: "2Gi"
   # -- Cassandra max heap size
-  maxHeapSize: "1024M"
+  maxHeapSize: "512M"
   # -- Cassandra heap new size
-  heapNewSize: "1024M"
+  heapNewSize: "128M"
+  # -- Cassandra Xms
+  xms: "128M"
+  # -- Cassandra Xmx
+  xmx: "512M"
+  # -- Cassandra Xmn
+  xmn: "128M"
   persistence:
     # -- Enable Cassandra persistence
     enabled: true
     # -- Cassandra storageClass
     storageClass: "standard"
     # -- Cassandra persistent volume size
-    size: 2Gi
-    # -- Cassandra volume mode (Filesystem or Block) 
+    size: "2Gi"
+    # -- Cassandra volume mode (Filesystem or Block)
     volumeMode: Filesystem
-    
+
 # -- For more information: https://github.com/elastic/helm-charts/tree/main/elasticsearch
 # @default -- {}
 elasticsearch:
-  # -- Enable Elasticsearch 
+  # -- Enable Elasticsearch
   enabled: true
   # -- Replicas count
   replicas: 2
   # -- Master nodes
   minimumMasterNodes: 1
-  # -- Set to true in production 
+  # -- Set to true in production
   createCert: false
   # -- Set to true in production
   secret:
@@ -76,19 +82,19 @@ elasticsearch:
   resources:
     requests:
       cpu: "100m"
-      memory: "512M"
+      memory: "512Mi"
     limits:
       cpu: "1000m"
-      memory: "512M"
+      memory: "512Mi"
 
   # -- Request smaller persistent volumes.
   # @default -- {}
   volumeClaimTemplate:
-    accessModes: [ "ReadWriteOnce" ]
+    accessModes: ["ReadWriteOnce"]
     storageClassName: "standard"
     resources:
       requests:
-        storage: 500M
+        storage: "500Mi"
 
 minio:
   # -- Enable Minio
@@ -106,7 +112,7 @@ minio:
     rootPassword: minio123
   # -- Minio storage configuration
   storage:
-    volumeClaimValue: 2Gi
+    volumeClaimValue: "2Gi"
   nodeSelector: {}
   tolerations: []
   affinity: {}
@@ -118,12 +124,12 @@ thehive:
     enabled: true
   # -- PodDisruptionBudget configuration
   maxUnavailable: 1
-  # -- TheHive Secret 
+  # -- TheHive Secret
   secret: "SuperSecretForKubernetes"
   # -- TheHive Nodes count
   clusterMinNodesCount: 0
   # -- Cortex configuration
-  cortex: 
+  cortex:
     enabled: false
     # -- Cortex hostnames
     hostnames:
@@ -141,7 +147,7 @@ thehive:
     # -- Elasticsearch is the only supported backend for now
     type: elasticsearch
     # -- Elasticsearch hostnames
-    hostnames: 
+    hostnames:
       - "elasticsearch-master"
   # -- Object Storage configuration
   # @default -- {}

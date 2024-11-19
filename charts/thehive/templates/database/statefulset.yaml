@@ -61,6 +61,8 @@ spec:
               value: "{{ .Values.cassandra.maxHeapSize }}"
             - name: HEAP_NEWSIZE
               value: "{{ .Values.cassandra.heapNewSize }}"
+            - name: JVM_OPTS
+              value: "-Xms{{ .Values.cassandra.xms }} -Xmx{{ .Values.cassandra.xmx }} -Xmn{{ .Values.cassandra.xmn }}"
             - name: CASSANDRA_CLUSTER_NAME
               value: "{{ .Values.cassandra.clusterName }}"
             - name: CASSANDRA_DC
