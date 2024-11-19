@@ -27,21 +27,21 @@ cassandra:
   resources:
     limits:
       cpu: "1000m"
-      memory: 1600Mi
+      memory: "2Gi"
     requests:
-      cpu: "500m"
-      memory: 1600Mi
+      cpu: "1000m"
+      memory: "2Gi"
   # -- Cassandra max heap size
-  maxHeapSize: "1024M"
+  maxHeapSize: "256M"
   # -- Cassandra heap new size
-  heapNewSize: "1024M"
+  heapNewSize: "256M"
   persistence:
     # -- Enable Cassandra persistence
     enabled: true
     # -- Cassandra storageClass
     storageClass: "standard"
     # -- Cassandra persistent volume size
-    size: 2Gi
+    size: "2Gi"
     # -- Cassandra volume mode (Filesystem or Block)
     volumeMode: Filesystem
 
@@ -76,10 +76,10 @@ elasticsearch:
   resources:
     requests:
       cpu: "100m"
-      memory: "512M"
+      memory: "512Mi"
     limits:
       cpu: "1000m"
-      memory: "512M"
+      memory: "512Mi"
 
   # -- Request smaller persistent volumes.
   # @default -- {}
@@ -88,7 +88,7 @@ elasticsearch:
     storageClassName: "standard"
     resources:
       requests:
-        storage: 500M
+        storage: "500Mi"
 
 minio:
   # -- Enable Minio
@@ -106,7 +106,7 @@ minio:
     rootPassword: minio123
   # -- Minio storage configuration
   storage:
-    volumeClaimValue: 2Gi
+    volumeClaimValue: "2Gi"
   nodeSelector: {}
   tolerations: []
   affinity: {}
