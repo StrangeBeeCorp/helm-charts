@@ -32,9 +32,15 @@ cassandra:
       cpu: "1000m"
       memory: "2Gi"
   # -- Cassandra max heap size
-  maxHeapSize: "256M"
+  maxHeapSize: "512M"
   # -- Cassandra heap new size
-  heapNewSize: "256M"
+  heapNewSize: "128M"
+  # -- Cassandra Xms
+  xms: "128M"
+  # -- Cassandra Xmx
+  xmx: "512M"
+  # -- Cassandra Xmn
+  xmn: "128M"
   persistence:
     # -- Enable Cassandra persistence
     enabled: true
