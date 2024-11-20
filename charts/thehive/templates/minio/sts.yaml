@@ -8,11 +8,11 @@ metadata:
     helm.sh/hook: pre-install
     helm.sh/hook-weight: "-1"
   labels:
-    {{ include "thehive.minioLabels" . | nindent 4 }}
+    {{ include "thehive.minio.labels" . | nindent 4 }}
 spec:
   selector:
     matchLabels:
-      {{ include "thehive.minioSelectorLabels" . | nindent 6 }}
+      {{ include "thehive.minio.selectorLabels" . | nindent 6 }}
   serviceName: thehive-minio-svc
   volumeClaimTemplates:
       - metadata:
@@ -26,7 +26,7 @@ spec:
     metadata:
       labels:
         # Label is used as selector in the service.
-        {{ include "thehive.minioSelectorLabels" . | nindent 8 }}
+        {{ include "thehive.minio.labels" . | nindent 8 }}
     spec:
       # Refer to the PVC created earlier
       containers:

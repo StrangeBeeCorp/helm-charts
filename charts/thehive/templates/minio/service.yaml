@@ -4,7 +4,7 @@ kind: Service
 metadata:
   name: {{ include  "thehive.fullname" . }}-minio
   labels:
-    {{ include "thehive.minioLabels" . | nindent 4 }}
+    {{ include "thehive.minio.labels" . | nindent 4 }}
   annotations:
     helm.sh/hook: pre-install
     helm.sh/hook-weight: "-1"
@@ -14,5 +14,5 @@ spec:
       targetPort: 9000
       protocol: TCP
   selector:
-    {{ include "thehive.minioSelectorLabels" . | nindent 4 }}
+    {{ include "thehive.minio.selectorLabels" . | nindent 4 }}
 {{ end }}
