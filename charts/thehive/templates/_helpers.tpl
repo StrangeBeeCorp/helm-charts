@@ -47,7 +47,7 @@ app.kubernetes.io/instance: {{ .Release.Name }}
 {{- define "thehive.labels" -}}
 {{ include "thehive.commonLabels" . }}
 {{ include "thehive.selectorLabels" . }}
-app.kubernetes.io/version: {{ .Values.image.tag | default .Chart.AppVersion }}
+app.kubernetes.io/version: {{ .Values.image.tag | default .Chart.AppVersion | quote }}
 app.kubernetes.io/component: "frontend"
 {{- end }}
 
@@ -61,7 +61,7 @@ app.kubernetes.io/instance: {{ .Release.Name }}
 {{- define "thehive.cassandra.labels" -}}
 {{ include "thehive.commonLabels" . }}
 {{ include "thehive.cassandra.selectorLabels" . }}
-app.kubernetes.io/version: {{ .Values.cassandra.version }}
+app.kubernetes.io/version: {{ .Values.cassandra.version | quote }}
 app.kubernetes.io/component: "database"
 {{- end }}
 
@@ -75,7 +75,7 @@ app.kubernetes.io/instance: {{ .Release.Name }}
 {{- define "thehive.minio.labels" -}}
 {{ include "thehive.commonLabels" . }}
 {{ include "thehive.minio.selectorLabels" . }}
-app.kubernetes.io/version: {{ .Values.minio.image.tag }}
+app.kubernetes.io/version: {{ .Values.minio.image.tag | quote }}
 app.kubernetes.io/component: "file-storage"
 {{- end }}
 
