@@ -3,12 +3,11 @@ apiVersion: v1
 kind: Service
 metadata:
   labels:
-    app: thehive-cassandra
-    {{- include "thehive.labels" . | nindent 4 }}
+    {{- include "thehive.cassandra.labels" . | nindent 4 }}
   name: {{ include "thehive.fullname" . }}-cassandra
 spec:
   ports:
     - port: 9042
   selector:
-    app: thehive-cassandra
+    {{- include "thehive.cassandra.selectorLabels" . | nindent 4 }}
 {{- end}}
