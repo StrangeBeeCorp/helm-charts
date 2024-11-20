@@ -4,8 +4,7 @@ kind: StatefulSet
 metadata:
   name: {{ include "thehive.fullname" . }}-cassandra
   labels:
-    app: thehive-cassandra
-    {{- include "thehive.labels" . | nindent 4 }}
+    {{- include "thehive.cassandra.labels" . | nindent 4 }}
 spec:
   serviceName: {{ include "thehive.fullname" . }}-cassandra
   {{- if .Values.cassandra.persistence.enabled }}
@@ -23,12 +22,11 @@ spec:
   replicas: 1
   selector:
     matchLabels:
-      app: thehive-cassandra
+      {{- include "thehive.cassandra.selectorLabels" . | nindent 6 }}
   template:
     metadata:
       labels:
-        app: thehive-cassandra
-        {{- include "thehive.labels" . | nindent 8 }}
+        {{- include "thehive.cassandra.labels" . | nindent 8 }}
     spec:
       terminationGracePeriodSeconds: 1800
       containers:

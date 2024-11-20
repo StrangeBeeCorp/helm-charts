@@ -30,24 +30,53 @@ Create chart name and version as used by the chart label.
 {{- printf "%s-%s" .Chart.Name .Chart.Version | replace "+" "_" | trunc 63 | trimSuffix "-" }}
 {{- end }}
 
-{{/*
-Common labels
-*/}}
-{{- define "thehive.labels" -}}
-helm.sh/chart: {{ include "thehive.chart" . }}
-{{ include "thehive.selectorLabels" . }}
-{{- if .Chart.AppVersion }}
-app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
-{{- end }}
+{{/* Common labels */}}
+{{- define "thehive.commonLabels" -}}
+app.kubernetes.io/part-of: "TheHive"
 app.kubernetes.io/managed-by: {{ .Release.Service }}
+helm.sh/chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
 {{- end }}
 
-{{/*
-Selector labels
-*/}}
+{{/* TheHive selector labels */}}
 {{- define "thehive.selectorLabels" -}}
 app.kubernetes.io/name: {{ include "thehive.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
+{{- end }}
+
+{{/* TheHive labels */}}
+{{- define "thehive.labels" -}}
+{{ include "thehive.commonLabels" . }}
+{{ include "thehive.selectorLabels" . }}
+app.kubernetes.io/version: {{ .Values.image.tag | default .Chart.AppVersion | quote }}
+app.kubernetes.io/component: "frontend"
+{{- end }}
+
+{{/* Cassandra selector labels */}}
+{{- define "thehive.cassandra.selectorLabels" -}}
+app.kubernetes.io/name: {{ printf "%s-cassandra" (include "thehive.name" .) }}
+app.kubernetes.io/instance: {{ .Release.Name }}
+{{- end }}
+
+{{/* Cassandra labels */}}
+{{- define "thehive.cassandra.labels" -}}
+{{ include "thehive.commonLabels" . }}
+{{ include "thehive.cassandra.selectorLabels" . }}
+app.kubernetes.io/version: {{ .Values.cassandra.version | quote }}
+app.kubernetes.io/component: "database"
+{{- end }}
+
+{{/* MinIO selector labels */}}
+{{- define "thehive.minio.selectorLabels" -}}
+app.kubernetes.io/name: {{ printf "%s-minio" (include "thehive.name" .) }}
+app.kubernetes.io/instance: {{ .Release.Name }}
+{{- end }}
+
+{{/* MinIO labels */}}
+{{- define "thehive.minio.labels" -}}
+{{ include "thehive.commonLabels" . }}
+{{ include "thehive.minio.selectorLabels" . }}
+app.kubernetes.io/version: {{ .Values.minio.image.tag | quote }}
+app.kubernetes.io/component: "file-storage"
 {{- end }}
 
 {{/*
@@ -60,24 +89,3 @@ Create the name of the service account to use
 {{- default "default" .Values.serviceAccount.name }}
 {{- end }}
 {{- end }}
-
-{{/*
-Selector Minio labels
-*/}}
-{{- define "thehive.minioSelectorLabels" -}}
-app.kubernetes.io/name: {{ printf "%s-minio" .Release.Name }}
-app.kubernetes.io/instance: {{ .Release.Name }}
-{{- end }}
-
-{{/*
-Minio labels
-*/}}
-{{- define "thehive.minioLabels" -}}
-helm.sh/chart: {{ include "thehive.chart" . }}
-{{ include "thehive.minioSelectorLabels" . }}
-{{- if .Chart.AppVersion }}
-app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
-{{- end }}
-app.kubernetes.io/managed-by: {{ .Release.Service }}
-{{- end }}
-
