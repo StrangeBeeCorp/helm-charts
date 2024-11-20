@@ -127,7 +127,7 @@ thehive:
   # -- TheHive Secret
   secret: "SuperSecretForKubernetes"
   # -- TheHive Nodes count
-  clusterMinNodesCount: 0
+  clusterMinNodesCount: 1
   # -- Cortex configuration
   cortex:
     enabled: false
