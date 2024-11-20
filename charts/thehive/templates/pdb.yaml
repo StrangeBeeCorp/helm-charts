@@ -2,6 +2,8 @@ apiVersion: policy/v1
 kind: PodDisruptionBudget
 metadata:
   name: {{ include "thehive.fullname" . }}
+  labels:
+    {{- include "thehive.labels" . | nindent 4 }}
 spec:
   maxUnavailable: {{ .Values.thehive.maxUnavailable | default 1 }}
   selector:
