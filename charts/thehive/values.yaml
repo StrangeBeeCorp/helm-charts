@@ -5,10 +5,11 @@
 replicaCount: 1
 
 image:
+  registry: docker.io
   repository: strangebee/thehive
-  pullPolicy: IfNotPresent
-  # Overrides the image tag whose default is the chart appVersion.
+  # Defaults to the chart appVersion, can be overridden here
   tag: ""
+  pullPolicy: IfNotPresent
 
 imagePullSecrets: []
 nameOverride: ""
@@ -17,7 +18,11 @@ fullnameOverride: ""
 cassandra:
   # -- Enable Cassandra database
   enabled: true
-  version: "4.1"
+  image:
+    registry: docker.io
+    repository: cassandra
+    tag: "4.1"
+    pullPolicy: IfNotPresent
   # -- Cassandra cluster name
   clusterName: "TheHive"
   # -- Cassandra datacenter name
@@ -103,8 +108,18 @@ minio:
   endpoint: http://thehive-minio:9000
 
   image:
+    registry: docker.io
     repository: minio/minio
     tag: RELEASE.2024-01-18T22-51-28Z
+    pullPolicy: IfNotPresent
+
+  # -- MinIO client image
+  minioClient:
+    image:
+      registry: docker.io
+      repository: minio/mc
+      tag: RELEASE.2024-11-17T19-35-25Z
+      pullPolicy: IfNotPresent
 
   # -- Minio authentification configuration
   auth:
@@ -116,6 +131,13 @@ minio:
   nodeSelector: {}
   tolerations: []
   affinity: {}
+
+busybox:
+  image:
+    registry: docker.io
+    repository: busybox
+    tag: "1.28"
+    pullPolicy: IfNotPresent
 
 thehive:
   # -- Init containers will execute nslookup to resolve the hostnames of cassandra and elasticsearch

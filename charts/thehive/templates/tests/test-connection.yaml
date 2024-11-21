@@ -9,7 +9,8 @@ metadata:
 spec:
   containers:
     - name: wget
-      image: busybox
+      image: "{{ .Values.busybox.image.registry }}/{{ .Values.busybox.image.repository }}:{{ .Values.busybox.image.tag }}"
+      imagePullPolicy: {{ .Values.busybox.image.pullPolicy }}
       command: ['wget']
       args: ['{{ include "thehive.fullname" . }}:{{ .Values.service.port }}']
   restartPolicy: Never

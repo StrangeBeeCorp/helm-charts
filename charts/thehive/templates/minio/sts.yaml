@@ -32,7 +32,8 @@ spec:
       containers:
         - name: thehive-minio
           # Pulls the default Minio image from Docker Hub
-          image: "{{ .Values.minio.image.repository }}:{{ .Values.minio.image.tag }}"
+          image: "{{ .Values.minio.image.registry }}/{{ .Values.minio.image.repository }}:{{ .Values.minio.image.tag }}"
+          imagePullPolicy: {{ .Values.minio.image.pullPolicy }}
           args:
             - server
             - /storage
