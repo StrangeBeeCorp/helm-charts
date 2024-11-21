@@ -21,7 +21,7 @@ cassandra:
   image:
     registry: docker.io
     repository: cassandra
-    tag: "4.1"
+    tag: "4.1.7"
     pullPolicy: IfNotPresent
   # -- Cassandra cluster name
   clusterName: "TheHive"
@@ -110,7 +110,7 @@ minio:
   image:
     registry: docker.io
     repository: minio/minio
-    tag: RELEASE.2024-01-18T22-51-28Z
+    tag: RELEASE.2024-11-07T00-52-20Z
     pullPolicy: IfNotPresent
 
   # -- MinIO client image
@@ -136,7 +136,7 @@ busybox:
   image:
     registry: docker.io
     repository: busybox
-    tag: "1.28"
+    tag: "1.36-glibc"
     pullPolicy: IfNotPresent
 
 thehive:
