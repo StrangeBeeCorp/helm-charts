@@ -146,8 +146,8 @@ thehive:
     enabled: true
   # -- PodDisruptionBudget configuration
   maxUnavailable: 1
-  # -- TheHive Secret
-  secret: "SuperSecretForKubernetes"
+  # -- TheHive Secret (must be at least 32 characters long)
+  secret: "YouShouldChangeThisSecretWithOneOfAtLeast32Chars"
   # -- TheHive Nodes count
   clusterMinNodesCount: 1
   # -- Cortex configuration
