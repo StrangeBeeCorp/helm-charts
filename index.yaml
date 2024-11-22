@@ -17,6 +17,49 @@ entries:
         - name: Community
           url: https://chat.thehive-project.org
     apiVersion: v2
+    appVersion: 5.4.5-1
+    created: "2024-11-22T13:18:25.51345375Z"
+    dependencies:
+    - condition: elasticsearch.enabled
+      name: elasticsearch
+      repository: https://helm.elastic.co
+      version: 7.17.3
+    description: The official Helm chart of TheHive for Kubernetes.
+    digest: 13d45497139bc6fd21e295ff85b297ca402aab4be837252e01a7e8829e392f4a
+    home: https://github.com/StrangeBeeCorp/helm-charts
+    icon: https://strangebeecorp.github.io/helm-charts/assets/thehive-icon.svg
+    keywords:
+    - thehive
+    - sirp
+    - incident-response
+    - case-management
+    - strangebee
+    maintainers:
+    - name: StrangeBee
+      url: https://strangebee.com/
+    name: thehive
+    sources:
+    - https://github.com/StrangeBeeCorp/helm-charts/tree/main/charts/thehive
+    type: application
+    urls:
+    - https://github.com/StrangeBeeCorp/helm-charts/releases/download/thehive-0.1.7/thehive-0.1.7.tgz
+    version: 0.1.7
+  - annotations:
+      artifacthub.io/images: |
+        - name: busybox
+          image: busybox:1.28
+          whitelisted: true
+        - name: cassandra
+          image: cassandra:4.1
+          whitelisted: true
+        - name: thehive
+          image: strangebee/thehive:5.2
+          whitelisted: true
+      artifacthub.io/license: AGPL-3.0
+      artifacthub.io/links: |
+        - name: Community
+          url: https://chat.thehive-project.org
+    apiVersion: v2
     appVersion: "5.2"
     created: "2024-02-01T09:48:09.039860029Z"
     dependencies:
@@ -163,4 +206,4 @@ entries:
     urls:
     - https://github.com/StrangeBeeCorp/helm-charts/releases/download/thehive-0.1.1/thehive-0.1.1.tgz
     version: 0.1.1
-generated: "2024-02-01T09:48:09.03987664Z"
+generated: "2024-11-22T13:18:25.513488325Z"
