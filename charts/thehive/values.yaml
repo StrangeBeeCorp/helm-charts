@@ -5,10 +5,11 @@
 replicaCount: 1
 
 image:
+  registry: docker.io
   repository: strangebee/thehive
-  pullPolicy: IfNotPresent
-  # Overrides the image tag whose default is the chart appVersion.
+  # Defaults to the chart appVersion, can be overridden here
   tag: ""
+  pullPolicy: IfNotPresent
 
 imagePullSecrets: []
 nameOverride: ""
@@ -17,7 +18,11 @@ fullnameOverride: ""
 cassandra:
   # -- Enable Cassandra database
   enabled: true
-  version: "4.1"
+  image:
+    registry: docker.io
+    repository: cassandra
+    tag: "4.1.7"
+    pullPolicy: IfNotPresent
   # -- Cassandra cluster name
   clusterName: "TheHive"
   # -- Cassandra datacenter name
@@ -103,8 +108,18 @@ minio:
   endpoint: http://thehive-minio:9000
 
   image:
+    registry: docker.io
     repository: minio/minio
-    tag: RELEASE.2024-01-18T22-51-28Z
+    tag: RELEASE.2024-11-07T00-52-20Z
+    pullPolicy: IfNotPresent
+
+  # -- MinIO client image
+  minioClient:
+    image:
+      registry: docker.io
+      repository: minio/mc
+      tag: RELEASE.2024-11-17T19-35-25Z
+      pullPolicy: IfNotPresent
 
   # -- Minio authentification configuration
   auth:
@@ -117,6 +132,13 @@ minio:
   tolerations: []
   affinity: {}
 
+busybox:
+  image:
+    registry: docker.io
+    repository: busybox
+    tag: "1.36-glibc"
+    pullPolicy: IfNotPresent
+
 thehive:
   # -- Init containers will execute nslookup to resolve the hostnames of cassandra and elasticsearch
   initContainers:
@@ -124,8 +146,8 @@ thehive:
     enabled: true
   # -- PodDisruptionBudget configuration
   maxUnavailable: 1
-  # -- TheHive Secret
-  secret: "SuperSecretForKubernetes"
+  # -- TheHive Secret (must be at least 32 characters long)
+  secret: "YouShouldChangeThisSecretWithOneOfAtLeast32Chars"
   # -- TheHive Nodes count
   clusterMinNodesCount: 1
   # -- Cortex configuration

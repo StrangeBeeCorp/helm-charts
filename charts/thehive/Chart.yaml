@@ -1,6 +1,6 @@
 version: 0.1.6
 apiVersion: v2
-appVersion: "5.2"
+appVersion: "5.4.5-1"
 name: thehive
 description: The official Helm chart of TheHive for Kubernetes.
 type: application
@@ -43,6 +43,6 @@ annotations:
       image: strangebee/thehive:5.2
       whitelisted: true
 
-## For reference: 
+## For reference:
 ## https://helm.sh/docs/topics/charts/#the-chartyaml-file
 ## https://artifacthub.io/docs/topics/annotations/helm/

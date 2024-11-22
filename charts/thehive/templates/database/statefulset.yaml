@@ -31,7 +31,8 @@ spec:
       terminationGracePeriodSeconds: 1800
       containers:
         - name: cassandra
-          image: "cassandra:{{ .Values.cassandra.version }}"
+          image: "{{ .Values.cassandra.image.registry }}/{{ .Values.cassandra.image.repository }}:{{ .Values.cassandra.image.tag }}"
+          imagePullPolicy: {{ .Values.cassandra.image.pullPolicy }}
           ports:
             - containerPort: 7000
               name: intra-node
