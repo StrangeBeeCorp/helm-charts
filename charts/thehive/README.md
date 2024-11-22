@@ -1,6 +1,6 @@
 # TheHive Helm Chart
 
-![Chart version 0.1.6](https://img.shields.io/badge/Chart_version-0.1.6-blue.svg?logo=helm) ![App version 5.4.5-1](https://img.shields.io/badge/App_version-5.4.5--1-blue)
+![Chart version 0.1.7](https://img.shields.io/badge/Chart_version-0.1.7-blue.svg?logo=helm) ![App version 5.4.5-1](https://img.shields.io/badge/App_version-5.4.5--1-blue)
 
 > [!CAUTION]
 > This chart is under development and is **not production ready**
