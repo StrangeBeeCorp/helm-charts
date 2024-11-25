@@ -1,6 +1,6 @@
 ## Next release
 
-- Nothing yet
+- Replace ElasticSearch unmaintained Helm Chart [#19](https://github.com/StrangeBeeCorp/helm-charts/pull/19)
 
 
 ## 0.1.7
