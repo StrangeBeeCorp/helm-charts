@@ -40,7 +40,7 @@ spec:
         - name: init-elastic
           image: "{{ .Values.busybox.image.registry }}/{{ .Values.busybox.image.repository }}:{{ .Values.busybox.image.tag }}"
           imagePullPolicy: {{ .Values.busybox.image.pullPolicy }}
-          command: ['sh', '-c', "until nslookup {{ index .Values.thehive.indexBackend.hostnames 0 }}.$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace).svc.cluster.local; do echo waiting for elasticsearch; sleep 2; done"]
+          command: ['sh', '-c', "until wget --no-cache --no-check-certificate --spider http://{{ index .Values.thehive.indexBackend.hostnames 0 }}{{ if .Values.elasticsearch.enabled }}.$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace).svc.cluster.local{{ end }}:{{ .Values.thehive.indexBackend.port }}/_cluster/health ; do echo waiting for elasticsearch; sleep 2; done"]
       {{- end }}
       containers:
         - name: {{ .Chart.Name }}
