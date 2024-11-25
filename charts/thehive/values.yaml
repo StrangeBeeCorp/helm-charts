@@ -75,11 +75,11 @@ elasticsearch:
     # Defined in https://github.com/bitnami/charts/blob/elasticsearch/21.3.26/bitnami/common/templates/_resources.tpl
     resourcesPreset: "small"
     # Master nodes heap size
-    heapSize: 128m
+    heapSize: 96m
     # Configure JVM options as env variable
     extraEnvVars:
       - name: JVM_OPTS
-        value: "-Xms128m -Xmx128m -Xmn128m"
+        value: "-Xms96m -Xmx96m -Xmn96m"
     # WARNING - should be set to "hard" or configured manually with "elasticsearch.master.affinity" in production
     podAffinityPreset: "soft"
 
