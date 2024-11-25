@@ -56,50 +56,49 @@ cassandra:
     # -- Cassandra volume mode (Filesystem or Block)
     volumeMode: Filesystem
 
-# -- For more information: https://github.com/elastic/helm-charts/tree/main/elasticsearch
-# @default -- {}
+
+# https://github.com/bitnami/charts/blob/elasticsearch/21.3.26/bitnami/elasticsearch/values.yaml
 elasticsearch:
-  # -- Enable Elasticsearch
+  # Use ElasticSearch dependency Helm Chart
   enabled: true
-  # -- Replicas count
-  replicas: 2
-  # -- Master nodes
-  minimumMasterNodes: 1
-  # -- Set to true in production
-  createCert: false
-  # -- Set to true in production
-  secret:
-    enabled: false # WARNING: In production you should enable this
-  # -- Disable xpack security
-  # @default -- {esConfig: {}}
-  esConfig:
-    elasticsearch.yml: |
-      xpack.security.enabled: false
-      xpack.security.transport.ssl.enabled: false
-      xpack.security.http.ssl.enabled: false
-  # -- Permit co-located instances for solitary minikube virtual machines.
-  antiAffinity: "soft"
 
-  # -- Shrink default JVM heap.
-  esJavaOpts: "-Xmx128m -Xms128m"
+  image:
+    registry: docker.io
+    repository: bitnami/elasticsearch
+    tag: "7.17.25-debian-12-r3"
 
-  # -- Allocate smaller chunks of memory per pod.
-  resources:
-    requests:
-      cpu: "100m"
-      memory: "512Mi"
-    limits:
-      cpu: "1000m"
-      memory: "512Mi"
+  master:
+    # Use master nodes as multipurpose nodes (master, data, coordinating and ingest) to simplify the deployment
+    masterOnly: false
+    # Number of master-elegible replicas to deploy
+    replicaCount: 2
+    # Defined in https://github.com/bitnami/charts/blob/elasticsearch/21.3.26/bitnami/common/templates/_resources.tpl
+    resourcesPreset: "small"
+    # Master nodes heap size
+    heapSize: 128m
+    # Configure JVM options as env variable
+    extraEnvVars:
+      - name: JVM_OPTS
+        value: "-Xms128m -Xmx128m -Xmn128m"
+    # WARNING - should be set to "hard" or configured manually with "elasticsearch.master.affinity" in production
+    podAffinityPreset: "soft"
 
-  # -- Request smaller persistent volumes.
-  # @default -- {}
-  volumeClaimTemplate:
-    accessModes: ["ReadWriteOnce"]
-    storageClassName: "standard"
-    resources:
-      requests:
-        storage: "500Mi"
+  data:
+    # Disable data-dedicated nodes
+    replicaCount: 0
+
+  coordinating:
+    # Disable coordination-dedicated nodes
+    replicaCount: 0
+
+  ingest:
+    # Disable ingestion-dedicated nodes
+    replicaCount: 0
+
+  security:
+    # WARNING - security options should be enabled in production
+    enabled: false
+
 
 minio:
   # -- Enable Minio
@@ -161,7 +160,7 @@ thehive:
   cql:
     # -- Cassandra hostnames
     hostnames:
-      - "thehive-cassandra"
+      - "thehive-elasticsearch"
     # -- Wait for Cassandra
     wait: true
   # -- Index Backend configuration
