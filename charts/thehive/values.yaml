@@ -163,13 +163,14 @@ thehive:
       - "thehive-cassandra"
     # -- Wait for Cassandra
     wait: true
-  # -- Index Backend configuration
+  # Index backend configuration
   indexBackend:
-    # -- Elasticsearch is the only supported backend for now
     type: elasticsearch
-    # -- Elasticsearch hostnames
+    # ElasticSearch cluster hostnames
     hostnames:
       - "thehive-elasticsearch"
+    # ElasticSearch API port
+    port: "9200"
   # -- Object Storage configuration
   # @default -- {}
   s3:
