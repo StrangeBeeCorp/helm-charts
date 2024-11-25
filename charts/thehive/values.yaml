@@ -160,7 +160,7 @@ thehive:
   cql:
     # -- Cassandra hostnames
     hostnames:
-      - "thehive-elasticsearch"
+      - "thehive-cassandra"
     # -- Wait for Cassandra
     wait: true
   # -- Index Backend configuration
@@ -169,7 +169,7 @@ thehive:
     type: elasticsearch
     # -- Elasticsearch hostnames
     hostnames:
-      - "elasticsearch-master"
+      - "thehive-elasticsearch"
   # -- Object Storage configuration
   # @default -- {}
   s3:
