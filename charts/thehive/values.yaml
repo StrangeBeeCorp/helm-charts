@@ -65,7 +65,7 @@ elasticsearch:
   image:
     registry: docker.io
     repository: bitnami/elasticsearch
-    tag: "7.17.25-debian-12-r3"
+    tag: "8.16.1-debian-12-r1"
 
   master:
     # Use master nodes as multipurpose nodes (master, data, coordinating and ingest) to simplify the deployment
