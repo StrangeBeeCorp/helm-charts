@@ -51,20 +51,6 @@ app.kubernetes.io/version: {{ .Values.image.tag | default .Chart.AppVersion | qu
 app.kubernetes.io/component: "frontend"
 {{- end }}
 
-{{/* Cassandra selector labels */}}
-{{- define "thehive.cassandra.selectorLabels" -}}
-app.kubernetes.io/name: {{ printf "%s-cassandra" (include "thehive.name" .) }}
-app.kubernetes.io/instance: {{ .Release.Name }}
-{{- end }}
-
-{{/* Cassandra labels */}}
-{{- define "thehive.cassandra.labels" -}}
-{{ include "thehive.commonLabels" . }}
-{{ include "thehive.cassandra.selectorLabels" . }}
-app.kubernetes.io/version: {{ .Values.cassandra.version | quote }}
-app.kubernetes.io/component: "database"
-{{- end }}
-
 {{/* MinIO selector labels */}}
 {{- define "thehive.minio.selectorLabels" -}}
 app.kubernetes.io/name: {{ printf "%s-minio" (include "thehive.name" .) }}
