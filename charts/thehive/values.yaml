@@ -274,8 +274,16 @@ elasticsearch:
     masterOnly: false
     # Number of master-elegible replicas to deploy
     replicaCount: 2
-    # Defined in https://github.com/bitnami/charts/blob/elasticsearch/21.3.26/bitnami/common/templates/_resources.tpl
-    resourcesPreset: "small"
+    # Resources available for each replica
+    resources:
+      requests:
+        cpu: "500m"
+        memory: "500Mi"
+        ephemeral-storage: "2Gi"
+      limits:
+        cpu: "750m"
+        memory: "750Mi"
+        ephemeral-storage: "2Gi"
     # Master nodes heap size
     heapSize: 96m
     # Configure JVM options as env variable
@@ -283,7 +291,7 @@ elasticsearch:
       - name: JVM_OPTS
         value: "-Xms96m -Xmx96m -Xmn96m"
     # WARNING - should be set to "hard" or configured manually with "elasticsearch.master.affinity" in production
-    podAffinityPreset: "soft"
+    podAntiAffinityPreset: "soft"
 
   data:
     # Disable data-dedicated nodes
