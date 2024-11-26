@@ -34,10 +34,10 @@ helm install [RELEASE_NAME] strangebee/thehive
 ## Dependencies
 
 This Chart relies on the following Helm Charts by default:
+- [bitnami/charts cassandra](https://github.com/bitnami/charts/tree/main/bitnami/cassandra) - used as database
 - [bitnami/charts elasticsearch](https://github.com/bitnami/charts/tree/main/bitnami/elasticsearch) - used as index
 
 In addition, this Chart deploys additional services for TheHive to work out of the box:
-- [cassandra](https://hub.docker.com/_/cassandra) - used as database
 - [minio](https://hub.docker.com/r/minio/minio) (configured with [mc](https://hub.docker.com/r/minio/mc)) - used as s3 compatible object storage
 
 
@@ -87,7 +87,7 @@ You can check out [the related Helm Chart](./README.md#dependencies) to see conf
 
 A single Cassandra pod is started by this Chart to store TheHive's data.
 
-We are exposing some parameters in the Chart's values, but we recommend that you use a dedicated Cassandra cluster for a highly available service.
+You can check out [the related Helm Chart](./README.md#dependencies) to see configuration options.
 
 
 ### Object storage
