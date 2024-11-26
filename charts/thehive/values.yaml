@@ -61,6 +61,14 @@ cassandra:
   # WARNING - should be set to "hard" or configured manually with "cassandra.affinity" in production
   podAntiAffinityPreset: "soft"
 
+  extraEnvVars:
+    # WARNING - replace with "PasswordAuthenticator" value in production
+    - name: CASSANDRA_AUTHENTICATOR
+      value: AllowAllAuthenticator
+    # WARNING - replace with "CassandraAuthorizer" value in production
+    - name: CASSANDRA_AUTHORIZER
+      value: AllowAllAuthorizer
+
 
 # https://github.com/bitnami/charts/blob/elasticsearch/21.3.26/bitnami/elasticsearch/values.yaml
 elasticsearch:
