@@ -34,7 +34,7 @@ helm install [RELEASE_NAME] strangebee/thehive
 ## Dependencies
 
 This Chart relies on the following Helm Charts by default:
-- [deprecated] [elastic/elasticsearch](https://github.com/elastic/helm-charts/tree/main/elasticsearch) - used as index
+- [bitnami/charts elasticsearch](https://github.com/bitnami/charts/tree/main/bitnami/elasticsearch) - used as index
 
 In addition, this Chart deploys additional services for TheHive to work out of the box:
 - [cassandra](https://hub.docker.com/_/cassandra) - used as database
@@ -78,7 +78,7 @@ To configure StorageClasses according to your needs, you should check out releva
 
 ### ElasticSearch
 
-By default, this Chart will deploy an ElasticSearch cluster made of 2 nodes (with one master node).
+By default, this Chart will deploy an ElasticSearch cluster made of 2 nodes (both master-eligible and general purposed).
 
 You can check out [the related Helm Chart](./README.md#dependencies) to see configuration options.
 
