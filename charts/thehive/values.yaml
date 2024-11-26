@@ -15,46 +15,59 @@ imagePullSecrets: []
 nameOverride: ""
 fullnameOverride: ""
 
+
+# https://github.com/bitnami/charts/blob/cassandra/12.0.4/bitnami/cassandra/values.yaml
 cassandra:
-  # -- Enable Cassandra database
+  # Use Cassandra dependency Helm Chart
   enabled: true
+
   image:
     registry: docker.io
-    repository: cassandra
-    tag: "4.1.7"
-    pullPolicy: IfNotPresent
-  # -- Cassandra cluster name
-  clusterName: "TheHive"
-  # -- Cassandra datacenter name
-  dcName: "DC1-TheHive"
-  # -- Cassandra rack name
-  rackName: "Rack1-TheHive"
+    repository: bitnami/cassandra
+    tag: "4.1.7-debian-12-r2"
+
+  # WARNING - you should provide a k8s secret (or at least a password) in production
+  dbUser:
+    user: "cassandra"
+    forcePassword: false
+    password: ""
+    existingSecret: ""
+
+  cluster:
+    name: "TheHive"
+    datacenter: "DC1-TheHive"
+    rack: "Rack1-TheHive"
+
+  replicaCount: 1
+
+  # Resources available for each replica
+  # http://docs.datastax.com/en/archived/cassandra/2.0/cassandra/architecture/architecturePlanningHardware_c.html
   resources:
-    limits:
-      cpu: "1000m"
-      memory: "2Gi"
     requests:
       cpu: "1000m"
       memory: "2Gi"
-  # -- Cassandra max heap size
-  maxHeapSize: "512M"
-  # -- Cassandra heap new size
-  heapNewSize: "128M"
-  # -- Cassandra Xms
-  xms: "128M"
-  # -- Cassandra Xmx
-  xmx: "512M"
-  # -- Cassandra Xmn
-  xmn: "128M"
-  persistence:
-    # -- Enable Cassandra persistence
-    enabled: true
-    # -- Cassandra storageClass
-    storageClass: "standard"
-    # -- Cassandra persistent volume size
-    size: "2Gi"
-    # -- Cassandra volume mode (Filesystem or Block)
-    volumeMode: Filesystem
+      ephemeral-storage: "2Gi"
+    limits:
+      cpu: "1000m"
+      memory: "2Gi"
+      ephemeral-storage: "2Gi"
+
+  # https://docs.datastax.com/en/archived/cassandra/2.0/cassandra/operations/ops_tune_jvm_c.html
+  jvm:
+    extraOpts: "-Xms128m -Xmx512m -Xmn128m"
+    maxHeapSize: "512m"
+    newHeapSize: "128m"
+
+  # WARNING - should be set to "hard" or configured manually with "cassandra.affinity" in production
+  podAntiAffinityPreset: "soft"
+
+  extraEnvVars:
+    # WARNING - replace with "PasswordAuthenticator" value in production
+    - name: CASSANDRA_AUTHENTICATOR
+      value: AllowAllAuthenticator
+    # WARNING - replace with "CassandraAuthorizer" value in production
+    - name: CASSANDRA_AUTHORIZER
+      value: AllowAllAuthorizer
 
 
 # https://github.com/bitnami/charts/blob/elasticsearch/21.3.26/bitnami/elasticsearch/values.yaml
