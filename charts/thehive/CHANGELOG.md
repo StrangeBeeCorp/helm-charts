@@ -4,6 +4,7 @@
 - Use Bitnami Cassandra Helm Chart [#20](https://github.com/StrangeBeeCorp/helm-charts/pull/20)
 - Use MinIO (community) Helm Chart [#21](https://github.com/StrangeBeeCorp/helm-charts/pull/21)
 - Rework GitHub workflow [#22](https://github.com/StrangeBeeCorp/helm-charts/pull/22)
+- Remove Helm Chart tests and NOTES.txt [#23](https://github.com/StrangeBeeCorp/helm-charts/pull/23)
 
 
 ## 0.1.7
