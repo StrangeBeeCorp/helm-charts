@@ -129,6 +129,12 @@ minio:
 
   # WARNING - set to "distributed" with multiple replicas in production
   mode: standalone
+  # Number of drives attached to a node
+  drivesPerNode: 1
+  # Number of MinIO pods running
+  replicas: 1
+  # Number of expanded MinIO clusters
+  pools: 1
 
   # WARNING - you should provide a k8s secret (or at least a password) in production
   rootUser: "minio"
