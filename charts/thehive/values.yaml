@@ -113,36 +113,67 @@ elasticsearch:
     enabled: false
 
 
+# https://github.com/minio/minio/blob/master/helm/minio/values.yaml
 minio:
-  # -- Enable Minio
+  # Use MinIO dependency Helm Chart
+  # You should disable it if you plan to use another s3-compatible object storage for TheHive
   enabled: true
-  # -- Minio endpoint
-  endpoint: http://thehive-minio:9000
 
   image:
-    registry: docker.io
-    repository: minio/minio
+    repository: quay.io/minio/minio
     tag: RELEASE.2024-11-07T00-52-20Z
-    pullPolicy: IfNotPresent
 
-  # -- MinIO client image
-  minioClient:
-    image:
-      registry: docker.io
-      repository: minio/mc
-      tag: RELEASE.2024-11-17T19-35-25Z
-      pullPolicy: IfNotPresent
+  mcImage:
+    repository: quay.io/minio/mc
+    tag: RELEASE.2024-11-17T19-35-25Z
 
-  # -- Minio authentification configuration
-  auth:
-    rootUser: minio
-    rootPassword: minio123
-  # -- Minio storage configuration
-  storage:
-    volumeClaimValue: "2Gi"
-  nodeSelector: {}
-  tolerations: []
-  affinity: {}
+  # WARNING - set to "distributed" with multiple replicas in production
+  mode: standalone
+  # Number of drives attached to a node
+  drivesPerNode: 1
+  # Number of MinIO pods running
+  replicas: 1
+  # Number of expanded MinIO clusters
+  pools: 1
+
+  # WARNING - you should provide a k8s secret (or at least a password) in production
+  rootUser: "minio"
+  rootPassword: "ModifyThisSecretForMinIO"
+  # The secret must at least contain ".data.rootUser" and ".data.rootPassword" values
+  existingSecret: ""
+
+  # WARNING - non-root user (e.g. with "readwrite" policy) should be created in production
+  users: []
+
+  buckets:
+    - name: state-storage
+      policy: none
+      purge: false
+      versioning: false
+      objectlocking: false
+    - name: thehive-dev-logs
+      policy: none
+      purge: false
+      versioning: false
+      objectlocking: false
+
+  resources:
+    requests:
+      cpu: "500m"
+      memory: "2Gi"
+      ephemeral-storage: "2Gi"
+    limits:
+      cpu: "1000m"
+      memory: "2Gi"
+      ephemeral-storage: "2Gi"
+
+  persistence:
+    enabled: true
+    storageClass: ""
+    volumeName: ""
+    accessMode: ReadWriteOnce
+    size: "2Gi"
+
 
 busybox:
   image:
@@ -192,7 +223,7 @@ thehive:
     # -- S3 Access key
     accessKey: "minio"
     # -- S3 Secret key
-    secretKey: "minio123"
+    secretKey: "ModifyThisSecretForMinIO"
     # -- S3 Access Style
     usePathAccessStyle: true
   # -- Custom application.conf file for TheHive

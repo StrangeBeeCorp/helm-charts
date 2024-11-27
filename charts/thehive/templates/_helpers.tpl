@@ -51,20 +51,6 @@ app.kubernetes.io/version: {{ .Values.image.tag | default .Chart.AppVersion | qu
 app.kubernetes.io/component: "frontend"
 {{- end }}
 
-{{/* MinIO selector labels */}}
-{{- define "thehive.minio.selectorLabels" -}}
-app.kubernetes.io/name: {{ printf "%s-minio" (include "thehive.name" .) }}
-app.kubernetes.io/instance: {{ .Release.Name }}
-{{- end }}
-
-{{/* MinIO labels */}}
-{{- define "thehive.minio.labels" -}}
-{{ include "thehive.commonLabels" . }}
-{{ include "thehive.minio.selectorLabels" . }}
-app.kubernetes.io/version: {{ .Values.minio.image.tag | quote }}
-app.kubernetes.io/component: "file-storage"
-{{- end }}
-
 {{/*
 Create the name of the service account to use
 */}}
