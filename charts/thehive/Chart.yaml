@@ -1,25 +1,10 @@
-version: 0.1.7
+# https://helm.sh/docs/topics/charts/#the-chartyaml-file
 apiVersion: v2
-appVersion: "5.4.5-1"
+
 name: thehive
-description: The official Helm chart of TheHive for Kubernetes.
-type: application
-
-maintainers:
-  - name: StrangeBee
-    url: https://strangebee.com/
-
-keywords:
-  - thehive
-  - sirp
-  - incident-response
-  - case-management
-  - strangebee
-
-icon: https://strangebeecorp.github.io/helm-charts/assets/thehive-icon.svg
-home: https://github.com/StrangeBeeCorp/helm-charts
-sources:
-  - https://github.com/StrangeBeeCorp/helm-charts/tree/main/charts/thehive
+version: 0.1.7
+appVersion: "5.4.5-1"
+kubeVersion: ">= 1.23.0"
 
 dependencies:
   - name: cassandra
@@ -35,22 +20,36 @@ dependencies:
     version: 5.3.0
     condition: minio.enabled
 
+type: application
+description: The official Helm Chart of TheHive for Kubernetes
+icon: https://strangebeecorp.github.io/helm-charts/assets/thehive-icon.svg
+keywords:
+  - thehive
+  - sirp
+  - incident-response
+  - case-management
+  - strangebee
+
+home: https://strangebee.com/thehive/
+sources:
+  - https://github.com/StrangeBeeCorp/helm-charts/tree/main/charts/thehive
+maintainers:
+  - name: StrangeBee
+    url: https://strangebee.com/
+
+# https://artifacthub.io/docs/topics/annotations/helm/
 annotations:
+  artifacthub.io/category: security
+  artifacthub.io/images: |
+    - name: thehive
+      image: strangebee/thehive:5.4.5-1
+      whitelisted: true
+    - name: busybox
+      image: busybox:1.36-glibc
+      whitelisted: true
   artifacthub.io/license: AGPL-3.0
   artifacthub.io/links: |
-    - name: Community
-      url: https://chat.thehive-project.org
-  artifacthub.io/images: |
-    - name: busybox
-      image: busybox:1.28
-      whitelisted: true
-    - name: cassandra
-      image: cassandra:4.1
-      whitelisted: true
-    - name: thehive
-      image: strangebee/thehive:5.2
-      whitelisted: true
-
-## For reference:
-## https://helm.sh/docs/topics/charts/#the-chartyaml-file
-## https://artifacthub.io/docs/topics/annotations/helm/
+    - name: source
+      url: https://github.com/StrangeBeeCorp/helm-charts/tree/main/charts/thehive
+    - name: support
+      url: https://strangebee.com/contact-strangebee/
