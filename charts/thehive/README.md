@@ -36,9 +36,7 @@ helm install [RELEASE_NAME] strangebee/thehive
 This Chart relies on the following Helm Charts by default:
 - [bitnami/charts cassandra](https://github.com/bitnami/charts/tree/main/bitnami/cassandra) - used as database
 - [bitnami/charts elasticsearch](https://github.com/bitnami/charts/tree/main/bitnami/elasticsearch) - used as index
-
-In addition, this Chart deploys additional services for TheHive to work out of the box:
-- [minio](https://hub.docker.com/r/minio/minio) (configured with [mc](https://hub.docker.com/r/minio/mc)) - used as s3 compatible object storage
+- [minio/minio (community)](https://github.com/minio/minio/tree/master/helm/minio) - used as s3 compatible object storage
 
 
 ## Upgrading a Release
