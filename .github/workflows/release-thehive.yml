@@ -1,11 +1,9 @@
-name: Release Charts
+name: Release TheHive Helm Chart
 
 on:
   push:
-    # branches:
-    #   - main
     tags:
-      - '*'
+      - thehive-*
 
 jobs:
   release:
