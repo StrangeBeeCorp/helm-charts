@@ -9,4 +9,4 @@ This repository contains a collection of Helm Charts for [StrangeBee](https://st
 - [TheHive](./charts/thehive/)
 - Cortex (TBD)
 
-The code is provided as-is with no warranties. Feedback and contributions are welcomed.
+The code is provided as-is with no warranties. Feedbacks and contributions are welcomed.
