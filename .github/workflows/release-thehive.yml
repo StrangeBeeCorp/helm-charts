@@ -1,3 +1,4 @@
+# Based on https://github.com/helm/chart-releaser-action
 name: Release TheHive Helm Chart
 
 on:
@@ -21,9 +22,9 @@ jobs:
           git config user.name "$GITHUB_ACTOR"
           git config user.email "$GITHUB_ACTOR@users.noreply.github.com"
 
-      - name: Add Helm repos
+      - name: Add Helm Repositories related to the Helm Charts specified as dependencies
         run: |
-          helm repo add elastic https://helm.elastic.co
+          helm repo add minio https://charts.min.io/
 
       - name: Run chart-releaser
         uses: helm/chart-releaser-action@v1.6.0
