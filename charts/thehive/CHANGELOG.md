@@ -5,6 +5,7 @@
 - Use MinIO (community) Helm Chart [#21](https://github.com/StrangeBeeCorp/helm-charts/pull/21)
 - Rework GitHub workflow [#22](https://github.com/StrangeBeeCorp/helm-charts/pull/22)
 - Remove Helm Chart tests and NOTES.txt [#23](https://github.com/StrangeBeeCorp/helm-charts/pull/23)
+- Update READMEs and ArtifactHub information [#24](https://github.com/StrangeBeeCorp/helm-charts/pull/24)
 
 
 ## 0.1.7
