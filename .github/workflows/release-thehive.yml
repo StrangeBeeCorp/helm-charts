@@ -31,7 +31,13 @@ jobs:
         run: |
           helm repo add minio https://charts.min.io/
 
+      # At the time of writing, the "helm/chart-releaser-action" does not support multiple Helm Charts
+      # https://github.com/helm/chart-releaser-action/issues/198
+      #
+      # For now we only have TheHive Helm Chart defined, but adding other Charts will create issues
       - name: Run chart-releaser
         uses: helm/chart-releaser-action@v1.6.0
+        with:
+          charts_dir: charts
         env:
           CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
