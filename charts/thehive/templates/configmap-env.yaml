@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "thehive.fullname" . }}-env
+  labels:
+    {{- include "thehive.labels" . | nindent 4 }}
+data:
+  TH_CQL_USERNAME: {{ .Values.database.username | quote }}
+  TH_CQL_HOSTNAMES: {{ join "," .Values.database.hostnames | quote }}
+  TH_ELASTICSEARCH_USERNAME: {{ .Values.index.username | quote }}
+  TH_ELASTICSEARCH_HOSTNAMES: {{ join "," .Values.index.hostnames | quote }}
+  TH_S3_ACCESS_KEY: {{ .Values.storage.accessKey | quote }}
+  TH_S3_ENDPOINT: {{ .Values.storage.endpoint | quote }}
+  TH_S3_BUCKET: {{ .Values.storage.bucket | quote }}
+  TH_S3_REGION: {{ .Values.storage.region | quote }}

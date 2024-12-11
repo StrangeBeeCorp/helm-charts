@@ -60,7 +60,7 @@ spec:
             - "--kubernetes-pod-label-selector"
             - "app.kubernetes.io/name={{ include "thehive.name" . }}"
             - "--index-backend"
-            - "{{ .Values.thehive.indexBackend.type }}"
+            - "elasticsearch"
             - "--es-hostnames"
             - "{{- range $i, $hostname := $.Values.thehive.indexBackend.hostnames }}{{- if and (gt (len $.Values.thehive.indexBackend.hostnames) 0) (gt $i 0) }},{{- end -}}{{ $hostname }}{{- end -}}"
             - "--s3-endpoint"
@@ -83,6 +83,41 @@ spec:
               valueFrom:
                 fieldRef:
                   fieldPath: status.podIP
+            {{- if .Values.database.secretName }}
+            - name: TH_CQL_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.database.secretName }}
+                  key: cassandra-password
+            {{- end }}
+            {{- if .Values.index.secretName }}
+            - name: TH_ELASTICSEARCH_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.index.secretName }}
+                  key: elasticsearch-password
+            {{- end }}
+            {{- if .Values.storage.secretName }}
+            - name: TH_S3_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.storage.secretName }}
+                  key: rootPassword
+            {{- end }}
+            {{- if .Values.thehive.secretName }}
+            - name: TH_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.thehive.secretName }}
+                  key: thehive-secret
+            {{- end }}
+          envFrom:
+            - configMapRef:
+                name: {{ include "thehive.fullname" . }}-env
+            {{- if or (not .Values.database.secretName) (not .Values.index.secretName) (not .Values.storage.secretName) (not .Values.thehive.secretName) }}
+            - secretRef:
+                name: {{ include "thehive.fullname" . }}-secrets
+            {{- end }}
           ports:
             - name: http
               containerPort: 9000
