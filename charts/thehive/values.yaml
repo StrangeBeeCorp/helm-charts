@@ -43,7 +43,7 @@ database:
   # Credentials to connect to Cassandra (used by Cassandra subchart if enabled)
   username: "cassandra"
   password: ""
-  # The name of an existing k8s secret (Cassandra subchart expects a ".data.cassandra-password" key)
+  # The name of an existing k8s secret containing Cassandra password
   k8sSecretName: ""
   k8sSecretKey: "cassandra-password"
   # List of Cassandra cluster hostnames
@@ -57,7 +57,7 @@ index:
   # Credentials to connect to ElasticSearch (used by ElasticSearch subchart if enabled)
   username: "elastic"
   password: ""
-  # The name of an existing k8s secret (ElasticSearch subchart expects a ".data.elasticsearch-password" key)
+  # The name of an existing k8s secret containing ElasticSearch password
   k8sSecretName: ""
   k8sSecretKey: "elasticsearch-password"
   # List of ElasticSearch cluster hostnames
@@ -71,7 +71,7 @@ storage:
   # Credentials to connect to the object storage (used by MinIO subchart if enabled)
   accessKey: "minio"
   secretKey: ""
-  # The name of an existing k8s secret (MinIO subchart expects ".data.rootUser" and ".data.rootPassword" keys)
+  # The name of an existing k8s secret containing the object storage secret key
   k8sSecretName: ""
   k8sSecretKey: "rootPassword"
   # Bucket information
@@ -81,8 +81,7 @@ storage:
   usePathAccessStyle: true
 
 # Init containers used to wait for ElasticSearch and Cassandra to be reachable
-initContainers:
-  enabled: true
+useInitContainers: true
 
 # Busybox image (used by initContainers)
 busybox:
@@ -214,7 +213,8 @@ cassandra:
     user: "{{ .Values.database.username }}"
     password: "{{ .Values.database.password }}"
     forcePassword: false
-    existingSecret: "{{ .Values.database.k8sSecretName }}"
+    # The name of an existing k8s secret (Cassandra subchart expects a ".data.cassandra-password" key)
+    existingSecret: ""
 
   cluster:
     name: "TheHive"
@@ -299,7 +299,8 @@ elasticsearch:
     # TLS configuration is required to enable password authentication
     enabled: false
     elasticPassword: "{{ .Values.index.password }}"
-    existingSecret: "{{ .Values.index.k8sSecretName }}"
+    # The name of an existing k8s secret (ElasticSearch subchart expects a ".data.elasticsearch-password" key)
+    existingSecret: ""
 
 ############################
 # MinIO subchart variables #
@@ -321,7 +322,8 @@ minio:
 
   rootUser: "{{ .Values.storage.accessKey }}"
   rootPassword: "{{ .Values.storage.secretKey }}"
-  existingSecret: "{{ .Values.storage.k8sSecretName }}"
+  # The name of an existing k8s secret (MinIO subchart expects ".data.rootUser" and ".data.rootPassword" keys)
+  existingSecret: ""
 
   # WARNING - set to "distributed" with multiple replicas in production
   mode: standalone
