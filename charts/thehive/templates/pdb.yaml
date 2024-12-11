@@ -5,7 +5,7 @@ metadata:
   labels:
     {{- include "thehive.labels" . | nindent 4 }}
 spec:
-  maxUnavailable: {{ .Values.thehive.maxUnavailable | default 1 }}
+  maxUnavailable: {{ .Values.maxUnavailable | default 1 }}
   selector:
     matchLabels:
       app.kubernetes.io/name: {{ include "thehive.fullname" . }}

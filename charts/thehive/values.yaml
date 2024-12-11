@@ -1,10 +1,11 @@
-# Default values for thehive.
-# This is a YAML-formatted file.
-# Declare variables to be passed into your templates.
+################################
+# TheHive Helm Chart variables #
+################################
 
 nameOverride: ""
 fullnameOverride: ""
 
+# TheHive image
 image:
   registry: docker.io
   repository: strangebee/thehive
@@ -16,203 +17,74 @@ imagePullSecrets: []
 
 replicaCount: 1
 
+# TheHive nodes count
+clusterMinNodesCount: 1
+
+# PodDisruptionBudget configuration
+maxUnavailable: 1
+
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 5
+  targetCPUUtilizationPercentage: 80
+  # targetMemoryUtilizationPercentage: 95
+
+resources: {}
+  #requests:
+  #  cpu: 100m
+  #  memory: 128Mi
+  #limits:
+  #  cpu: 100m
+  #  memory: 128Mi
+
 # TheHive Cassandra configuration
-# Relevant values are provided to Cassandra dependency Helm Chart (if enabled)
 database:
-  # (not recommended) Cassandra credentials, password randomly generated if empty
+  # Credentials to connect to Cassandra (used by Cassandra subchart if enabled)
   username: "cassandra"
   password: ""
-
-  # (recommended) The name of an existing k8s secret containing a ".data.cassandra-password" key
-  secretName: ""
-
+  # The name of an existing k8s secret (Cassandra subchart expects a ".data.cassandra-password" key)
+  k8sSecretName: ""
+  k8sSecretKey: "cassandra-password"
   # List of Cassandra cluster hostnames
   hostnames:
     - "thehive-cassandra"
-
-  # Wait 30 seconds for Cassandra to start before launching TheHive
+  # Set to true to wait 30 seconds for Cassandra to start before launching TheHive
   wait: true
 
 # TheHive ElasticSearch configuration
-# Relevant values are provided to ElasticSearch dependency Helm Chart (if enabled)
 index:
-  # (not recommended) ElasticSearch credentials, password randomly generated if empty
-  # NOTE the ElasticSearch dependency chart forces "elastic" as username
+  # Credentials to connect to ElasticSearch (used by ElasticSearch subchart if enabled)
   username: "elastic"
   password: ""
-
-  # (recommended) The name of an existing k8s secret containing a ".data.elasticsearch-password" key
-  secretName: ""
-
+  # The name of an existing k8s secret (ElasticSearch subchart expects a ".data.elasticsearch-password" key)
+  k8sSecretName: ""
+  k8sSecretKey: "elasticsearch-password"
   # List of ElasticSearch cluster hostnames
   hostnames:
     - "thehive-elasticsearch"
-
   # ElasticSearch API port
   port: "9200"
 
 # TheHive object storage configuration
-# Relevant values are provided to MinIO dependency Helm Chart (if enabled)
 storage:
-  # (not recommended) Object storage credentials, password randomly generated if empty
+  # Credentials to connect to the object storage (used by MinIO subchart if enabled)
   accessKey: "minio"
   secretKey: ""
-
-  # (recommended) The name of an existing k8s secret containing ".data.rootUser" and ".data.rootPassword" keys
-  # NOTE key names are confusing because they are influenced by MinIO dependency Chart, to be fixed later on
-  secretName: ""
-
-  # Object storage information
+  # The name of an existing k8s secret (MinIO subchart expects ".data.rootUser" and ".data.rootPassword" keys)
+  k8sSecretName: ""
+  k8sSecretKey: "rootPassword"
+  # Bucket information
   endpoint: "http://thehive-minio:9000"
   bucket: "thehive"
   region: "us-east-1"
   usePathAccessStyle: true
 
-# https://github.com/bitnami/charts/blob/cassandra/12.0.4/bitnami/cassandra/values.yaml
-cassandra:
-  # Use Cassandra dependency Helm Chart
+# Init containers used to wait for ElasticSearch and Cassandra to be reachable
+initContainers:
   enabled: true
 
-  image:
-    registry: docker.io
-    repository: bitnami/cassandra
-    tag: "4.1.7-debian-12-r2"
-
-  # Automatically filled by values under the "database" key defined above
-  dbUser:
-    forcePassword: true
-
-  cluster:
-    name: "TheHive"
-    datacenter: "DC1-TheHive"
-    rack: "Rack1-TheHive"
-
-  replicaCount: 1
-
-  # Resources available for each replica
-  # http://docs.datastax.com/en/archived/cassandra/2.0/cassandra/architecture/architecturePlanningHardware_c.html
-  resources:
-    requests:
-      cpu: "1000m"
-      memory: "2Gi"
-      ephemeral-storage: "2Gi"
-    limits:
-      cpu: "1000m"
-      memory: "2Gi"
-      ephemeral-storage: "2Gi"
-
-  # https://docs.datastax.com/en/archived/cassandra/2.0/cassandra/operations/ops_tune_jvm_c.html
-  jvm:
-    extraOpts: "-Xms128m -Xmx512m -Xmn128m"
-    maxHeapSize: "512m"
-    newHeapSize: "128m"
-
-  # WARNING - should be set to "hard" or configured manually with "cassandra.affinity" in production
-  podAntiAffinityPreset: "soft"
-
-  extraEnvVars:
-    # WARNING - replace with "PasswordAuthenticator" value in production
-    - name: CASSANDRA_AUTHENTICATOR
-      value: AllowAllAuthenticator
-    # WARNING - replace with "CassandraAuthorizer" value in production
-    - name: CASSANDRA_AUTHORIZER
-      value: AllowAllAuthorizer
-
-# https://github.com/bitnami/charts/blob/elasticsearch/21.3.26/bitnami/elasticsearch/values.yaml
-elasticsearch:
-  # Use ElasticSearch dependency Helm Chart
-  enabled: true
-
-  image:
-    registry: docker.io
-    repository: bitnami/elasticsearch
-    tag: "8.16.1-debian-12-r1"
-
-  master:
-    # Whether nodes are master only or multipurpose (master, data, coordinating and ingest)
-    masterOnly: false
-    # Number of master-elegible replicas to deploy
-    replicaCount: 2
-    # Defined in https://github.com/bitnami/charts/blob/elasticsearch/21.3.26/bitnami/common/templates/_resources.tpl
-    resourcesPreset: "small"
-    # Master nodes heap size
-    heapSize: 96m
-    # Configure JVM options as env variable
-    extraEnvVars:
-      - name: JVM_OPTS
-        value: "-Xms96m -Xmx96m -Xmn96m"
-    # WARNING - should be set to "hard" or configured manually with "elasticsearch.master.affinity" in production
-    podAffinityPreset: "soft"
-
-  data:
-    # Disable data-dedicated nodes
-    replicaCount: 0
-
-  coordinating:
-    # Disable coordination-dedicated nodes
-    replicaCount: 0
-
-  ingest:
-    # Disable ingestion-dedicated nodes
-    replicaCount: 0
-
-  # Automatically filled by values under the "index" key defined above
-  security:
-    # TLS configuration is required to enable password authentication
-    enabled: false
-
-# https://github.com/minio/minio/blob/master/helm/minio/values.yaml
-minio:
-  # Use MinIO dependency Helm Chart
-  # You should disable it if you plan to use another s3-compatible object storage for TheHive
-  enabled: true
-
-  image:
-    repository: quay.io/minio/minio
-    tag: RELEASE.2024-11-07T00-52-20Z
-
-  mcImage:
-    repository: quay.io/minio/mc
-    tag: RELEASE.2024-11-17T19-35-25Z
-
-  # WARNING - set to "distributed" with multiple replicas in production
-  mode: standalone
-  # Number of drives attached to a node
-  drivesPerNode: 1
-  # Number of MinIO pods running
-  replicas: 1
-  # Number of expanded MinIO clusters
-  pools: 1
-
-  buckets:
-    - name: state-storage
-      policy: none
-      purge: false
-      versioning: false
-      objectlocking: false
-    - name: thehive-dev-logs
-      policy: none
-      purge: false
-      versioning: false
-      objectlocking: false
-
-  resources:
-    requests:
-      cpu: "500m"
-      memory: "2Gi"
-      ephemeral-storage: "2Gi"
-    limits:
-      cpu: "1000m"
-      memory: "2Gi"
-      ephemeral-storage: "2Gi"
-
-  persistence:
-    enabled: true
-    storageClass: ""
-    volumeName: ""
-    accessMode: ReadWriteOnce
-    size: "2Gi"
-
+# Busybox image (used by initContainers)
 busybox:
   image:
     registry: docker.io
@@ -220,40 +92,39 @@ busybox:
     tag: "1.36-glibc"
     pullPolicy: IfNotPresent
 
-thehive:
-  # Init containers wait for ElasticSearch and Cassandra to be reachable
-  initContainers:
-    enabled: true
-  # PodDisruptionBudget configuration
-  maxUnavailable: 1
-  # (not recommended) TheHive Secret (autogenerated if empty, must be at least 32 characters long)
-  secret: ""
-  # (recommended) The name of an existing k8s secret containing a ".data.thehive-secret" key
-  secretName: ""
-  # TheHive nodes count
-  clusterMinNodesCount: 1
-  # Cortex configuration
-  cortex:
-    enabled: false
-    hostnames:
-      - "thehive-cortex"
-    keys: ""
-  # Custom application.conf file for TheHive
-  extraConfig: ""
-  #extraConfig: |-
-  #  # TheHive configuration file
-  # Extra entrypoint arguments. See: https://docs.strangebee.com/thehive/setup/installation/docker/#all-options
-  extraCommand: []
-  # Extra environment variables
-  extraEnv: []
-  #  - name: "EXAMPLE"
-  #    value: "example"
-  # Liveness probes
-  livenessProbe:
-    enabled: true
-  # Readiness probes
-  readinessProbe:
-    enabled: true
+# TheHive HTTP secret
+httpSecret: ""
+# The name of an existing k8s secret containing the HTTP secret used by TheHive
+k8sSecretName: ""
+k8sSecretKey: "http-secret"
+
+# Cortex configuration
+cortex:
+  enabled: false
+  hostnames:
+    - "thehive-cortex"
+  keys: ""
+
+# Custom application.conf file for TheHive (included on startup)
+extraConfig: ""
+#extraConfig: |-
+#  # TheHive configuration file
+
+# Extra entrypoint arguments. See: https://docs.strangebee.com/thehive/setup/installation/docker/#all-options
+extraCommand: []
+
+# Extra environment variables
+extraEnv: []
+#  - name: "EXAMPLE"
+#    value: "example"
+
+# Liveness probes
+livenessProbe:
+  enabled: true
+
+# Readiness probes
+readinessProbe:
+  enabled: true
 
 serviceAccount:
   # Specifies whether a service account should be created
@@ -306,25 +177,6 @@ ingress:
   #    hosts:
   #      - chart-example.local
 
-resources: {}
-  # We usually recommend not to specify default resources and to leave this as a conscious
-  # choice for the user. This also increases chances charts run on environments with little
-  # resources, such as Minikube. If you do want to specify resources, uncomment the following
-  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
-  # limits:
-  #   cpu: 100m
-  #   memory: 128Mi
-  # requests:
-  #   cpu: 100m
-  #   memory: 128Mi
-
-autoscaling:
-  enabled: false
-  minReplicas: 1
-  maxReplicas: 100
-  targetCPUUtilizationPercentage: 80
-  # targetMemoryUtilizationPercentage: 80
-
 # Additional volumes on the output Deployment definition.
 volumes: []
 # - name: foo
@@ -343,3 +195,168 @@ nodeSelector: {}
 tolerations: []
 
 affinity: {}
+
+################################
+# Cassandra subchart variables #
+################################
+
+# https://github.com/bitnami/charts/blob/cassandra/12.0.4/bitnami/cassandra/values.yaml
+cassandra:
+  # Use Cassandra dependency Helm Chart
+  enabled: true
+
+  image:
+    registry: docker.io
+    repository: bitnami/cassandra
+    tag: "4.1.7-debian-12-r2"
+
+  dbUser:
+    user: "{{ .Values.database.username }}"
+    password: "{{ .Values.database.password }}"
+    forcePassword: false
+    existingSecret: "{{ .Values.database.k8sSecretName }}"
+
+  cluster:
+    name: "TheHive"
+    datacenter: "DC1-TheHive"
+    rack: "Rack1-TheHive"
+
+  replicaCount: 1
+
+  # Resources available for each replica
+  # http://docs.datastax.com/en/archived/cassandra/2.0/cassandra/architecture/architecturePlanningHardware_c.html
+  resources:
+    requests:
+      cpu: "1000m"
+      memory: "2Gi"
+      ephemeral-storage: "2Gi"
+    limits:
+      cpu: "1000m"
+      memory: "2Gi"
+      ephemeral-storage: "2Gi"
+
+  # https://docs.datastax.com/en/archived/cassandra/2.0/cassandra/operations/ops_tune_jvm_c.html
+  jvm:
+    extraOpts: "-Xms128m -Xmx512m -Xmn128m"
+    maxHeapSize: "512m"
+    newHeapSize: "128m"
+
+  # WARNING - should be set to "hard" or configured manually with "cassandra.affinity" in production
+  podAntiAffinityPreset: "soft"
+
+  extraEnvVars:
+    # WARNING - replace with "PasswordAuthenticator" value in production
+    - name: CASSANDRA_AUTHENTICATOR
+      value: AllowAllAuthenticator
+    # WARNING - replace with "CassandraAuthorizer" value in production
+    - name: CASSANDRA_AUTHORIZER
+      value: AllowAllAuthorizer
+
+####################################
+# ElasticSearch subchart variables #
+####################################
+
+# https://github.com/bitnami/charts/blob/elasticsearch/21.3.26/bitnami/elasticsearch/values.yaml
+elasticsearch:
+  # Use ElasticSearch dependency Helm Chart
+  enabled: true
+
+  image:
+    registry: docker.io
+    repository: bitnami/elasticsearch
+    tag: "8.16.1-debian-12-r1"
+
+  master:
+    # Whether nodes are master only or multipurpose (master, data, coordinating and ingest)
+    masterOnly: false
+    # Number of master-elegible replicas to deploy
+    replicaCount: 2
+    # Defined in https://github.com/bitnami/charts/blob/elasticsearch/21.3.26/bitnami/common/templates/_resources.tpl
+    resourcesPreset: "small"
+    # Master nodes heap size
+    heapSize: 96m
+    # Configure JVM options as env variable
+    extraEnvVars:
+      - name: JVM_OPTS
+        value: "-Xms96m -Xmx96m -Xmn96m"
+    # WARNING - should be set to "hard" or configured manually with "elasticsearch.master.affinity" in production
+    podAffinityPreset: "soft"
+
+  data:
+    # Disable data-dedicated nodes
+    replicaCount: 0
+
+  coordinating:
+    # Disable coordination-dedicated nodes
+    replicaCount: 0
+
+  ingest:
+    # Disable ingestion-dedicated nodes
+    replicaCount: 0
+
+  # Automatically filled by values under the "index" key defined above
+  security:
+    # TLS configuration is required to enable password authentication
+    enabled: false
+    elasticPassword: "{{ .Values.index.password }}"
+    existingSecret: "{{ .Values.index.k8sSecretName }}"
+
+############################
+# MinIO subchart variables #
+############################
+
+# https://github.com/minio/minio/blob/master/helm/minio/values.yaml
+minio:
+  # Use MinIO dependency Helm Chart
+  # You should disable it if you plan to use another s3-compatible object storage for TheHive
+  enabled: true
+
+  image:
+    repository: quay.io/minio/minio
+    tag: RELEASE.2024-11-07T00-52-20Z
+
+  mcImage:
+    repository: quay.io/minio/mc
+    tag: RELEASE.2024-11-17T19-35-25Z
+
+  rootUser: "{{ .Values.storage.accessKey }}"
+  rootPassword: "{{ .Values.storage.secretKey }}"
+  existingSecret: "{{ .Values.storage.k8sSecretName }}"
+
+  # WARNING - set to "distributed" with multiple replicas in production
+  mode: standalone
+  # Number of drives attached to a node
+  drivesPerNode: 1
+  # Number of MinIO pods running
+  replicas: 1
+  # Number of expanded MinIO clusters
+  pools: 1
+
+  buckets:
+    - name: state-storage
+      policy: none
+      purge: false
+      versioning: false
+      objectlocking: false
+    - name: thehive-dev-logs
+      policy: none
+      purge: false
+      versioning: false
+      objectlocking: false
+
+  resources:
+    requests:
+      cpu: "500m"
+      memory: "2Gi"
+      ephemeral-storage: "2Gi"
+    limits:
+      cpu: "1000m"
+      memory: "2Gi"
+      ephemeral-storage: "2Gi"
+
+  persistence:
+    enabled: true
+    storageClass: ""
+    volumeName: ""
+    accessMode: ReadWriteOnce
+    size: "2Gi"
