@@ -43,7 +43,7 @@ database:
   # Credentials to connect to Cassandra
   # They should match the credentials for Cassandra subchart below (if enabled)
   username: "cassandra"
-  password: ""
+  password: "ChangeThisPasswordForCassandra"
   # The name of an existing k8s secret containing Cassandra password
   k8sSecretName: ""
   k8sSecretKey: "cassandra-password"
@@ -131,7 +131,7 @@ readinessProbe:
 serviceAccount:
   # Specifies whether a service account should be created
   create: true
-  # Whether to automatically mount a ServiceAccount's API credentials
+  # Whether to automatically mount the Service Account's token in pod
   automount: true
   # Annotations to add to the service account
   annotations: {}
@@ -214,7 +214,7 @@ cassandra:
 
   dbUser:
     user: "cassandra"
-    password: ""
+    password: "ChangeThisPasswordForCassandra"
     forcePassword: false
     # The name of an existing k8s secret (Cassandra subchart expects a ".data.cassandra-password" key)
     existingSecret: ""
@@ -225,6 +225,10 @@ cassandra:
     rack: "Rack1-TheHive"
 
   replicaCount: 1
+
+  pdb:
+    create: true
+    maxUnavailable: "1"
 
   # Resources available for each replica
   # http://docs.datastax.com/en/archived/cassandra/2.0/cassandra/architecture/architecturePlanningHardware_c.html
@@ -244,16 +248,21 @@ cassandra:
     maxHeapSize: "512m"
     newHeapSize: "128m"
 
-  # WARNING - should be set to "hard" or configured manually with "cassandra.affinity" in production
-  podAntiAffinityPreset: "soft"
+  persistence:
+    enabled: true
+    storageClass: ""
+    size: "10Gi"
+
+  networkPolicy:
+    enabled: false
 
   extraEnvVars:
-    # WARNING - replace with "PasswordAuthenticator" value in production
+    # Can be set to "AllowAllAuthenticator" to allow passwordless authentication
     - name: CASSANDRA_AUTHENTICATOR
-      value: AllowAllAuthenticator
-    # WARNING - replace with "CassandraAuthorizer" value in production
+      value: PasswordAuthenticator
+    # Can be set to "AllowAllAuthorizer" to allow passwordless authentication
     - name: CASSANDRA_AUTHORIZER
-      value: AllowAllAuthorizer
+      value: CassandraAuthorizer
 
 ####################################
 # ElasticSearch subchart variables #
