@@ -104,12 +104,9 @@ httpSecret: ""
 k8sSecretName: ""
 k8sSecretKey: "http-secret"
 
-# Cortex configuration
+# Cortex configuration (not implemented yet)
 cortex:
   enabled: false
-  hostnames:
-    - "thehive-cortex"
-  keys: ""
 
 # Custom application.conf file for TheHive (included on startup)
 extraConfig: ""
