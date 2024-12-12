@@ -358,7 +358,7 @@ minio:
   # The name of an existing k8s secret (MinIO subchart expects ".data.rootUser" and ".data.rootPassword" keys)
   existingSecret: ""
 
-  # WARNING - set to "distributed" with multiple replicas in production
+  # Set to "distributed" with multiple replicas in production
   mode: standalone
   # Number of drives attached to a node
   drivesPerNode: 1
@@ -392,6 +392,4 @@ minio:
   persistence:
     enabled: true
     storageClass: ""
-    volumeName: ""
-    accessMode: ReadWriteOnce
-    size: "2Gi"
+    size: "10Gi"
