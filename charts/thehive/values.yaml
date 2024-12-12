@@ -15,7 +15,7 @@ image:
 
 imagePullSecrets: []
 
-replicaCount: 1
+replicaCount: 2
 
 # TheHive nodes count
 clusterMinNodesCount: 1
@@ -25,18 +25,22 @@ maxUnavailable: 1
 
 autoscaling:
   enabled: false
-  minReplicas: 1
-  maxReplicas: 5
+  minReplicas: 2
+  maxReplicas: 4
   targetCPUUtilizationPercentage: 80
   # targetMemoryUtilizationPercentage: 95
 
-resources: {}
-  #requests:
-  #  cpu: 100m
-  #  memory: 128Mi
-  #limits:
-  #  cpu: 100m
-  #  memory: 128Mi
+resources:
+  requests:
+    cpu: "1000m"
+    memory: "2048Mi"
+    ephemeral-storage: "4Gi"
+  limits:
+    cpu: "3000m"
+    memory: "3584Mi"
+    ephemeral-storage: "4Gi"
+
+jvmOpts: "-Xms2g -Xmx2g -Xmn300m"
 
 # TheHive Cassandra configuration
 database:

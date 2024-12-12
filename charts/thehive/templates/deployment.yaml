@@ -66,6 +66,8 @@ spec:
             {{- if .Values.extraEnv }}
             {{- toYaml .Values.extraEnv | nindent 12 }}
             {{- end }}
+            - name: JVM_OPTS
+              value: {{ .Values.jvmOpts | quote }}
             - name: POD_IP
               valueFrom:
                 fieldRef:
