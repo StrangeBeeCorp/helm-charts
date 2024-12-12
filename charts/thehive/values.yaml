@@ -43,7 +43,7 @@ database:
   # Credentials to connect to Cassandra
   # They should match the credentials for Cassandra subchart below (if enabled)
   username: "cassandra"
-  password: ""
+  password: "ChangeThisPasswordForCassandra"
   # The name of an existing k8s secret containing Cassandra password
   k8sSecretName: ""
   k8sSecretKey: "cassandra-password"
@@ -131,7 +131,7 @@ readinessProbe:
 serviceAccount:
   # Specifies whether a service account should be created
   create: true
-  # Whether to automatically mount a ServiceAccount's API credentials
+  # Whether to automatically mount the Service Account's token in pod
   automount: true
   # Annotations to add to the service account
   annotations: {}
@@ -214,7 +214,7 @@ cassandra:
 
   dbUser:
     user: "cassandra"
-    password: ""
+    password: "ChangeThisPasswordForCassandra"
     forcePassword: false
     # The name of an existing k8s secret (Cassandra subchart expects a ".data.cassandra-password" key)
     existingSecret: ""
@@ -225,6 +225,10 @@ cassandra:
     rack: "Rack1-TheHive"
 
   replicaCount: 1
+
+  pdb:
+    create: true
+    maxUnavailable: "1"
 
   # Resources available for each replica
   # http://docs.datastax.com/en/archived/cassandra/2.0/cassandra/architecture/architecturePlanningHardware_c.html
@@ -244,16 +248,21 @@ cassandra:
     maxHeapSize: "512m"
     newHeapSize: "128m"
 
-  # WARNING - should be set to "hard" or configured manually with "cassandra.affinity" in production
-  podAntiAffinityPreset: "soft"
+  persistence:
+    enabled: true
+    storageClass: ""
+    size: "10Gi"
+
+  networkPolicy:
+    enabled: false
 
   extraEnvVars:
-    # WARNING - replace with "PasswordAuthenticator" value in production
+    # Can be set to "AllowAllAuthenticator" to allow passwordless authentication
     - name: CASSANDRA_AUTHENTICATOR
-      value: AllowAllAuthenticator
-    # WARNING - replace with "CassandraAuthorizer" value in production
+      value: PasswordAuthenticator
+    # Can be set to "AllowAllAuthorizer" to allow passwordless authentication
     - name: CASSANDRA_AUTHORIZER
-      value: AllowAllAuthorizer
+      value: CassandraAuthorizer
 
 ####################################
 # ElasticSearch subchart variables #
@@ -269,21 +278,50 @@ elasticsearch:
     repository: bitnami/elasticsearch
     tag: "8.16.1-debian-12-r1"
 
+  # Automatically filled by values under the "index" key defined above
+  security:
+    tls: {}
+    # TLS configuration is required to enable password authentication
+    enabled: false
+    elasticPassword: ""
+    # The name of an existing k8s secret (ElasticSearch subchart expects a ".data.elasticsearch-password" key)
+    existingSecret: ""
+
   master:
     # Whether nodes are master only or multipurpose (master, data, coordinating and ingest)
     masterOnly: false
+
     # Number of master-elegible replicas to deploy
     replicaCount: 2
-    # Defined in https://github.com/bitnami/charts/blob/elasticsearch/21.3.26/bitnami/common/templates/_resources.tpl
-    resourcesPreset: "small"
+    pdb:
+      create: true
+      maxUnavailable: "1"
+
+    # Resources available for each replica
+    resources:
+      requests:
+        cpu: "1000m"
+        memory: "2Gi"
+        ephemeral-storage: "2Gi"
+      limits:
+        cpu: "1000m"
+        memory: "2Gi"
+        ephemeral-storage: "2Gi"
+
     # Master nodes heap size
-    heapSize: 96m
+    heapSize: 512m
     # Configure JVM options as env variable
     extraEnvVars:
       - name: JVM_OPTS
-        value: "-Xms96m -Xmx96m -Xmn96m"
-    # WARNING - should be set to "hard" or configured manually with "elasticsearch.master.affinity" in production
-    podAffinityPreset: "soft"
+        value: "-Xms128m -Xmx512m -Xmn128m"
+
+    persistence:
+      enabled: true
+      storageClass: ""
+      size: "10Gi"
+
+    networkPolicy:
+      enabled: false
 
   data:
     # Disable data-dedicated nodes
@@ -296,14 +334,6 @@ elasticsearch:
   ingest:
     # Disable ingestion-dedicated nodes
     replicaCount: 0
-
-  # Automatically filled by values under the "index" key defined above
-  security:
-    # TLS configuration is required to enable password authentication
-    enabled: false
-    elasticPassword: ""
-    # The name of an existing k8s secret (ElasticSearch subchart expects a ".data.elasticsearch-password" key)
-    existingSecret: ""
 
 ############################
 # MinIO subchart variables #
@@ -328,7 +358,7 @@ minio:
   # The name of an existing k8s secret (MinIO subchart expects ".data.rootUser" and ".data.rootPassword" keys)
   existingSecret: ""
 
-  # WARNING - set to "distributed" with multiple replicas in production
+  # Set to "distributed" with multiple replicas in production
   mode: standalone
   # Number of drives attached to a node
   drivesPerNode: 1
@@ -336,6 +366,10 @@ minio:
   replicas: 1
   # Number of expanded MinIO clusters
   pools: 1
+
+  podDisruptionBudget:
+    enabled: true
+    maxUnavailable: 1
 
   buckets:
     - name: state-storage
@@ -362,6 +396,4 @@ minio:
   persistence:
     enabled: true
     storageClass: ""
-    volumeName: ""
-    accessMode: ReadWriteOnce
-    size: "2Gi"
+    size: "10Gi"
