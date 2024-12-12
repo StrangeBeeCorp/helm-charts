@@ -51,7 +51,7 @@ database:
   hostnames:
     - "thehive-cassandra"
   # Set to true to wait 30 seconds for Cassandra to start before launching TheHive
-  wait: true
+  wait: false
 
 # TheHive ElasticSearch configuration
 index:

@@ -50,7 +50,7 @@ spec:
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           command:
             - "/opt/thehive/entrypoint"
-            {{ if .Values.database.wait -}}- "--no-cql-wait"{{- end }}
+            {{ if not .Values.database.wait -}}- "--no-cql-wait"{{- end }}
             {{ if not .Values.cortex.enabled -}}- "--no-config-cortex"{{- end }}
             - "--kubernetes"
             - "--kubernetes-pod-label-selector"
