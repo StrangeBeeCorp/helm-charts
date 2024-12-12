@@ -367,6 +367,10 @@ minio:
   # Number of expanded MinIO clusters
   pools: 1
 
+  podDisruptionBudget:
+    enabled: true
+    maxUnavailable: 1
+
   buckets:
     - name: state-storage
       policy: none
