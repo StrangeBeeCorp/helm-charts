@@ -305,19 +305,19 @@ elasticsearch:
     resources:
       requests:
         cpu: "1000m"
-        memory: "2Gi"
-        ephemeral-storage: "2Gi"
+        memory: "2048Mi"
+        ephemeral-storage: "4Gi"
       limits:
-        cpu: "1000m"
-        memory: "2Gi"
-        ephemeral-storage: "2Gi"
+        cpu: "2000m"
+        memory: "3584Mi"
+        ephemeral-storage: "4Gi"
 
     # Master nodes heap size
-    heapSize: 512m
+    heapSize: "2g"
     # Configure JVM options as env variable
     extraEnvVars:
       - name: JVM_OPTS
-        value: "-Xms128m -Xmx512m -Xmn128m"
+        value: "-Xms2g -Xmx2g -Xmn200m"
 
     persistence:
       enabled: true
