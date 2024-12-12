@@ -70,38 +70,38 @@ spec:
               valueFrom:
                 fieldRef:
                   fieldPath: status.podIP
-            {{- if .Values.database.secretName }}
+            {{- if .Values.database.k8sSecretName }}
             - name: TH_CQL_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: {{ .Values.database.secretName }}
-                  key: cassandra-password
+                  name: {{ .Values.database.k8sSecretName }}
+                  key: {{ .Values.database.k8sSecretKey }}
             {{- end }}
-            {{- if .Values.index.secretName }}
+            {{- if .Values.index.k8sSecretName }}
             - name: TH_ELASTICSEARCH_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: {{ .Values.index.secretName }}
-                  key: elasticsearch-password
+                  name: {{ .Values.index.k8sSecretName }}
+                  key: {{ .Values.index.k8sSecretKey }}
             {{- end }}
-            {{- if .Values.storage.secretName }}
+            {{- if .Values.storage.k8sSecretName }}
             - name: TH_S3_SECRET_KEY
               valueFrom:
                 secretKeyRef:
-                  name: {{ .Values.storage.secretName }}
-                  key: rootPassword
+                  name: {{ .Values.storage.k8sSecretName }}
+                  key: {{ .Values.storage.k8sSecretKey }}
             {{- end }}
-            {{- if .Values.secretName }}
+            {{- if .Values.k8sSecretName }}
             - name: TH_SECRET
               valueFrom:
                 secretKeyRef:
-                  name: {{ .Values.secretName }}
-                  key: thehive-secret
+                  name: {{ .Values.k8sSecretName }}
+                  key: {{ .Values.k8sSecretKey }}
             {{- end }}
           envFrom:
             - configMapRef:
                 name: {{ include "thehive.fullname" . }}-env
-            {{- if or (not .Values.database.secretName) (not .Values.index.secretName) (not .Values.storage.secretName) (not .Values.secretName) }}
+            {{- if or (not .Values.database.k8sSecretName) (not .Values.index.k8sSecretName) (not .Values.storage.k8sSecretName) (not .Values.k8sSecretName) }}
             - secretRef:
                 name: {{ include "thehive.fullname" . }}-secrets
             {{- end }}

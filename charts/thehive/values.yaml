@@ -40,7 +40,8 @@ resources: {}
 
 # TheHive Cassandra configuration
 database:
-  # Credentials to connect to Cassandra (used by Cassandra subchart if enabled)
+  # Credentials to connect to Cassandra
+  # They should match the credentials for Cassandra subchart below (if enabled)
   username: "cassandra"
   password: ""
   # The name of an existing k8s secret containing Cassandra password
@@ -54,7 +55,8 @@ database:
 
 # TheHive ElasticSearch configuration
 index:
-  # Credentials to connect to ElasticSearch (used by ElasticSearch subchart if enabled)
+  # Credentials to connect to ElasticSearch
+  # They should match the credentials for ElasticSearch subchart below (if enabled)
   username: "elastic"
   password: ""
   # The name of an existing k8s secret containing ElasticSearch password
@@ -68,9 +70,10 @@ index:
 
 # TheHive object storage configuration
 storage:
-  # Credentials to connect to the object storage (used by MinIO subchart if enabled)
+  # Credentials to connect to the object storage
+  # They should match the credentials for MinIO subchart below (if enabled)
   accessKey: "minio"
-  secretKey: ""
+  secretKey: "ChangeThisPasswordForMinIO"
   # The name of an existing k8s secret containing the object storage secret key
   k8sSecretName: ""
   k8sSecretKey: "rootPassword"
@@ -80,7 +83,7 @@ storage:
   region: "us-east-1"
   usePathAccessStyle: true
 
-# Init containers used to wait for ElasticSearch and Cassandra to be reachable
+# Add init containers to TheHive deployment (to wait for Cassandra and ElasticSearch to be reachable)
 useInitContainers: true
 
 # Busybox image (used by initContainers)
@@ -210,8 +213,8 @@ cassandra:
     tag: "4.1.7-debian-12-r2"
 
   dbUser:
-    user: "{{ .Values.database.username }}"
-    password: "{{ .Values.database.password }}"
+    user: "cassandra"
+    password: ""
     forcePassword: false
     # The name of an existing k8s secret (Cassandra subchart expects a ".data.cassandra-password" key)
     existingSecret: ""
@@ -298,7 +301,7 @@ elasticsearch:
   security:
     # TLS configuration is required to enable password authentication
     enabled: false
-    elasticPassword: "{{ .Values.index.password }}"
+    elasticPassword: ""
     # The name of an existing k8s secret (ElasticSearch subchart expects a ".data.elasticsearch-password" key)
     existingSecret: ""
 
@@ -320,8 +323,8 @@ minio:
     repository: quay.io/minio/mc
     tag: RELEASE.2024-11-17T19-35-25Z
 
-  rootUser: "{{ .Values.storage.accessKey }}"
-  rootPassword: "{{ .Values.storage.secretKey }}"
+  rootUser: "minio"
+  rootPassword: "ChangeThisPasswordForMinIO"
   # The name of an existing k8s secret (MinIO subchart expects ".data.rootUser" and ".data.rootPassword" keys)
   existingSecret: ""
 
