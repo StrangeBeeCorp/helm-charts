@@ -1,20 +1,206 @@
-# Default values for thehive.
-# This is a YAML-formatted file.
-# Declare variables to be passed into your templates.
+################################
+# TheHive Helm Chart variables #
+################################
 
-replicaCount: 1
+nameOverride: ""
+fullnameOverride: ""
 
+# TheHive image
 image:
   registry: docker.io
   repository: strangebee/thehive
-  # Defaults to the chart appVersion, can be overridden here
+  # Defaults to the chart appVersion
   tag: ""
   pullPolicy: IfNotPresent
 
 imagePullSecrets: []
-nameOverride: ""
-fullnameOverride: ""
 
+replicaCount: 1
+
+# TheHive nodes count
+clusterMinNodesCount: 1
+
+# PodDisruptionBudget configuration
+maxUnavailable: 1
+
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 5
+  targetCPUUtilizationPercentage: 80
+  # targetMemoryUtilizationPercentage: 95
+
+resources: {}
+  #requests:
+  #  cpu: 100m
+  #  memory: 128Mi
+  #limits:
+  #  cpu: 100m
+  #  memory: 128Mi
+
+# TheHive Cassandra configuration
+database:
+  # Credentials to connect to Cassandra
+  # They should match the credentials for Cassandra subchart below (if enabled)
+  username: "cassandra"
+  password: ""
+  # The name of an existing k8s secret containing Cassandra password
+  k8sSecretName: ""
+  k8sSecretKey: "cassandra-password"
+  # List of Cassandra cluster hostnames
+  hostnames:
+    - "thehive-cassandra"
+  # Set to true to wait 30 seconds for Cassandra to start before launching TheHive
+  wait: false
+
+# TheHive ElasticSearch configuration
+index:
+  # Credentials to connect to ElasticSearch
+  # They should match the credentials for ElasticSearch subchart below (if enabled)
+  username: "elastic"
+  password: ""
+  # The name of an existing k8s secret containing ElasticSearch password
+  k8sSecretName: ""
+  k8sSecretKey: "elasticsearch-password"
+  # List of ElasticSearch cluster hostnames
+  hostnames:
+    - "thehive-elasticsearch"
+  # ElasticSearch API port
+  port: "9200"
+
+# TheHive object storage configuration
+storage:
+  # Credentials to connect to the object storage
+  # They should match the credentials for MinIO subchart below (if enabled)
+  accessKey: "minio"
+  secretKey: "ChangeThisPasswordForMinIO"
+  # The name of an existing k8s secret containing the object storage secret key
+  k8sSecretName: ""
+  k8sSecretKey: "rootPassword"
+  # Bucket information
+  endpoint: "http://thehive-minio:9000"
+  bucket: "thehive"
+  region: "us-east-1"
+  usePathAccessStyle: true
+
+# Add init containers to TheHive deployment (to wait for Cassandra and ElasticSearch to be reachable)
+useInitContainers: true
+
+# Busybox image (used by initContainers)
+busybox:
+  image:
+    registry: docker.io
+    repository: busybox
+    tag: "1.36-glibc"
+    pullPolicy: IfNotPresent
+
+# TheHive HTTP secret
+httpSecret: ""
+# The name of an existing k8s secret containing the HTTP secret used by TheHive
+k8sSecretName: ""
+k8sSecretKey: "http-secret"
+
+# Cortex configuration
+cortex:
+  enabled: false
+  hostnames:
+    - "thehive-cortex"
+  keys: ""
+
+# Custom application.conf file for TheHive (included on startup)
+extraConfig: ""
+#extraConfig: |-
+#  # TheHive configuration file
+
+# Extra entrypoint arguments. See: https://docs.strangebee.com/thehive/setup/installation/docker/#all-options
+extraCommand: []
+
+# Extra environment variables
+extraEnv: []
+#  - name: "EXAMPLE"
+#    value: "example"
+
+# Liveness probes
+livenessProbe:
+  enabled: true
+
+# Readiness probes
+readinessProbe:
+  enabled: true
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # Whether to automatically mount a ServiceAccount's API credentials
+  automount: true
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+  # Attach pod reader role to service account
+  podReader:
+    # Specifies whether a pod reader role should be attached. Required to running thehive in cluster mode
+    attach: true
+    # The name of the service account to map pod reader role.
+    serviceAccountName: ""
+
+podAnnotations: {}
+podLabels: {}
+
+podSecurityContext: {}
+  # fsGroup: 2000
+
+securityContext: {}
+  # capabilities:
+  #   drop:
+  #   - ALL
+  # readOnlyRootFilesystem: true
+  # runAsNonRoot: true
+  # runAsUser: 1000
+
+service:
+  type: ClusterIP
+  port: 9000
+
+ingress:
+  enabled: false
+  className: ""
+  annotations: {}
+    # kubernetes.io/ingress.class: nginx
+    # kubernetes.io/tls-acme: "true"
+  hosts:
+    - host: chart-example.local
+      paths:
+        - path: /
+          pathType: ImplementationSpecific
+  tls: []
+  #  - secretName: chart-example-tls
+  #    hosts:
+  #      - chart-example.local
+
+# Additional volumes on the output Deployment definition.
+volumes: []
+# - name: foo
+#   secret:
+#     secretName: mysecret
+#     optional: false
+
+# Additional volumeMounts on the output Deployment definition.
+volumeMounts: []
+# - name: foo
+#   mountPath: "/etc/foo"
+#   readOnly: true
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+
+################################
+# Cassandra subchart variables #
+################################
 
 # https://github.com/bitnami/charts/blob/cassandra/12.0.4/bitnami/cassandra/values.yaml
 cassandra:
@@ -26,11 +212,11 @@ cassandra:
     repository: bitnami/cassandra
     tag: "4.1.7-debian-12-r2"
 
-  # WARNING - you should provide a k8s secret (or at least a password) in production
   dbUser:
     user: "cassandra"
-    forcePassword: false
     password: ""
+    forcePassword: false
+    # The name of an existing k8s secret (Cassandra subchart expects a ".data.cassandra-password" key)
     existingSecret: ""
 
   cluster:
@@ -69,6 +255,9 @@ cassandra:
     - name: CASSANDRA_AUTHORIZER
       value: AllowAllAuthorizer
 
+####################################
+# ElasticSearch subchart variables #
+####################################
 
 # https://github.com/bitnami/charts/blob/elasticsearch/21.3.26/bitnami/elasticsearch/values.yaml
 elasticsearch:
@@ -81,7 +270,7 @@ elasticsearch:
     tag: "8.16.1-debian-12-r1"
 
   master:
-    # Use master nodes as multipurpose nodes (master, data, coordinating and ingest) to simplify the deployment
+    # Whether nodes are master only or multipurpose (master, data, coordinating and ingest)
     masterOnly: false
     # Number of master-elegible replicas to deploy
     replicaCount: 2
@@ -108,10 +297,17 @@ elasticsearch:
     # Disable ingestion-dedicated nodes
     replicaCount: 0
 
+  # Automatically filled by values under the "index" key defined above
   security:
-    # WARNING - security options should be enabled in production
+    # TLS configuration is required to enable password authentication
     enabled: false
+    elasticPassword: ""
+    # The name of an existing k8s secret (ElasticSearch subchart expects a ".data.elasticsearch-password" key)
+    existingSecret: ""
 
+############################
+# MinIO subchart variables #
+############################
 
 # https://github.com/minio/minio/blob/master/helm/minio/values.yaml
 minio:
@@ -127,6 +323,11 @@ minio:
     repository: quay.io/minio/mc
     tag: RELEASE.2024-11-17T19-35-25Z
 
+  rootUser: "minio"
+  rootPassword: "ChangeThisPasswordForMinIO"
+  # The name of an existing k8s secret (MinIO subchart expects ".data.rootUser" and ".data.rootPassword" keys)
+  existingSecret: ""
+
   # WARNING - set to "distributed" with multiple replicas in production
   mode: standalone
   # Number of drives attached to a node
@@ -135,15 +336,6 @@ minio:
   replicas: 1
   # Number of expanded MinIO clusters
   pools: 1
-
-  # WARNING - you should provide a k8s secret (or at least a password) in production
-  rootUser: "minio"
-  rootPassword: "ModifyThisSecretForMinIO"
-  # The secret must at least contain ".data.rootUser" and ".data.rootPassword" values
-  existingSecret: ""
-
-  # WARNING - non-root user (e.g. with "readwrite" policy) should be created in production
-  users: []
 
   buckets:
     - name: state-storage
@@ -173,161 +365,3 @@ minio:
     volumeName: ""
     accessMode: ReadWriteOnce
     size: "2Gi"
-
-
-busybox:
-  image:
-    registry: docker.io
-    repository: busybox
-    tag: "1.36-glibc"
-    pullPolicy: IfNotPresent
-
-thehive:
-  # -- Init containers will execute nslookup to resolve the hostnames of cassandra and elasticsearch
-  initContainers:
-    # -- Enable init containers
-    enabled: true
-  # -- PodDisruptionBudget configuration
-  maxUnavailable: 1
-  # -- TheHive Secret (must be at least 32 characters long)
-  secret: "YouShouldChangeThisSecretWithOneOfAtLeast32Chars"
-  # -- TheHive Nodes count
-  clusterMinNodesCount: 1
-  # -- Cortex configuration
-  cortex:
-    enabled: false
-    # -- Cortex hostnames
-    hostnames:
-      - "thehive-cortex"
-    keys: ""
-  # -- Cassandra configuration
-  cql:
-    # -- Cassandra hostnames
-    hostnames:
-      - "thehive-cassandra"
-    # -- Wait for Cassandra
-    wait: true
-  # Index backend configuration
-  indexBackend:
-    type: elasticsearch
-    # ElasticSearch cluster hostnames
-    hostnames:
-      - "thehive-elasticsearch"
-    # ElasticSearch API port
-    port: "9200"
-  # -- Object Storage configuration
-  # @default -- {}
-  s3:
-    # -- S3 Endpoint
-    endpoint: "http://thehive-minio:9000"
-    # -- S3 Access key
-    accessKey: "minio"
-    # -- S3 Secret key
-    secretKey: "ModifyThisSecretForMinIO"
-    # -- S3 Access Style
-    usePathAccessStyle: true
-  # -- Custom application.conf file for TheHive
-  extraConfig: ""
-  #extraConfig: |-
-  #  # TheHive configuration file
-  # -- Extra entrypoint arguments. See: https://docs.strangebee.com/thehive/setup/installation/docker/#all-options
-  extraCommand: []
-  # -- Extra environment variables
-  extraEnv: []
-  #- name: "EXAMPLE"
-  #  value: "example"
-  # -- Liveness probes
-  livenessProbe:
-    enabled: true
-  # -- Readiness probes
-  readinessProbe:
-    enabled: true
-
-serviceAccount:
-  # -- Specifies whether a service account should be created
-  create: true
-  # -- Automatically mount a ServiceAccount's API credentials?
-  automount: true
-  # -- Annotations to add to the service account
-  annotations: {}
-  # -- The name of the service account to use.
-  # -- If not set and create is true, a name is generated using the fullname template
-  name: ""
-  # -- Attach pod reader role to service account
-  podReader:
-    # -- Specifies whether a pod reader role should be attached. Required to running thehive in cluster mode
-    attach: true
-    # -- The name of the service account to map pod reader role.
-    serviceAccountName: ""
-
-podAnnotations: {}
-podLabels: {}
-
-podSecurityContext: {}
-  # fsGroup: 2000
-
-securityContext: {}
-  # capabilities:
-  #   drop:
-  #   - ALL
-  # readOnlyRootFilesystem: true
-  # runAsNonRoot: true
-  # runAsUser: 1000
-
-service:
-  type: ClusterIP
-  port: 9000
-
-ingress:
-  enabled: false
-  className: ""
-  annotations: {}
-    # kubernetes.io/ingress.class: nginx
-    # kubernetes.io/tls-acme: "true"
-  hosts:
-    - host: chart-example.local
-      paths:
-        - path: /
-          pathType: ImplementationSpecific
-  tls: []
-  #  - secretName: chart-example-tls
-  #    hosts:
-  #      - chart-example.local
-
-resources: {}
-  # We usually recommend not to specify default resources and to leave this as a conscious
-  # choice for the user. This also increases chances charts run on environments with little
-  # resources, such as Minikube. If you do want to specify resources, uncomment the following
-  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
-  # limits:
-  #   cpu: 100m
-  #   memory: 128Mi
-  # requests:
-  #   cpu: 100m
-  #   memory: 128Mi
-
-autoscaling:
-  enabled: false
-  minReplicas: 1
-  maxReplicas: 100
-  targetCPUUtilizationPercentage: 80
-  # targetMemoryUtilizationPercentage: 80
-
-# -- Additional volumes on the output Deployment definition.
-volumes: []
-# - name: foo
-#   secret:
-#     secretName: mysecret
-#     optional: false
-
-# -- Additional volumeMounts on the output Deployment definition.
-volumeMounts: []
-# - name: foo
-#   mountPath: "/etc/foo"
-#   readOnly: true
-
-nodeSelector: {}
-
-tolerations: []
-
-affinity: {}

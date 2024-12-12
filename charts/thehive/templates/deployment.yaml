@@ -30,17 +30,17 @@ spec:
       serviceAccountName: {{ include "thehive.serviceAccountName" . }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
-      {{ if .Values.thehive.initContainers.enabled }}
+      {{ if .Values.useInitContainers }}
       # See https://kubernetes.io/docs/concepts/workloads/pods/init-containers/#init-containers-in-use
       initContainers:
         - name: init-cassandra
           image: "{{ .Values.busybox.image.registry }}/{{ .Values.busybox.image.repository }}:{{ .Values.busybox.image.tag }}"
           imagePullPolicy: {{ .Values.busybox.image.pullPolicy }}
-          command: ['sh', '-c', "until nslookup {{ index .Values.thehive.cql.hostnames 0 }}.$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace).svc.cluster.local; do echo waiting for cassandra; sleep 2; done"]
+          command: ['sh', '-c', "until nslookup {{ index .Values.database.hostnames 0 }}.$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace).svc.cluster.local; do echo waiting for cassandra; sleep 2; done"]
         - name: init-elastic
           image: "{{ .Values.busybox.image.registry }}/{{ .Values.busybox.image.repository }}:{{ .Values.busybox.image.tag }}"
           imagePullPolicy: {{ .Values.busybox.image.pullPolicy }}
-          command: ['sh', '-c', "until wget --no-cache --no-check-certificate --spider http://{{ index .Values.thehive.indexBackend.hostnames 0 }}{{ if .Values.elasticsearch.enabled }}.$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace).svc.cluster.local{{ end }}:{{ .Values.thehive.indexBackend.port }}/_cluster/health ; do echo waiting for elasticsearch; sleep 2; done"]
+          command: ['sh', '-c', "until wget --no-cache --no-check-certificate --spider http://{{ index .Values.index.hostnames 0 }}{{ if .Values.elasticsearch.enabled }}.$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace).svc.cluster.local{{ end }}:{{ .Values.index.port }}/_cluster/health ; do echo waiting for elasticsearch; sleep 2; done"]
       {{- end }}
       containers:
         - name: {{ .Chart.Name }}
@@ -50,50 +50,72 @@ spec:
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           command:
             - "/opt/thehive/entrypoint"
-            - "--secret"
-            - "{{ .Values.thehive.secret }}"
-            - "--cql-hostnames"
-            - "{{- range $i, $hostname := $.Values.thehive.cql.hostnames }}{{- if and (gt (len $.Values.thehive.cql.hostnames) 0) (gt $i 0) }},{{- end -}}{{ $hostname }}{{- end -}}"
-            {{ if .Values.thehive.cql.wait -}}- "--no-cql-wait"{{- end }}
-            {{ if not .Values.thehive.cortex.enabled -}}- "--no-config-cortex"{{- end }}
+            {{ if not .Values.database.wait -}}- "--no-cql-wait"{{- end }}
+            {{ if not .Values.cortex.enabled -}}- "--no-config-cortex"{{- end }}
             - "--kubernetes"
             - "--kubernetes-pod-label-selector"
             - "app.kubernetes.io/name={{ include "thehive.name" . }}"
             - "--index-backend"
-            - "{{ .Values.thehive.indexBackend.type }}"
-            - "--es-hostnames"
-            - "{{- range $i, $hostname := $.Values.thehive.indexBackend.hostnames }}{{- if and (gt (len $.Values.thehive.indexBackend.hostnames) 0) (gt $i 0) }},{{- end -}}{{ $hostname }}{{- end -}}"
-            - "--s3-endpoint"
-            - "{{ .Values.thehive.s3.endpoint }}"
-            - "--s3-access-key"
-            - "{{ .Values.thehive.s3.accessKey }}"
-            - "--s3-secret-key"
-            - "{{ .Values.thehive.s3.secretKey }}"
-            {{ if .Values.thehive.s3.usePathAccessStyle -}}- "--s3-use-path-access-style"{{- end }}
+            - "elasticsearch"
             - "--cluster-min-nodes-count"
-            - "{{ .Values.thehive.clusterMinNodesCount }}"
-          {{- with .Values.thehive.extraCommand }}
+            - "{{ .Values.clusterMinNodesCount }}"
+          {{- with .Values.extraCommand }}
             {{- toYaml . | nindent 12 }}
           {{- end }}
           env:
-            {{- if .Values.thehive.extraEnv }}
-            {{- toYaml .Values.thehive.extraEnv | nindent 12 }}
+            {{- if .Values.extraEnv }}
+            {{- toYaml .Values.extraEnv | nindent 12 }}
             {{- end }}
             - name: POD_IP
               valueFrom:
                 fieldRef:
                   fieldPath: status.podIP
+            {{- if .Values.database.k8sSecretName }}
+            - name: TH_CQL_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.database.k8sSecretName }}
+                  key: {{ .Values.database.k8sSecretKey }}
+            {{- end }}
+            {{- if .Values.index.k8sSecretName }}
+            - name: TH_ELASTICSEARCH_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.index.k8sSecretName }}
+                  key: {{ .Values.index.k8sSecretKey }}
+            {{- end }}
+            {{- if .Values.storage.k8sSecretName }}
+            - name: TH_S3_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.storage.k8sSecretName }}
+                  key: {{ .Values.storage.k8sSecretKey }}
+            {{- end }}
+            {{- if .Values.k8sSecretName }}
+            - name: TH_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.k8sSecretName }}
+                  key: {{ .Values.k8sSecretKey }}
+            {{- end }}
+          envFrom:
+            - configMapRef:
+                name: {{ include "thehive.fullname" . }}-env
+            {{- if or (not .Values.database.k8sSecretName) (not .Values.index.k8sSecretName) (not .Values.storage.k8sSecretName) (not .Values.k8sSecretName) }}
+            - secretRef:
+                name: {{ include "thehive.fullname" . }}-secrets
+            {{- end }}
           ports:
             - name: http
               containerPort: 9000
               protocol: TCP
-          {{- if .Values.thehive.livenessProbe.enabled }}
+          {{- if .Values.livenessProbe.enabled }}
           livenessProbe:
             httpGet:
               path: /
               port: http
           {{- end }}
-          {{- if .Values.thehive.readinessProbe.enabled }}
+          {{- if .Values.readinessProbe.enabled }}
           readinessProbe:
             httpGet:
               path: /
@@ -101,9 +123,9 @@ spec:
           {{- end }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
-          {{- if or .Values.volumeMounts .Values.thehive.extraConfig }}
+          {{- if or .Values.volumeMounts .Values.extraConfig }}
           volumeMounts:
-          {{- if .Values.thehive.extraConfig }}
+          {{- if .Values.extraConfig }}
             - name: config
               mountPath: /etc/thehive
               readOnly: true
@@ -112,9 +134,9 @@ spec:
             {{- toYaml . | nindent 12 }}
           {{- end }}
           {{- end }}
-      {{- if or .Values.volumes .Values.thehive.extraConfig }}
+      {{- if or .Values.volumes .Values.extraConfig }}
       volumes:
-      {{- if .Values.thehive.extraConfig }}
+      {{- if .Values.extraConfig }}
         - name: config
           configMap:
             name: {{ include "thehive.fullname" . }}-config
