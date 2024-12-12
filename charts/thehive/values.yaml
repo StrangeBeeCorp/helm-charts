@@ -228,7 +228,7 @@ cassandra:
     datacenter: "DC1-TheHive"
     rack: "Rack1-TheHive"
 
-  replicaCount: 1
+  replicaCount: 2
 
   pdb:
     create: true
@@ -239,18 +239,18 @@ cassandra:
   resources:
     requests:
       cpu: "1000m"
-      memory: "2Gi"
-      ephemeral-storage: "2Gi"
+      memory: "2048Mi"
+      ephemeral-storage: "4Gi"
     limits:
-      cpu: "1000m"
-      memory: "2Gi"
-      ephemeral-storage: "2Gi"
+      cpu: "2000m"
+      memory: "3584Mi"
+      ephemeral-storage: "4Gi"
 
   # https://docs.datastax.com/en/archived/cassandra/2.0/cassandra/operations/ops_tune_jvm_c.html
   jvm:
-    extraOpts: "-Xms128m -Xmx512m -Xmn128m"
-    maxHeapSize: "512m"
-    newHeapSize: "128m"
+    extraOpts: "-Xms2g -Xmx2g -Xmn200m"
+    maxHeapSize: "2g"
+    newHeapSize: "200m"
 
   persistence:
     enabled: true
