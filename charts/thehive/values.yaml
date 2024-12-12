@@ -278,29 +278,50 @@ elasticsearch:
     repository: bitnami/elasticsearch
     tag: "8.16.1-debian-12-r1"
 
+  # Automatically filled by values under the "index" key defined above
+  security:
+    tls: {}
+    # TLS configuration is required to enable password authentication
+    enabled: false
+    elasticPassword: ""
+    # The name of an existing k8s secret (ElasticSearch subchart expects a ".data.elasticsearch-password" key)
+    existingSecret: ""
+
   master:
     # Whether nodes are master only or multipurpose (master, data, coordinating and ingest)
     masterOnly: false
+
     # Number of master-elegible replicas to deploy
     replicaCount: 2
+    pdb:
+      create: true
+      maxUnavailable: "1"
+
     # Resources available for each replica
     resources:
       requests:
-        cpu: "500m"
-        memory: "500Mi"
+        cpu: "1000m"
+        memory: "2Gi"
         ephemeral-storage: "2Gi"
       limits:
-        cpu: "750m"
-        memory: "750Mi"
+        cpu: "1000m"
+        memory: "2Gi"
         ephemeral-storage: "2Gi"
+
     # Master nodes heap size
-    heapSize: 96m
+    heapSize: 512m
     # Configure JVM options as env variable
     extraEnvVars:
       - name: JVM_OPTS
-        value: "-Xms96m -Xmx96m -Xmn96m"
-    # WARNING - should be set to "hard" or configured manually with "elasticsearch.master.affinity" in production
-    podAntiAffinityPreset: "soft"
+        value: "-Xms128m -Xmx512m -Xmn128m"
+
+    persistence:
+      enabled: true
+      storageClass: ""
+      size: "10Gi"
+
+    networkPolicy:
+      enabled: false
 
   data:
     # Disable data-dedicated nodes
@@ -313,14 +334,6 @@ elasticsearch:
   ingest:
     # Disable ingestion-dedicated nodes
     replicaCount: 0
-
-  # Automatically filled by values under the "index" key defined above
-  security:
-    # TLS configuration is required to enable password authentication
-    enabled: false
-    elasticPassword: ""
-    # The name of an existing k8s secret (ElasticSearch subchart expects a ".data.elasticsearch-password" key)
-    existingSecret: ""
 
 ############################
 # MinIO subchart variables #
