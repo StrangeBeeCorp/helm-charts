@@ -391,11 +391,11 @@ minio:
     requests:
       cpu: "500m"
       memory: "2Gi"
-      ephemeral-storage: "2Gi"
+      ephemeral-storage: "4Gi"
     limits:
       cpu: "1000m"
       memory: "2Gi"
-      ephemeral-storage: "2Gi"
+      ephemeral-storage: "4Gi"
 
   persistence:
     enabled: true
