@@ -8,6 +8,7 @@
 - Update READMEs and ArtifactHub information [#24](https://github.com/StrangeBeeCorp/helm-charts/pull/24)
 - Add Secret and improve ConfigMaps usage [#25](https://github.com/StrangeBeeCorp/helm-charts/pull/25)
 - Tweak subcharts configurations [#26](https://github.com/StrangeBeeCorp/helm-charts/pull/26)
+- Improve default values for production use [#27](https://github.com/StrangeBeeCorp/helm-charts/pull/27)
 
 
 ## 0.1.7
