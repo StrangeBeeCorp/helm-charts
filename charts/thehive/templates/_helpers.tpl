@@ -49,9 +49,5 @@ app.kubernetes.io/component: "frontend"
 
 {{/* TheHive service account name */}}
 {{- define "thehive.serviceAccountName" -}}
-{{- if .Values.serviceAccount.create }}
-  {{- default (include "thehive.fullname" .) .Values.serviceAccount.name }}
-{{- else }}
-  {{- default "default" .Values.serviceAccount.name }}
-{{- end }}
+{{- default (include "thehive.fullname" .) .Values.serviceAccount.name }}
 {{- end }}

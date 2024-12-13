@@ -113,13 +113,23 @@ extraConfig: ""
 #extraConfig: |-
 #  # TheHive configuration file
 
-# Extra entrypoint arguments. See: https://docs.strangebee.com/thehive/setup/installation/docker/#all-options
+# Extra entrypoint arguments
 extraCommand: []
 
 # Extra environment variables
 extraEnv: []
 #  - name: "EXAMPLE"
 #    value: "example"
+#  - name: "FROM_CM"
+#    valueFrom:
+#      configMapKeyRef:
+#        name: "cm-name"
+#        key: "key-name"
+#  - name: "FROM_SECRET"
+#    valueFrom:
+#      secretKeyRef:
+#        name: "cm-name"
+#        key: "key-name"
 
 # Liveness probes
 livenessProbe:
@@ -130,21 +140,14 @@ readinessProbe:
   enabled: true
 
 serviceAccount:
-  # Specifies whether a service account should be created
+  # Create a ServiceAccount for TheHive
   create: true
+  # The name of the service account to use (generated automatically if empty)
+  name: ""
   # Whether to automatically mount the Service Account's token in pod
   automount: true
   # Annotations to add to the service account
   annotations: {}
-  # The name of the service account to use.
-  # If not set and create is true, a name is generated using the fullname template
-  name: ""
-  # Attach pod reader role to service account
-  podReader:
-    # Specifies whether a pod reader role should be attached. Required to running thehive in cluster mode
-    attach: true
-    # The name of the service account to map pod reader role.
-    serviceAccountName: ""
 
 podAnnotations: {}
 podLabels: {}
