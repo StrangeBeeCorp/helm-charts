@@ -380,16 +380,6 @@ minio:
       purge: false
       versioning: false
       objectlocking: false
-    - name: state-storage
-      policy: none
-      purge: false
-      versioning: false
-      objectlocking: false
-    - name: thehive-dev-logs
-      policy: none
-      purge: false
-      versioning: false
-      objectlocking: false
 
   resources:
     requests:
