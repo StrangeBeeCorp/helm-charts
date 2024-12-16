@@ -130,8 +130,8 @@ spec:
           volumeMounts:
           {{- if .Values.extraConfig }}
             - name: config
-              mountPath: /etc/thehive
-              readOnly: true
+              mountPath: /etc/thehive/application.conf
+              subPath: application.conf
           {{- end -}}
           {{- with .Values.volumeMounts }}
             {{- toYaml . | nindent 12 }}
