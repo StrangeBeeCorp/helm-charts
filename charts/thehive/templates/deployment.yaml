@@ -132,6 +132,7 @@ spec:
             - name: config
               mountPath: /etc/thehive/application.conf
               subPath: application.conf
+              readOnly: true
           {{- end -}}
           {{- with .Values.volumeMounts }}
             {{- toYaml . | nindent 12 }}
