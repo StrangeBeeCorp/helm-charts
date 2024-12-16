@@ -1,5 +1,10 @@
 ## Next release
 
+- Nothing yet
+
+
+## 0.2.0
+
 - Replace ElasticSearch unmaintained Helm Chart [#19](https://github.com/StrangeBeeCorp/helm-charts/pull/19)
 - Use Bitnami Cassandra Helm Chart [#20](https://github.com/StrangeBeeCorp/helm-charts/pull/20)
 - Use MinIO (community) Helm Chart [#21](https://github.com/StrangeBeeCorp/helm-charts/pull/21)
