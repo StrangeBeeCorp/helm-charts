@@ -9,6 +9,7 @@
 - Add Secret and improve ConfigMaps usage [#25](https://github.com/StrangeBeeCorp/helm-charts/pull/25)
 - Tweak subcharts configurations [#26](https://github.com/StrangeBeeCorp/helm-charts/pull/26)
 - Improve default values for production use [#27](https://github.com/StrangeBeeCorp/helm-charts/pull/27)
+- Fix MinIO bucket configuration [#28](https://github.com/StrangeBeeCorp/helm-charts/pull/28)
 
 
 ## 0.1.7

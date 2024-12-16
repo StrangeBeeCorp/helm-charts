@@ -375,12 +375,7 @@ minio:
     maxUnavailable: 1
 
   buckets:
-    - name: state-storage
-      policy: none
-      purge: false
-      versioning: false
-      objectlocking: false
-    - name: thehive-dev-logs
+    - name: thehive
       policy: none
       purge: false
       versioning: false
