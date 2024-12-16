@@ -10,6 +10,7 @@
 - Tweak subcharts configurations [#26](https://github.com/StrangeBeeCorp/helm-charts/pull/26)
 - Improve default values for production use [#27](https://github.com/StrangeBeeCorp/helm-charts/pull/27)
 - Fix MinIO bucket configuration [#28](https://github.com/StrangeBeeCorp/helm-charts/pull/28)
+- Fix ConfigMap mount to prevent overwriting files in "/etc/thehive" folder [#29](https://github.com/StrangeBeeCorp/helm-charts/pull/29)
 
 
 ## 0.1.7
