@@ -1,6 +1,6 @@
 ## Next release
 
-- Nothing yet
+- Fix TheHive crashLoop on first start using a startupProbe [#31](https://github.com/StrangeBeeCorp/helm-charts/pull/31)
 
 
 ## 0.2.0
