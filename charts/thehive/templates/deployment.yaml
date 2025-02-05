@@ -112,6 +112,13 @@ spec:
             - name: http
               containerPort: 9000
               protocol: TCP
+          {{- if .Values.startupProbe.enabled }}
+          startupProbe:
+            tcpSocket:
+              port: http
+            failureThreshold: 36
+            periodSeconds: 5
+          {{- end }}
           {{- if .Values.livenessProbe.enabled }}
           livenessProbe:
             httpGet:

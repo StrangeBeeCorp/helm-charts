@@ -132,11 +132,15 @@ extraEnv: []
   #      name: "cm-name"
   #      key: "key-name"
 
-# Liveness probes
+# Startup probe
+startupProbe:
+  enabled: true
+
+# Liveness probe
 livenessProbe:
   enabled: true
 
-# Readiness probes
+# Readiness probe
 readinessProbe:
   enabled: true
 
