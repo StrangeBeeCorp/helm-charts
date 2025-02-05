@@ -5,6 +5,7 @@ metadata:
   name: {{ include "thehive.fullname" . }}-config
   labels:
     {{- include "thehive.labels" . | nindent 4 }}
-data: |
-  {{- toYaml .Values.extraConfig | nindent 2 }}
+data:
+  application.conf: |
+    {{- toYaml .Values.extraConfig | nindent 4 }}
 {{- end -}}
