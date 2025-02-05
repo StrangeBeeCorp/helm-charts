@@ -110,7 +110,7 @@ cortex:
 
 # Custom application.conf file for TheHive (included on startup)
 extraConfig: ""
-#extraConfig: |-
+#extraConfig: |
 #  # TheHive configuration file
 #  # See https://docs.strangebee.com/thehive/overview/ under the "Configuration" section
 

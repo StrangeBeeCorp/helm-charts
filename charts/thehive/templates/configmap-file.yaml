@@ -6,6 +6,5 @@ metadata:
   labels:
     {{- include "thehive.labels" . | nindent 4 }}
 data:
-  application.conf: |
-    {{- toYaml .Values.extraConfig | nindent 4 }}
+  application.conf: {{- .Values.extraConfig | toYaml | indent 1 }}
 {{- end -}}
