@@ -45,7 +45,7 @@ annotations:
       image: strangebee/thehive:5.4.7-1
       whitelisted: true
     - name: busybox
-      image: busybox:1.36-glibc
+      image: busybox:1.36.1-glibc
       whitelisted: true
   artifacthub.io/license: AGPL-3.0
   artifacthub.io/links: |
