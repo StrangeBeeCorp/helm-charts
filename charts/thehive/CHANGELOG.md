@@ -2,6 +2,7 @@
 
 - Fix TheHive crashLoop on first start using a startupProbe [#31](https://github.com/StrangeBeeCorp/helm-charts/pull/31)
 - Fix the CM template used to create a custom "application.conf" file [#32](https://github.com/StrangeBeeCorp/helm-charts/pull/32)
+- Update TheHive Helm Chart README [#33](https://github.com/StrangeBeeCorp/helm-charts/pull/33)
 
 
 ## 0.2.0
