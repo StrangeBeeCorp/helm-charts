@@ -47,7 +47,7 @@ helm upgrade [RELEASE_NAME] strangebee/thehive
 ```
 
 
-## Configuration
+## Customizing this Chart
 
 > [!TIP]
 > See [Helm documentation on how to customize a Chart before installing](https://helm.sh/docs/intro/using_helm/#customizing-the-chart-before-installing)
@@ -59,12 +59,22 @@ helm show values strangebee/thehive
 
 You should also check available options [from this Chart's dependencies](./README.md#dependencies) to customize other services.
 
+
+## Default configuration and best practices
+
+For convenience, this Helm Chart is provided with all required components out of the box.
+While this can be a good fit for a dev environment, it is **highly recommended** to review all dependencies before moving to production.
+
+
 ### Storage considerations
+
+> [!IMPORTANT]
+> Regular backups of your PVs are **paramount** to prevent data loss
 
 If not changed, this Chart uses **your default [StorageClass](https://kubernetes.io/docs/concepts/storage/storage-classes/)** to create persistent volumes.
 
 You should make sure that the StorageClass you use:
-- Is backed up regularly
+- Is backed up regularly (some tools like [Velero](https://velero.io/) can help automate backups)
 - Has a fitting `reclaimPolicy` to reduce the risk of data loss
 
 To configure StorageClasses according to your needs, you should check out relevant CSI drivers for your infrastructure
@@ -80,7 +90,7 @@ You can check out [the related Helm Chart](./README.md#dependencies) to see conf
 
 ### Cassandra
 
-A single Cassandra pod is started by this Chart to store TheHive's data.
+Two Cassandra pods are started by this Chart to store TheHive's data.
 
 You can check out [the related Helm Chart](./README.md#dependencies) to see configuration options.
 
@@ -92,3 +102,5 @@ To support multiple replicas of TheHive, we define an object storage in the conf
 However, we recommend that you use a managed object storage service to guarantee the best performance and resilience of your deployment, such as:
 - [AWS s3](https://aws.amazon.com/s3/)
 - [GCP Cloud Storage](https://cloud.google.com/storage)
+
+Do note that [network shared filesystem (e.g. NFS)](https://docs.strangebee.com/thehive/installation/deploying-a-cluster/#file-storage) is supported too, but it can be trickier to implement and slower.
