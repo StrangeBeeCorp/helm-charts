@@ -14,7 +14,7 @@ The [official Helm Chart](https://github.com/StrangeBeeCorp/helm-charts) of [The
 ## Using the Chart
 
 > [!TIP]
-> For more options, check out [helm install](https://helm.sh/docs/helm/helm_install/) documentation and [the configuration section](./README.md#configuration) of this page
+> For more options, check out [helm install](https://helm.sh/docs/helm/helm_install/) documentation and [the customization section](./README.md#customizing-this-chart) of this page
 
 ```bash
 # Add StrangeBee Helm Repository
