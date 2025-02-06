@@ -1,6 +1,6 @@
 # TheHive Helm Chart
 
-[![Chart version 0.2.0](https://img.shields.io/badge/Chart_version-0.2.0-blue.svg?logo=helm)](https://github.com/StrangeBeeCorp/helm-charts/releases/tag/thehive-0.2.0) [![App version 5.4.5-1](https://img.shields.io/badge/App_version-5.4.5--1-blue)](https://docs.strangebee.com/thehive/release-notes/release-notes-5.4/)
+[![Chart version 0.2.0](https://img.shields.io/badge/Chart_version-0.2.0-blue.svg?logo=helm)](https://github.com/StrangeBeeCorp/helm-charts/releases/tag/thehive-0.2.0) [![App version 5.4.7-1](https://img.shields.io/badge/App_version-5.4.7--1-blue)](https://docs.strangebee.com/thehive/release-notes/release-notes-5.4/)
 
 The [official Helm Chart](https://github.com/StrangeBeeCorp/helm-charts) of [TheHive](https://strangebee.com/thehive/) for Kubernetes.
 

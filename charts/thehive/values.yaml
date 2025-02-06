@@ -95,7 +95,7 @@ busybox:
   image:
     registry: docker.io
     repository: busybox
-    tag: "1.36-glibc"
+    tag: "1.36.1-glibc"
     pullPolicy: IfNotPresent
 
 # TheHive HTTP secret
@@ -209,7 +209,7 @@ affinity: {}
 # Cassandra subchart variables #
 ################################
 
-# https://github.com/bitnami/charts/blob/cassandra/12.0.4/bitnami/cassandra/values.yaml
+# https://github.com/bitnami/charts/blob/cassandra/12.0.5/bitnami/cassandra/values.yaml
 cassandra:
   # Use Cassandra dependency Helm Chart
   enabled: true
@@ -217,7 +217,7 @@ cassandra:
   image:
     registry: docker.io
     repository: bitnami/cassandra
-    tag: "4.1.7-debian-12-r2"
+    tag: "4.1.7-debian-12-r3"
 
   dbUser:
     user: "cassandra"
