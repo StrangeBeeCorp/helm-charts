@@ -5,8 +5,8 @@
 nameOverride: ""
 fullnameOverride: ""
 
-# The k8s cluster's domain (often set to "cluster.local")
-clusterDomain: ""
+# The k8s cluster's domain
+clusterDomain: "cluster.local"
 
 # TheHive image
 image:
