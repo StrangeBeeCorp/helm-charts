@@ -5,6 +5,9 @@
 nameOverride: ""
 fullnameOverride: ""
 
+# The k8s cluster's domain
+clusterDomain: "cluster.local"
+
 # TheHive image
 image:
   registry: docker.io
