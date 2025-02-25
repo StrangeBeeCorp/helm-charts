@@ -32,7 +32,7 @@ keywords:
 
 home: https://strangebee.com/thehive/
 sources:
-  - https://github.com/StrangeBeeCorp/helm-charts/tree/main/charts/thehive
+  - https://github.com/StrangeBeeCorp/helm-charts/tree/main/thehive-charts/thehive
 maintainers:
   - name: StrangeBee
     url: https://strangebee.com/
@@ -50,6 +50,6 @@ annotations:
   artifacthub.io/license: AGPL-3.0
   artifacthub.io/links: |
     - name: source
-      url: https://github.com/StrangeBeeCorp/helm-charts/tree/main/charts/thehive
+      url: https://github.com/StrangeBeeCorp/helm-charts/tree/main/thehive-charts/thehive
     - name: support
       url: https://strangebee.com/contact-strangebee/
