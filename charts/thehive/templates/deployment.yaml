@@ -36,7 +36,7 @@ spec:
         - name: init-cassandra
           image: "{{ .Values.busybox.image.registry }}/{{ .Values.busybox.image.repository }}:{{ .Values.busybox.image.tag }}"
           imagePullPolicy: {{ .Values.busybox.image.pullPolicy }}
-          command: ['sh', '-c', "until nslookup {{ index .Values.database.hostnames 0 }}.$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace).svc{{ if .Values.clusterDomain }}.{{ .Values.clusterDomain }}{{ end }}; do echo waiting for cassandra; sleep 2; done"]
+          command: ['sh', '-c', "until nslookup {{ index .Values.database.hostnames 0 }}{{ if .Values.cassandra.enabled }}.$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace).svc{{ if .Values.clusterDomain }}.{{ .Values.clusterDomain }}{{ end }}{{ end }}; do echo waiting for cassandra; sleep 2; done"]
         - name: init-elastic
           image: "{{ .Values.busybox.image.registry }}/{{ .Values.busybox.image.repository }}:{{ .Values.busybox.image.tag }}"
           imagePullPolicy: {{ .Values.busybox.image.pullPolicy }}
