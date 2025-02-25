@@ -3,7 +3,7 @@ apiVersion: v2
 
 name: thehive
 version: 0.2.1
-appVersion: "5.4.7-1"
+appVersion: "5.4.8-1"
 kubeVersion: ">= 1.23.0"
 
 dependencies:
@@ -42,7 +42,7 @@ annotations:
   artifacthub.io/category: security
   artifacthub.io/images: |
     - name: thehive
-      image: strangebee/thehive:5.4.7-1
+      image: strangebee/thehive:5.4.8-1
       whitelisted: true
     - name: busybox
       image: busybox:1.36.1-glibc
