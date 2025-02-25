@@ -2,6 +2,7 @@
 
 - Update TheHive version from 5.4.7-1 to 5.4.8-1 [#37](https://github.com/StrangeBeeCorp/helm-charts/pull/37)
 - Add cluster domain configuration [#38](https://github.com/StrangeBeeCorp/helm-charts/pull/38)
+- Reorganize charts folders [#39](https://github.com/StrangeBeeCorp/helm-charts/pull/39)
 
 
 ## 0.2.1
