@@ -1,0 +1,97 @@
+###############################
+# Cortex Helm Chart variables #
+###############################
+
+nameOverride: ""
+fullnameOverride: ""
+
+cortex:
+  # Additional labels to attach to Cortex resources
+  additionalLabels: {}
+
+  # Cortex container image
+  image:
+    registry: docker.io
+    repository: thehiveproject/cortex
+    # Defaults to the chart appVersion if not set
+    tag: ""
+    pullPolicy: IfNotPresent
+
+  serviceAccount:
+    create: true
+    name: ""
+    annotations: {}
+    # Whether to automatically mount Kubernetes API credentials
+    automountServiceAccountToken: true
+
+####################################
+# ElasticSearch subchart variables #
+####################################
+
+# https://github.com/bitnami/charts/blob/elasticsearch/21.4.7/bitnami/elasticsearch/values.yaml
+elasticsearch:
+  # Use ElasticSearch dependency Helm Chart
+  enabled: true
+
+  # Cortex only supports ElasticSearch v7 at the time of writing
+  image:
+    registry: docker.io
+    repository: bitnami/elasticsearch
+    tag: "7.17.26-debian-12-r0"
+
+  # Automatically filled by values under the "index" key defined above
+  security:
+    tls: {}
+    # TLS configuration is required to enable password authentication
+    enabled: false
+    elasticPassword: ""
+    # The name of an existing k8s secret (ElasticSearch subchart expects a ".data.elasticsearch-password" key)
+    existingSecret: ""
+
+  master:
+    # Whether nodes are master only or multipurpose (master, data, coordinating and ingest)
+    masterOnly: false
+
+    # Number of master-elegible replicas to deploy
+    replicaCount: 2
+    pdb:
+      create: true
+      maxUnavailable: "1"
+
+    # Resources available for each replica
+    resources:
+      requests:
+        cpu: "1000m"
+        memory: "2048Mi"
+        ephemeral-storage: "4Gi"
+      limits:
+        cpu: "2000m"
+        memory: "3584Mi"
+        ephemeral-storage: "4Gi"
+
+    # Master nodes heap size
+    heapSize: "2g"
+    # Configure JVM options as env variable
+    extraEnvVars:
+      - name: JVM_OPTS
+        value: "-Xms2g -Xmx2g -Xmn200m"
+
+    persistence:
+      enabled: true
+      storageClass: ""
+      size: "10Gi"
+
+    networkPolicy:
+      enabled: false
+
+  data:
+    # Disable data-dedicated nodes
+    replicaCount: 0
+
+  coordinating:
+    # Disable coordination-dedicated nodes
+    replicaCount: 0
+
+  ingest:
+    # Disable ingestion-dedicated nodes
+    replicaCount: 0
