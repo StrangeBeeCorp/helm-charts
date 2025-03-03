@@ -1,0 +1,48 @@
+# https://helm.sh/docs/topics/charts/#the-chartyaml-file
+apiVersion: v2
+
+name: cortex
+version: 0.1.0
+appVersion: "3.2.0-1"
+kubeVersion: ">= 1.23.0"
+
+dependencies:
+  - name: elasticsearch
+    repository: oci://registry-1.docker.io/bitnamicharts
+    version: 21.4.7
+    condition: elasticsearch.enabled
+
+type: application
+description: StrangeBee official Helm Chart for Cortex
+icon: https://strangebeecorp.github.io/helm-charts/assets/cortex-icon.svg
+keywords:
+  - cortex
+  - thehive
+  - sirp
+  - incident-response
+  - case-management
+  - strangebee
+
+home: https://strangebee.com/cortex/
+sources:
+  - https://github.com/StrangeBeeCorp/helm-charts/tree/main/cortex-charts/cortex
+maintainers:
+  - name: StrangeBee
+    url: https://strangebee.com/
+
+# https://artifacthub.io/docs/topics/annotations/helm/
+annotations:
+  artifacthub.io/category: security
+  artifacthub.io/images: |
+    - name: cortex
+      image: thehiveproject/cortex:3.2.0-1
+      whitelisted: true
+    - name: busybox
+      image: busybox:1.37.0-glibc
+      whitelisted: true
+  artifacthub.io/license: AGPL-3.0
+  artifacthub.io/links: |
+    - name: source
+      url: https://github.com/StrangeBeeCorp/helm-charts/tree/main/cortex-charts/cortex
+    - name: support
+      url: https://strangebee.com/contact-strangebee/
