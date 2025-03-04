@@ -53,3 +53,12 @@ app.kubernetes.io/component: "server"
 {{- define "cortex.serviceAccountName" -}}
 {{- default (include "cortex.fullname" .) .Values.cortex.serviceAccount.name }}
 {{- end -}}
+
+{{/* Cortex PersistentVolumeClaim name */}}
+{{- define "cortex.persistentVolumeClaimName" -}}
+{{- if .Values.cortex.persistentVolumeClaim.name -}}
+  {{- .Values.cortex.persistentVolumeClaim.name | quote -}}
+{{- else -}}
+  {{- printf "%s-shared-fs-claim" (include "cortex.fullname" .) -}}
+{{- end -}}
+{{- end -}}
