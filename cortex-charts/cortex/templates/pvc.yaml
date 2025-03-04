@@ -1,0 +1,19 @@
+{{- if .Values.cortex.persistentVolumeClaim.create -}}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ include "cortex.persistentVolumeClaimName" . }}
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: {{ .Values.cortex.persistentVolumeClaim.size }}
+{{- if .Values.cortex.persistentVolumeClaim.storageClass }}
+{{- if (eq "-" .Values.cortex.persistentVolumeClaim.storageClass) }}
+  storageClassName: ""
+{{- else }}
+  storageClassName: "{{ .Values.cortex.persistentVolumeClaim.storageClass }}"
+{{- end -}}
+{{- end -}}
+{{- end -}}

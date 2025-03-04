@@ -17,6 +17,20 @@ cortex:
     tag: ""
     pullPolicy: IfNotPresent
 
+  # A persistentVolume with "ReadWriteMany" accessMode is MANDATORY for cortex to work
+  # It will be used by cortex to share data with pods running cortex jobs
+  persistentVolumeClaim:
+    # Whether to create a PVC or use an existing one
+    create: true
+    # The name of the PVC to create/use (if create is set to true, the name can be automatically generated)
+    name: ""
+    # Information for the PVC (only used if create is set to true)
+    # - If defined, storageClassName: <storageClass>
+    # - If set to "-", storageClassName: "" (disables dynamic provisioning)
+    # - If set to "", no storageClassName spec is set (use the default provisioner of your cluster)
+    storageClass: ""
+    size: 10Gi
+
   serviceAccount:
     create: true
     name: ""
