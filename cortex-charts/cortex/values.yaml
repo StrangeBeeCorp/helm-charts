@@ -5,9 +5,27 @@
 nameOverride: ""
 fullnameOverride: ""
 
+# Kubernetes cluster domain
+clusterDomain: "cluster.local"
+
+imagePullSecrets: []
+#  - name: "image-pull-secret"
+
 cortex:
   # Additional labels to attach to Cortex resources
   additionalLabels: {}
+
+  resources:
+    requests:
+      cpu: "1000m"
+      memory: "2048Mi"
+      ephemeral-storage: "4Gi"
+    limits:
+      cpu: "3000m"
+      memory: "3584Mi"
+      ephemeral-storage: "4Gi"
+
+  jvmOpts: "-Xms2g -Xmx2g -Xmn300m"
 
   # Cortex container image
   image:
@@ -16,6 +34,30 @@ cortex:
     # Defaults to the chart appVersion if not set
     tag: ""
     pullPolicy: IfNotPresent
+
+  # Cortex ElasticSearch configuration
+  index:
+    # Credentials to connect to ElasticSearch
+    # They should match the credentials for ElasticSearch subchart below (if enabled)
+    username: "elastic"
+    password: ""
+    # The name of an existing k8s secret containing ElasticSearch password
+    k8sSecretName: ""
+    k8sSecretKey: "elasticsearch-password"
+    # List of ElasticSearch cluster hostnames
+    hostnames:
+      - "cortex-elasticsearch"
+    # ElasticSearch API port
+    port: "9200"
+
+  # The directory in Cortex container used to communicate with running jobs (write inputs and read outputs)
+  jobDirectory: "/tmp/cortex-jobs"
+
+  # Cortex HTTP secret
+  httpSecret: ""
+  # The name of an existing k8s secret containing the HTTP secret used by Cortex
+  k8sSecretName: ""
+  k8sSecretKey: "http-secret"
 
   # A persistentVolume with "ReadWriteMany" accessMode is MANDATORY for cortex to work
   # It will be used by cortex to share data with pods running cortex jobs
@@ -31,12 +73,81 @@ cortex:
     storageClass: ""
     size: 10Gi
 
+  # Extra entrypoint arguments
+  extraCommand: []
+
+  # Extra environment variables
+  extraEnv: []
+    #- name: "EXAMPLE"
+    #  value: "example"
+    #- name: "FROM_CM"
+    #  valueFrom:
+    #    configMapKeyRef:
+    #      name: "cm-name"
+    #      key: "key-name"
+    #- name: "FROM_SECRET"
+    #  valueFrom:
+    #    secretKeyRef:
+    #      name: "cm-name"
+    #      key: "key-name"
+
+  # Custom application.conf file for Cortex
+  configFile: ""
+  #configFile: |
+  #  # Cortex configuration file
+  #  # See https://docs.strangebee.com/cortex/installation-and-configuration/#configuration-guides
+
+  startupProbe:
+    enabled: true
+
+  livenessProbe:
+    enabled: true
+
+  readinessProbe:
+    enabled: true
+
   serviceAccount:
     create: true
     name: ""
     annotations: {}
     # Whether to automatically mount Kubernetes API credentials
     automountServiceAccountToken: true
+
+  # Add an init container in cortex deployment waiting for ElasticSearch to be reachable
+  initContainers:
+    enabled: true
+    image:
+      registry: docker.io
+      repository: busybox
+      tag: "1.37.0-glibc"
+      pullPolicy: IfNotPresent
+
+  # Pod wide security context https://kubernetes.io/docs/tasks/configure-pod-container/security-context/
+  podSecurityContext: {}
+    #fsGroup: 2000
+
+  # Container wide security context
+  securityContext: {}
+    #allowPrivilegeEscalation: false
+
+  # Additional volumes for Cortex Deployment
+  volumes: []
+    #- name: foo
+    #  secret:
+    #    secretName: mysecret
+    #    optional: false
+
+  # Additional volumeMounts for Cortex Deployment
+  volumeMounts: []
+    #- name: foo
+    #  mountPath: "/etc/foo"
+    #  readOnly: true
+
+  nodeSelector: {}
+
+  tolerations: []
+
+  affinity: {}
 
 ####################################
 # ElasticSearch subchart variables #
