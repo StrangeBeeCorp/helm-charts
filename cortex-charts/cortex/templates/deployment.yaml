@@ -42,7 +42,7 @@ spec:
             - --job-directory
             - {{ .Values.cortex.jobDirectory }}
             - --kubernetes-job-pvc
-            - {{ .Values.cortex.persistentVolumeClaim.name }}
+            - {{ include "cortex.persistentVolumeClaimName" . }}
           {{- with .Values.cortex.extraCommand }}
             {{- toYaml . | nindent 12 }}
           {{- end }}
@@ -89,8 +89,9 @@ spec:
           {{- end }}
           resources:
             {{- toYaml .Values.cortex.resources | nindent 12 }}
-          {{- if or .Values.cortex.configFile .Values.cortex.volumeMounts }}
           volumeMounts:
+            - name: cortex-job-shared-pvc
+              mountPath: {{ .Values.cortex.jobDirectory }}
           {{- if .Values.cortex.configFile }}
             - name: config
               mountPath: /etc/cortex/application.conf
@@ -100,9 +101,10 @@ spec:
           {{- with .Values.cortex.volumeMounts }}
             {{- toYaml . | nindent 12 }}
           {{- end }}
-          {{- end }}
-      {{- if or .Values.cortex.configFile .Values.cortex.volumes }}
       volumes:
+        - name: cortex-job-shared-pvc
+          persistentVolumeClaim:
+            claimName: {{ include "cortex.persistentVolumeClaimName" . }}
       {{- if .Values.cortex.configFile }}
         - name: config
           configMap:
@@ -110,7 +112,6 @@ spec:
       {{- end }}
       {{- with .Values.cortex.volumes }}
         {{- toYaml . | nindent 8 }}
-      {{- end }}
       {{- end }}
       {{- with .Values.cortex.nodeSelector }}
       nodeSelector:
