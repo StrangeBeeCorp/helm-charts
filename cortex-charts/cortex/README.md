@@ -1,8 +1,8 @@
 # Cortex Helm Chart
 
-[![Chart version 0.1.0](https://img.shields.io/badge/Chart_version-0.1.0-blue.svg?logo=helm)](https://github.com/StrangeBeeCorp/helm-charts/releases/tag/cortex-0.1.0) [![App version 3.2.0-1](https://github.com/TheHive-Project/Cortex/releases)
+[![Chart version 0.1.0](https://img.shields.io/badge/Chart_version-0.1.0-blue.svg?logo=helm)](https://github.com/StrangeBeeCorp/helm-charts/releases/tag/cortex-0.1.0) [![App version 3.2.0-1](https://img.shields.io/badge/App_version-3.2.0--1-blue)](https://github.com/TheHive-Project/Cortex/releases)
 
-[Cortex](https://strangebee.com/cortex/) [official Helm Chart](https://github.com/StrangeBeeCorp/helm-charts)
+The [official Helm Chart](https://github.com/StrangeBeeCorp/helm-charts) for [Cortex](https://strangebee.com/cortex/)
 
 
 ## Prerequisites
