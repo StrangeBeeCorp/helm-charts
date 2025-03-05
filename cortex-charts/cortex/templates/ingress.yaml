@@ -1,0 +1,41 @@
+{{- if .Values.cortex.ingress.enabled -}}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ include "cortex.fullname" . }}
+  labels:
+    {{- include "cortex.labels" . | nindent 4 }}
+  {{- with .Values.cortex.ingress.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  {{- if .Values.cortex.ingress.className }}
+  ingressClassName: {{ .Values.cortex.ingress.className }}
+  {{- end }}
+  rules:
+    {{- range .Values.cortex.ingress.hosts }}
+    - host: {{ .host | quote }}
+      http:
+        paths:
+          {{- range .paths }}
+          - path: {{ .path }}
+            {{- if .pathType }}
+            pathType: {{ .pathType }}
+            {{- end }}
+            backend:
+              service:
+                name: {{ include "cortex.fullname" . }}
+                port:
+                  number: {{ .Values.cortex.service.port }}
+          {{- end }}
+    {{- end }}
+  tls:
+    {{- range .Values.cortex.ingress.tls }}
+    - hosts:
+        {{- range .hosts }}
+        - {{ . | quote }}
+        {{- end }}
+      secretName: {{ .secretName }}
+    {{- end }}
+{{- end }}
