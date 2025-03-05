@@ -37,7 +37,7 @@ spec:
           imagePullPolicy: {{ .Values.cortex.image.pullPolicy }}
           command:
             - /opt/cortex/entrypoint
-            - --es-uri
+            - --es-hostname
             - {{ join "," .Values.cortex.index.hostnames | quote }}
             - --job-directory
             - {{ .Values.cortex.jobDirectory }}
