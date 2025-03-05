@@ -15,3 +15,5 @@ owners: # (optional, used to claim repository ownership)
     email: contact@strangebee.com
   - name: Nabil
     email: nabil@strangebee.com
+  - name: Guillaume
+    email: guillaume.gonthier@strangebee.com
