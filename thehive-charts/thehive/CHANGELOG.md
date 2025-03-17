@@ -1,6 +1,6 @@
 ## Next release
 
-- Nothing yet
+- Improve subchart services hostnames handling [#43](https://github.com/StrangeBeeCorp/helm-charts/pull/43)
 
 
 ## 0.2.2
