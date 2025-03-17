@@ -36,11 +36,19 @@ spec:
         - name: init-cassandra
           image: "{{ .Values.busybox.image.registry }}/{{ .Values.busybox.image.repository }}:{{ .Values.busybox.image.tag }}"
           imagePullPolicy: {{ .Values.busybox.image.pullPolicy }}
-          command: ['sh', '-c', "until nslookup {{ index .Values.database.hostnames 0 }}{{ if .Values.cassandra.enabled }}.$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace).svc{{ if .Values.clusterDomain }}.{{ .Values.clusterDomain }}{{ end }}{{ end }}; do echo waiting for cassandra; sleep 2; done"]
-        - name: init-elastic
+          {{- if and (.Values.cassandra.enabled) (eq (len .Values.database.hostnames) 0) }}
+          command: ['sh', '-c', "until nc -v -z {{ printf "%s-cassandra" .Release.Name | trunc 63 }}.$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace).svc 9042; do echo 'Waiting for Cassandra'; sleep 5; done"]
+          {{- else }}
+          command: ['sh', '-c', "until nc -v -z {{ index .Values.database.hostnames 0 }} 9042; do echo 'Waiting for Cassandra'; sleep 5; done"]
+          {{- end }}
+        - name: init-elasticsearch
           image: "{{ .Values.busybox.image.registry }}/{{ .Values.busybox.image.repository }}:{{ .Values.busybox.image.tag }}"
           imagePullPolicy: {{ .Values.busybox.image.pullPolicy }}
-          command: ['sh', '-c', "until wget --no-cache --no-check-certificate --spider http://{{ index .Values.index.hostnames 0 }}{{ if .Values.elasticsearch.enabled }}.$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace).svc{{ if .Values.clusterDomain }}.{{ .Values.clusterDomain }}{{ end }}{{ end }}:{{ .Values.index.port }}/_cluster/health ; do echo waiting for elasticsearch; sleep 2; done"]
+          {{- if and (.Values.elasticsearch.enabled) (eq (len .Values.index.hostnames) 0) }}
+          command: ['sh', '-c', "until wget --no-cache --no-check-certificate --spider http://{{ printf "%s-elasticsearch" .Release.Name | trunc 63 }}.$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace).svc:9200/_cluster/health; do echo 'Waiting for ElasticSearch'; sleep 5; done"]
+          {{- else }}
+          command: ['sh', '-c', "until wget --no-cache --no-check-certificate --spider http://{{ index .Values.index.hostnames 0 }}:9200/_cluster/health; do echo 'Waiting for ElasticSearch'; sleep 5; done"]
+          {{- end }}
       {{- end }}
       containers:
         - name: {{ .Chart.Name }}

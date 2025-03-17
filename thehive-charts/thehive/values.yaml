@@ -5,9 +5,6 @@
 nameOverride: ""
 fullnameOverride: ""
 
-# The k8s cluster's domain
-clusterDomain: "cluster.local"
-
 # TheHive image
 image:
   registry: docker.io
@@ -54,10 +51,11 @@ database:
   # The name of an existing k8s secret containing Cassandra password
   k8sSecretName: ""
   k8sSecretKey: "cassandra-password"
-  # List of Cassandra cluster hostnames
-  hostnames:
-    - "thehive-cassandra"
-  # Set to true to wait 30 seconds for Cassandra to start before launching TheHive
+  # List of Cassandra hostnames
+  # Automatically set to Cassandra dependency chart service if enabled and this list is empty
+  hostnames: []
+    #- "mycassandra.example.com"
+  # Set to true for TheHive to wait 30 seconds before starting the app
   wait: false
 
 # TheHive ElasticSearch configuration
@@ -69,11 +67,10 @@ index:
   # The name of an existing k8s secret containing ElasticSearch password
   k8sSecretName: ""
   k8sSecretKey: "elasticsearch-password"
-  # List of ElasticSearch cluster hostnames
-  hostnames:
-    - "thehive-elasticsearch"
-  # ElasticSearch API port
-  port: "9200"
+  # List of ElasticSearch hostnames
+  # Automatically set to ElasticSearch dependency chart service if enabled and this list is empty
+  hostnames: []
+    #- "myelasticsearch.example.com"
 
 # TheHive object storage configuration
 storage:
