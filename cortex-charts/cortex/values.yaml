@@ -5,9 +5,6 @@
 nameOverride: ""
 fullnameOverride: ""
 
-# Kubernetes cluster domain
-clusterDomain: "cluster.local"
-
 imagePullSecrets: []
 #  - name: "image-pull-secret"
 
@@ -44,11 +41,10 @@ cortex:
     # The name of an existing k8s secret containing ElasticSearch password
     k8sSecretName: ""
     k8sSecretKey: "elasticsearch-password"
-    # List of ElasticSearch cluster hostnames
-    hostnames:
-      - "cortex-elasticsearch"
-    # ElasticSearch API port
-    port: "9200"
+    # List of ElasticSearch hostnames
+    # Auto set to ElasticSearch subchart service if enabled and this list is empty: "{{ .Release.Name }}-elasticsearch"
+    hostnames: []
+      #- "myelasticsearch.example.com"
 
   # The directory in Cortex container used to communicate with running jobs (write inputs and read outputs)
   jobDirectory: "/tmp/cortex-jobs"
