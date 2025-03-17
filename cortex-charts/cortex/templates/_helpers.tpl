@@ -27,7 +27,7 @@ We truncate at 63 chars because some Kubernetes name fields are limited to this 
 
 {{/* Cortex metaLabels */}}
 {{- define "cortex.metaLabels" -}}
-app.kubernetes.io/version: {{ .Values.cortex.image.tag | default .Chart.AppVersion | quote }}
+#app.kubernetes.io/version: {{ .Values.cortex.image.tag | default .Chart.AppVersion | quote }}
 app.kubernetes.io/part-of: {{ include "cortex.name" . }}
 app.kubernetes.io/managed-by: {{ .Release.Service }}
 helm.sh/chart: {{ include "cortex.chart" . }}
