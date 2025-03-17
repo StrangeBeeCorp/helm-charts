@@ -1,0 +1,10 @@
+{{- if .Values.cortex.configFile -}}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "cortex.fullname" . }}-config
+  labels:
+    {{- include "cortex.labels" . | nindent 4 }}
+data:
+  application.conf: {{- .Values.cortex.configFile | toYaml | indent 1 }}
+{{- end -}}
