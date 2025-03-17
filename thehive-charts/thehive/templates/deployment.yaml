@@ -37,7 +37,7 @@ spec:
           image: "{{ .Values.busybox.image.registry }}/{{ .Values.busybox.image.repository }}:{{ .Values.busybox.image.tag }}"
           imagePullPolicy: {{ .Values.busybox.image.pullPolicy }}
           {{- if and (.Values.cassandra.enabled) (eq (len .Values.database.hostnames) 0) }}
-          command: ['sh', '-c', "until nc -v -z {{ printf "%s-cassandra" .Release.Name | trunc 63 }}.$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace).svc 9042; do echo 'Waiting for Cassandra'; sleep 5; done"]
+          command: ['sh', '-c', "until nc -v -z {{ printf "%s-cassandra" .Release.Name | trunc 63 }} 9042; do echo 'Waiting for Cassandra'; sleep 5; done"]
           {{- else }}
           command: ['sh', '-c', "until nc -v -z {{ index .Values.database.hostnames 0 }} 9042; do echo 'Waiting for Cassandra'; sleep 5; done"]
           {{- end }}
@@ -45,7 +45,7 @@ spec:
           image: "{{ .Values.busybox.image.registry }}/{{ .Values.busybox.image.repository }}:{{ .Values.busybox.image.tag }}"
           imagePullPolicy: {{ .Values.busybox.image.pullPolicy }}
           {{- if and (.Values.elasticsearch.enabled) (eq (len .Values.index.hostnames) 0) }}
-          command: ['sh', '-c', "until wget --no-cache --no-check-certificate --spider http://{{ printf "%s-elasticsearch" .Release.Name | trunc 63 }}.$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace).svc:9200/_cluster/health; do echo 'Waiting for ElasticSearch'; sleep 5; done"]
+          command: ['sh', '-c', "until wget --no-cache --no-check-certificate --spider http://{{ printf "%s-elasticsearch" .Release.Name | trunc 63 }}:9200/_cluster/health; do echo 'Waiting for ElasticSearch'; sleep 5; done"]
           {{- else }}
           command: ['sh', '-c', "until wget --no-cache --no-check-certificate --spider http://{{ index .Values.index.hostnames 0 }}:9200/_cluster/health; do echo 'Waiting for ElasticSearch'; sleep 5; done"]
           {{- end }}

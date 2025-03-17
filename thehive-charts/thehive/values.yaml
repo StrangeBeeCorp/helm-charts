@@ -52,7 +52,7 @@ database:
   k8sSecretName: ""
   k8sSecretKey: "cassandra-password"
   # List of Cassandra hostnames
-  # Automatically set to Cassandra dependency chart service if enabled and this list is empty
+  # Auto set to Cassandra subchart service if enabled and this list is empty: "{{ .Release.Name }}-cassandra"
   hostnames: []
     #- "mycassandra.example.com"
   # Set to true for TheHive to wait 30 seconds before starting the app
@@ -68,7 +68,7 @@ index:
   k8sSecretName: ""
   k8sSecretKey: "elasticsearch-password"
   # List of ElasticSearch hostnames
-  # Automatically set to ElasticSearch dependency chart service if enabled and this list is empty
+  # Auto set to ElasticSearch subchart service if enabled and this list is empty: "{{ .Release.Name }}-elasticsearch"
   hostnames: []
     #- "myelasticsearch.example.com"
 
@@ -82,7 +82,8 @@ storage:
   k8sSecretName: ""
   k8sSecretKey: "rootPassword"
   # Bucket information
-  endpoint: "http://thehive-minio:9000"
+  # Auto set to MinIO subchart service if enabled and this string is empty: "http://{{ .Release.Name }}-minio:9000"
+  endpoint: ""
   bucket: "thehive"
   region: "us-east-1"
   usePathAccessStyle: true
