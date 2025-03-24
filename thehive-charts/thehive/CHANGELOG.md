@@ -1,6 +1,7 @@
 ## Next release
 
 - Improve subchart services hostnames handling [#43](https://github.com/StrangeBeeCorp/helm-charts/pull/43)
+- Create dedicated templates for TheHive Role and RoleBinding manifests [#44](https://github.com/StrangeBeeCorp/helm-charts/pull/44)
 
 
 ## 0.2.2
