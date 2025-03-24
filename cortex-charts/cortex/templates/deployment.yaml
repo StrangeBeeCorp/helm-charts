@@ -21,10 +21,10 @@ spec:
       serviceAccountName: {{ include "cortex.serviceAccountName" . }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
-      {{ if .Values.cortex.initContainers.enabled }}
+      {{ if .Values.cortex.initContainers.checkElasticsearch.enabled }}
       # See https://kubernetes.io/docs/concepts/workloads/pods/init-containers/#init-containers-in-use
       initContainers:
-        - name: init-elasticsearch
+        - name: check-elasticsearch
           image: "{{ .Values.cortex.initContainers.image.registry }}/{{ .Values.cortex.initContainers.image.repository }}:{{ .Values.cortex.initContainers.image.tag }}"
           imagePullPolicy: {{ .Values.cortex.initContainers.image.pullPolicy }}
           {{- if and (.Values.elasticsearch.enabled) (eq (len .Values.cortex.index.hostnames) 0) }}

@@ -109,14 +109,17 @@ cortex:
     # Whether to automatically mount Kubernetes API credentials
     automountServiceAccountToken: true
 
-  # Add an init container in cortex deployment waiting for ElasticSearch to be reachable
+  # Cortex Deployment initContainers configuration
   initContainers:
-    enabled: true
     image:
       registry: docker.io
       repository: busybox
       tag: "1.37.0-glibc"
       pullPolicy: IfNotPresent
+
+    # Wait for ElasticSearch "/_cluster/health" route on port 9200 to answer
+    checkElasticsearch:
+      enabled: true
 
   # Pod wide security context https://kubernetes.io/docs/tasks/configure-pod-container/security-context/
   podSecurityContext: {}
