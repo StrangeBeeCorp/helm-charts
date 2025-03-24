@@ -26,10 +26,10 @@ data:
   TH_S3_BUCKET: {{ .Values.storage.bucket | quote }}
   TH_S3_REGION: {{ .Values.storage.region | quote }}
   {{- if .Values.cortex.enabled }}
-  TH_NO_CONFIG_CORTEX: 0
+  TH_NO_CONFIG_CORTEX: "0"
   TH_CORTEX_PROTO: {{ .Values.cortex.protocol | quote }}
   TH_CORTEX_HOSTNAMES: {{ join "," .Values.cortex.hostnames | quote }}
   TH_CORTEX_PORT: {{ .Values.cortex.port | quote }}
   {{- else }}
-  TH_NO_CONFIG_CORTEX: 1
+  TH_NO_CONFIG_CORTEX: "1"
   {{- end }}
