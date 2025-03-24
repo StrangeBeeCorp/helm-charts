@@ -123,7 +123,7 @@ cortex:
   # Cortex API keys
   # Each API key will be mapped to a single Cortex hostname (following the order in this YAML)
   api_keys: []
-    #- "<api_key_for_mycortex>"
+    #- "abcdefghijklmnopqrstuvwxyz012345"
   # Alternatively, the name of an existing k8s secret containing all API keys for TheHive to connect to Cortex servers
   # Expected format: "<key>,<key>,..."
   k8sSecretName: ""
