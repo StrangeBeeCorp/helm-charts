@@ -89,15 +89,20 @@ storage:
   usePathAccessStyle: true
 
 # Add init containers to TheHive deployment (to wait for Cassandra and ElasticSearch to be reachable)
-useInitContainers: true
-
-# Busybox image (used by initContainers)
-busybox:
+initContainers:
   image:
     registry: docker.io
     repository: busybox
     tag: "1.36.1-glibc"
     pullPolicy: IfNotPresent
+
+  # Wait for Cassandra to be reachable on port 9042
+  checkCassandra:
+    enabled: true
+
+  # Wait for ElasticSearch "/_cluster/health" route on port 9200 to answer
+  checkElasticsearch:
+    enabled: true
 
 # TheHive HTTP secret
 httpSecret: ""
