@@ -65,7 +65,6 @@ spec:
             - "--kubernetes"
             - "--kubernetes-pod-label-selector"
             - "app.kubernetes.io/name={{ include "thehive.name" . }}"
-            {{ if not .Values.cortex.enabled -}}- "--no-config-cortex"{{- end }}
             {{ if not .Values.database.wait -}}- "--no-cql-wait"{{- end }}
             - "--index-backend"
             - "elasticsearch"
@@ -112,6 +111,13 @@ spec:
                 secretKeyRef:
                   name: {{ .Values.k8sSecretName }}
                   key: {{ .Values.k8sSecretKey }}
+            {{- end }}
+            {{- if .Values.cortex.k8sSecretName }}
+            - name: TH_CORTEX_KEYS
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.cortex.k8sSecretName }}
+                  key: {{ .Values.cortex.k8sSecretKey }}
             {{- end }}
           envFrom:
             - configMapRef:

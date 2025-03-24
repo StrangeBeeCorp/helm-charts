@@ -110,9 +110,24 @@ httpSecret: ""
 k8sSecretName: ""
 k8sSecretKey: "http-secret"
 
-# Cortex configuration (not implemented yet)
+# Cortex configuration
+# You can also add Cortex servers directly from TheHive UI https://docs.strangebee.com/thehive/administration/cortex/
 cortex:
   enabled: false
+  # Cortex protocol (expected values are "http" or "https")
+  protocol: "http"
+  # List of Cortex hostnames to configure
+  hostnames: []
+    #- "mycortex.example.com"
+  port: 9001
+  # Cortex API keys
+  # Each API key will be mapped to a single Cortex hostname (following the order in this YAML)
+  api_keys: []
+    #- "abcdefghijklmnopqrstuvwxyz012345"
+  # Alternatively, the name of an existing k8s secret containing all API keys for TheHive to connect to Cortex servers
+  # Expected format: "<key>,<key>,..."
+  k8sSecretName: ""
+  k8sSecretKey: "api-keys"
 
 # Custom application.conf file for TheHive (included on startup)
 extraConfig: ""
