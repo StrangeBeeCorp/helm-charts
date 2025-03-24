@@ -2,6 +2,7 @@
 
 - Improve subchart services hostnames handling [#43](https://github.com/StrangeBeeCorp/helm-charts/pull/43)
 - Create dedicated templates for TheHive Role and RoleBinding manifests [#44](https://github.com/StrangeBeeCorp/helm-charts/pull/44)
+- (BREAKING CHANGE) Change initContainers config and values [#45](https://github.com/StrangeBeeCorp/helm-charts/pull/45)
 
 
 ## 0.2.2
