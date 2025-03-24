@@ -6,10 +6,22 @@ metadata:
     {{- include "thehive.labels" . | nindent 4 }}
 data:
   TH_CQL_USERNAME: {{ .Values.database.username | quote }}
+  {{- if and (.Values.cassandra.enabled) (eq (len .Values.database.hostnames) 0) }}
+  TH_CQL_HOSTNAMES: {{ printf "%s-cassandra" .Release.Name | trunc 63 | quote }}
+  {{- else }}
   TH_CQL_HOSTNAMES: {{ join "," .Values.database.hostnames | quote }}
+  {{- end }}
   TH_ELASTICSEARCH_USERNAME: {{ .Values.index.username | quote }}
+  {{- if and (.Values.elasticsearch.enabled) (eq (len .Values.index.hostnames) 0) }}
+  TH_ELASTICSEARCH_HOSTNAMES: {{ printf "%s-elasticsearch" .Release.Name | trunc 63 | quote }}
+  {{- else }}
   TH_ELASTICSEARCH_HOSTNAMES: {{ join "," .Values.index.hostnames | quote }}
+  {{- end }}
   TH_S3_ACCESS_KEY: {{ .Values.storage.accessKey | quote }}
+  {{- if and (.Values.minio.enabled) (empty .Values.storage.endpoint) }}
+  TH_S3_ENDPOINT: {{ printf "http://%s-minio:9000" .Release.Name | quote }}
+  {{- else }}
   TH_S3_ENDPOINT: {{ .Values.storage.endpoint | quote }}
+  {{- end }}
   TH_S3_BUCKET: {{ .Values.storage.bucket | quote }}
   TH_S3_REGION: {{ .Values.storage.region | quote }}
