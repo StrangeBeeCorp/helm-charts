@@ -30,25 +30,29 @@ spec:
       serviceAccountName: {{ include "thehive.serviceAccountName" . }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
-      {{ if .Values.useInitContainers }}
+      {{ if or .Values.initContainers.checkCassandra.enabled .Values.initContainers.checkElasticsearch.enabled }}
       # See https://kubernetes.io/docs/concepts/workloads/pods/init-containers/#init-containers-in-use
       initContainers:
-        - name: init-cassandra
-          image: "{{ .Values.busybox.image.registry }}/{{ .Values.busybox.image.repository }}:{{ .Values.busybox.image.tag }}"
-          imagePullPolicy: {{ .Values.busybox.image.pullPolicy }}
+        {{ if .Values.initContainers.checkCassandra.enabled }}
+        - name: check-cassandra
+          image: "{{ .Values.initContainers.image.registry }}/{{ .Values.initContainers.image.repository }}:{{ .Values.initContainers.image.tag }}"
+          imagePullPolicy: {{ .Values.initContainers.image.pullPolicy }}
           {{- if and (.Values.cassandra.enabled) (eq (len .Values.database.hostnames) 0) }}
           command: ['sh', '-c', "until nc -v -z {{ printf "%s-cassandra" .Release.Name | trunc 63 }} 9042; do echo 'Waiting for Cassandra'; sleep 5; done"]
           {{- else }}
           command: ['sh', '-c', "until nc -v -z {{ index .Values.database.hostnames 0 }} 9042; do echo 'Waiting for Cassandra'; sleep 5; done"]
           {{- end }}
-        - name: init-elasticsearch
-          image: "{{ .Values.busybox.image.registry }}/{{ .Values.busybox.image.repository }}:{{ .Values.busybox.image.tag }}"
-          imagePullPolicy: {{ .Values.busybox.image.pullPolicy }}
+        {{- end }}
+        {{ if .Values.initContainers.checkElasticsearch.enabled }}
+        - name: check-elasticsearch
+          image: "{{ .Values.initContainers.image.registry }}/{{ .Values.initContainers.image.repository }}:{{ .Values.initContainers.image.tag }}"
+          imagePullPolicy: {{ .Values.initContainers.image.pullPolicy }}
           {{- if and (.Values.elasticsearch.enabled) (eq (len .Values.index.hostnames) 0) }}
           command: ['sh', '-c', "until wget --no-cache --no-check-certificate --spider http://{{ printf "%s-elasticsearch" .Release.Name | trunc 63 }}:9200/_cluster/health; do echo 'Waiting for ElasticSearch'; sleep 5; done"]
           {{- else }}
           command: ['sh', '-c', "until wget --no-cache --no-check-certificate --spider http://{{ index .Values.index.hostnames 0 }}:9200/_cluster/health; do echo 'Waiting for ElasticSearch'; sleep 5; done"]
           {{- end }}
+        {{- end }}
       {{- end }}
       containers:
         - name: {{ .Chart.Name }}
