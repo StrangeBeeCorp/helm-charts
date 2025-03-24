@@ -104,3 +104,26 @@ However, we recommend that you use a managed object storage service to guarantee
 - [GCP Cloud Storage](https://cloud.google.com/storage)
 
 Do note that [network shared filesystem (e.g. NFS)](https://docs.strangebee.com/thehive/installation/deploying-a-cluster/#file-storage) is supported too, but it can be trickier to implement and slower.
+
+
+### Cortex
+
+No Cortex server is defined in TheHive configuration by default.
+
+There are multiple ways to add Cortex servers to TheHive, among them:
+- [Add it from TheHive UI](https://docs.strangebee.com/thehive/administration/cortex/)
+- Add Cortex information in the related `values.yaml` object
+
+For the latter, here is an example:
+```yaml
+cortex:
+  enabled: true
+  protocol: "http"
+  hostnames:
+    - "cortex.default.svc" # Assuming cortex is deployed in the "default" namespace
+  port: 9001
+  api_keys:
+    - "<insert_cortex_api_key_here>" # Or even better, use an existing secret using the parameters below
+  #k8sSecretName: ""
+  #k8sSecretKey: "api-keys"
+```
