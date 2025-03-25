@@ -30,10 +30,10 @@ spec:
       serviceAccountName: {{ include "thehive.serviceAccountName" . }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
-      {{ if or .Values.initContainers.checkCassandra.enabled .Values.initContainers.checkElasticsearch.enabled }}
+      {{- if or .Values.initContainers.checkCassandra.enabled .Values.initContainers.checkElasticsearch.enabled }}
       # See https://kubernetes.io/docs/concepts/workloads/pods/init-containers/#init-containers-in-use
       initContainers:
-        {{ if .Values.initContainers.checkCassandra.enabled }}
+        {{- if .Values.initContainers.checkCassandra.enabled }}
         - name: check-cassandra
           image: "{{ .Values.initContainers.image.registry }}/{{ .Values.initContainers.image.repository }}:{{ .Values.initContainers.image.tag }}"
           imagePullPolicy: {{ .Values.initContainers.image.pullPolicy }}
@@ -43,7 +43,7 @@ spec:
           command: ['sh', '-c', "until nc -v -z {{ index .Values.database.hostnames 0 }} 9042; do echo 'Waiting for Cassandra'; sleep 5; done"]
           {{- end }}
         {{- end }}
-        {{ if .Values.initContainers.checkElasticsearch.enabled }}
+        {{- if .Values.initContainers.checkElasticsearch.enabled }}
         - name: check-elasticsearch
           image: "{{ .Values.initContainers.image.registry }}/{{ .Values.initContainers.image.repository }}:{{ .Values.initContainers.image.tag }}"
           imagePullPolicy: {{ .Values.initContainers.image.pullPolicy }}
