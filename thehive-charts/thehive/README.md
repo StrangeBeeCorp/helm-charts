@@ -66,9 +66,38 @@ For convenience, this Helm Chart is provided with all required components out of
 While this can be a good fit for a dev environment, it is **highly recommended** to review all dependencies before moving to production.
 
 
+### Pods resources
+
+Resources allocated to pods are fine-tuned for a production usage.
+
+If you want to tweak these values (especially the memory limit), make sure you change the `JVM_OPTS` environment variable accordingly to prevent OOM crashes:
+```yaml
+# JVM_OPTS variable for TheHive
+thehive:
+  jvmOpts: "-Xms2g -Xmx2g -Xmn300m"
+
+# JVM_OPTS variable for Cassandra dependency Chart
+cassandra:
+  jvm:
+    extraOpts: "-Xms2g -Xmx2g -Xmn200m"
+    maxHeapSize: "2g"
+    newHeapSize: "200m"
+
+# JVM_OPTS variable for ElasticSearch dependency Chart
+elasticsearch:
+  master:
+    heapSize: "2g"
+    extraEnvVars:
+      - name: JVM_OPTS
+        value: "-Xms2g -Xmx2g -Xmn200m"
+```
+
+Please refer to the official documentation of [Cassandra](https://cassandra.apache.org/doc/latest/cassandra/getting-started/production.html) and [ElasticSearch](https://www.elastic.co/guide/en/elasticsearch/reference/current/scalability.html) on how to optimize these values.
+
+
 ### Storage considerations
 
-> [!IMPORTANT]
+> [!CAUTION]
 > Regular backups of your PVs are **paramount** to prevent data loss
 
 If not changed, this Chart uses **your default [StorageClass](https://kubernetes.io/docs/concepts/storage/storage-classes/)** to create persistent volumes.
