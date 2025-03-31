@@ -153,17 +153,30 @@ extraEnv: []
   #      name: "cm-name"
   #      key: "key-name"
 
-# Startup probe
+# Startup probe (set "failureThreshold" to a high value to prevent CrashLoops during schema migrations)
 startupProbe:
   enabled: true
+  initialDelaySeconds: 0
+  periodSeconds: 5
+  timeoutSeconds: 1
+  failureThreshold: 36
 
 # Liveness probe
 livenessProbe:
   enabled: true
+  initialDelaySeconds: 0
+  periodSeconds: 10
+  timeoutSeconds: 1
+  failureThreshold: 3
 
 # Readiness probe
 readinessProbe:
   enabled: true
+  initialDelaySeconds: 0
+  periodSeconds: 10
+  timeoutSeconds: 1
+  successThreshold: 1
+  failureThreshold: 3
 
 serviceAccount:
   # Create a ServiceAccount for TheHive
