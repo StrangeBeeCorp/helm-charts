@@ -9,7 +9,7 @@ kubeVersion: ">= 1.23.0"
 dependencies:
   - name: elasticsearch
     repository: oci://registry-1.docker.io/bitnamicharts
-    version: 21.4.7
+    version: 21.4.9
     condition: elasticsearch.enabled
 
 type: application
