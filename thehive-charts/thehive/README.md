@@ -97,7 +97,7 @@ Please refer to the official documentation of [Cassandra](https://cassandra.apac
 
 ### Storage considerations
 
-> [!IMPORTANT]
+> [!CAUTION]
 > Regular backups of your PVs are **paramount** to prevent data loss
 
 If not changed, this Chart uses **your default [StorageClass](https://kubernetes.io/docs/concepts/storage/storage-classes/)** to create persistent volumes.
