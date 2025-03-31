@@ -95,7 +95,7 @@ thehive:
     image:
       registry: docker.io
       repository: busybox
-      tag: "1.36.1-glibc"
+      tag: "1.37.0-glibc"
       pullPolicy: IfNotPresent
 
     # Wait for Cassandra to be reachable on port 9042
