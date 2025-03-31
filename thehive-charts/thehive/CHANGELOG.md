@@ -5,6 +5,7 @@
 - (BREAKING CHANGE) Change initContainers config and values [#45](https://github.com/StrangeBeeCorp/helm-charts/pull/45)
 - Add parameters in TheHive values.yaml to configure Cortex servers [#46](https://github.com/StrangeBeeCorp/helm-charts/pull/46)
 - Fix regressions introduced in [#44](https://github.com/StrangeBeeCorp/helm-charts/pull/44) and [#45](https://github.com/StrangeBeeCorp/helm-charts/pull/45) [#47](https://github.com/StrangeBeeCorp/helm-charts/pull/47)
+- Add probe configs and update TheHive healthcheck route [#48](https://github.com/StrangeBeeCorp/helm-charts/pull/48)
 
 
 ## 0.2.2
