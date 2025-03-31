@@ -131,8 +131,8 @@ thehive:
     k8sSecretKey: "api-keys"
 
   # Custom application.conf file for TheHive (included on startup)
-  extraConfig: ""
-  #extraConfig: |
+  applicationConf: ""
+  #applicationConf: |
   #  # TheHive configuration file
   #  # See https://docs.strangebee.com/thehive/overview/ under the "Configuration" section
 

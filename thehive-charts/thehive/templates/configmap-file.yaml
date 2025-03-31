@@ -1,4 +1,4 @@
-{{- if .Values.thehive.extraConfig }}
+{{- if .Values.thehive.applicationConf }}
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -6,5 +6,5 @@ metadata:
   labels:
     {{- include "thehive.labels" . | nindent 4 }}
 data:
-  application.conf: {{- .Values.thehive.extraConfig | toYaml | indent 1 }}
+  application.conf: {{- .Values.thehive.applicationConf | toYaml | indent 1 }}
 {{- end }}
