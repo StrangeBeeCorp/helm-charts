@@ -7,6 +7,7 @@
 - Fix regressions introduced in [#44](https://github.com/StrangeBeeCorp/helm-charts/pull/44) and [#45](https://github.com/StrangeBeeCorp/helm-charts/pull/45) [#47](https://github.com/StrangeBeeCorp/helm-charts/pull/47)
 - Add probe configs and update TheHive healthcheck route [#48](https://github.com/StrangeBeeCorp/helm-charts/pull/48)
 - (BREAKING CHANGE) Add "thehive" root key and rename application.conf variable [#49](https://github.com/StrangeBeeCorp/helm-charts/pull/49)
+- Update README and values.yaml comments [#50](https://github.com/StrangeBeeCorp/helm-charts/pull/50)
 
 
 ## 0.2.2
