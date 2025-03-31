@@ -5,239 +5,240 @@
 nameOverride: ""
 fullnameOverride: ""
 
-# TheHive image
-image:
-  registry: docker.io
-  repository: strangebee/thehive
-  # Defaults to the chart appVersion
-  tag: ""
-  pullPolicy: IfNotPresent
-
 imagePullSecrets: []
 
-replicaCount: 2
-
-# TheHive nodes count
-clusterMinNodesCount: 1
-
-# PodDisruptionBudget configuration
-maxUnavailable: 1
-
-autoscaling:
-  enabled: false
-  minReplicas: 2
-  maxReplicas: 4
-  targetCPUUtilizationPercentage: 80
-  # targetMemoryUtilizationPercentage: 95
-
-resources:
-  requests:
-    cpu: "1000m"
-    memory: "2048Mi"
-    ephemeral-storage: "4Gi"
-  limits:
-    cpu: "3000m"
-    memory: "3584Mi"
-    ephemeral-storage: "4Gi"
-
-jvmOpts: "-Xms2g -Xmx2g -Xmn300m"
-
-# TheHive Cassandra configuration
-database:
-  # Credentials to connect to Cassandra
-  # They should match the credentials for Cassandra subchart below (if enabled)
-  username: "cassandra"
-  password: "ChangeThisPasswordForCassandra"
-  # The name of an existing k8s secret containing Cassandra password
-  k8sSecretName: ""
-  k8sSecretKey: "cassandra-password"
-  # List of Cassandra hostnames
-  # Auto set to Cassandra subchart service if enabled and this list is empty: "{{ .Release.Name }}-cassandra"
-  hostnames: []
-    #- "mycassandra.example.com"
-  # Set to true for TheHive to wait 30 seconds before starting the app
-  wait: false
-
-# TheHive ElasticSearch configuration
-index:
-  # Credentials to connect to ElasticSearch
-  # They should match the credentials for ElasticSearch subchart below (if enabled)
-  username: "elastic"
-  password: ""
-  # The name of an existing k8s secret containing ElasticSearch password
-  k8sSecretName: ""
-  k8sSecretKey: "elasticsearch-password"
-  # List of ElasticSearch hostnames
-  # Auto set to ElasticSearch subchart service if enabled and this list is empty: "{{ .Release.Name }}-elasticsearch"
-  hostnames: []
-    #- "myelasticsearch.example.com"
-
-# TheHive object storage configuration
-storage:
-  # Credentials to connect to the object storage
-  # They should match the credentials for MinIO subchart below (if enabled)
-  accessKey: "minio"
-  secretKey: "ChangeThisPasswordForMinIO"
-  # The name of an existing k8s secret containing the object storage secret key
-  k8sSecretName: ""
-  k8sSecretKey: "rootPassword"
-  # Bucket information
-  # Auto set to MinIO subchart service if enabled and this string is empty: "http://{{ .Release.Name }}-minio:9000"
-  endpoint: ""
-  bucket: "thehive"
-  region: "us-east-1"
-  usePathAccessStyle: true
-
-# Add init containers to TheHive deployment (to wait for Cassandra and ElasticSearch to be reachable)
-initContainers:
+thehive:
+  # TheHive image
   image:
     registry: docker.io
-    repository: busybox
-    tag: "1.36.1-glibc"
+    repository: strangebee/thehive
+    # Defaults to the chart appVersion
+    tag: ""
     pullPolicy: IfNotPresent
 
-  # Wait for Cassandra to be reachable on port 9042
-  checkCassandra:
-    enabled: true
+  replicaCount: 2
 
-  # Wait for ElasticSearch "/_cluster/health" route on port 9200 to answer
-  checkElasticsearch:
-    enabled: true
+  # TheHive nodes count
+  clusterMinNodesCount: 1
 
-# TheHive HTTP secret
-httpSecret: ""
-# The name of an existing k8s secret containing the HTTP secret used by TheHive
-k8sSecretName: ""
-k8sSecretKey: "http-secret"
+  # PodDisruptionBudget configuration
+  maxUnavailable: 1
 
-# Cortex configuration
-# You can also add Cortex servers directly from TheHive UI https://docs.strangebee.com/thehive/administration/cortex/
-cortex:
-  enabled: false
-  # Cortex protocol (expected values are "http" or "https")
-  protocol: "http"
-  # List of Cortex hostnames to configure
-  hostnames: []
-    #- "mycortex.example.com"
-  port: 9001
-  # Cortex API keys
-  # Each API key will be mapped to a single Cortex hostname (following the order in this YAML)
-  api_keys: []
-    #- "abcdefghijklmnopqrstuvwxyz012345"
-  # Alternatively, the name of an existing k8s secret containing all API keys for TheHive to connect to Cortex servers
-  # Expected format: "<key>,<key>,..."
+  autoscaling:
+    enabled: false
+    minReplicas: 2
+    maxReplicas: 4
+    targetCPUUtilizationPercentage: 80
+    # targetMemoryUtilizationPercentage: 95
+
+  resources:
+    requests:
+      cpu: "1000m"
+      memory: "2048Mi"
+      ephemeral-storage: "4Gi"
+    limits:
+      cpu: "3000m"
+      memory: "3584Mi"
+      ephemeral-storage: "4Gi"
+
+  jvmOpts: "-Xms2g -Xmx2g -Xmn300m"
+
+  # TheHive Cassandra configuration
+  database:
+    # Credentials to connect to Cassandra
+    # They should match the credentials for Cassandra subchart below (if enabled)
+    username: "cassandra"
+    password: "ChangeThisPasswordForCassandra"
+    # The name of an existing k8s secret containing Cassandra password
+    k8sSecretName: ""
+    k8sSecretKey: "cassandra-password"
+    # List of Cassandra hostnames
+    # Auto set to Cassandra subchart service if enabled and this list is empty: "{{ .Release.Name }}-cassandra"
+    hostnames: []
+      #- "mycassandra.example.com"
+    # Set to true for TheHive to wait 30 seconds before starting the app
+    wait: false
+
+  # TheHive ElasticSearch configuration
+  index:
+    # Credentials to connect to ElasticSearch
+    # They should match the credentials for ElasticSearch subchart below (if enabled)
+    username: "elastic"
+    password: ""
+    # The name of an existing k8s secret containing ElasticSearch password
+    k8sSecretName: ""
+    k8sSecretKey: "elasticsearch-password"
+    # List of ElasticSearch hostnames
+    # Auto set to ElasticSearch subchart service if enabled and this list is empty: "{{ .Release.Name }}-elasticsearch"
+    hostnames: []
+      #- "myelasticsearch.example.com"
+
+  # TheHive object storage configuration
+  storage:
+    # Credentials to connect to the object storage
+    # They should match the credentials for MinIO subchart below (if enabled)
+    accessKey: "minio"
+    secretKey: "ChangeThisPasswordForMinIO"
+    # The name of an existing k8s secret containing the object storage secret key
+    k8sSecretName: ""
+    k8sSecretKey: "rootPassword"
+    # Bucket information
+    # Auto set to MinIO subchart service if enabled and this string is empty: "http://{{ .Release.Name }}-minio:9000"
+    endpoint: ""
+    bucket: "thehive"
+    region: "us-east-1"
+    usePathAccessStyle: true
+
+  # Add init containers to TheHive deployment (to wait for Cassandra and ElasticSearch to be reachable)
+  initContainers:
+    image:
+      registry: docker.io
+      repository: busybox
+      tag: "1.36.1-glibc"
+      pullPolicy: IfNotPresent
+
+    # Wait for Cassandra to be reachable on port 9042
+    checkCassandra:
+      enabled: true
+
+    # Wait for ElasticSearch "/_cluster/health" route on port 9200 to answer
+    checkElasticsearch:
+      enabled: true
+
+  # TheHive HTTP secret
+  httpSecret: ""
+  # The name of an existing k8s secret containing the HTTP secret used by TheHive
   k8sSecretName: ""
-  k8sSecretKey: "api-keys"
+  k8sSecretKey: "http-secret"
 
-# Custom application.conf file for TheHive (included on startup)
-extraConfig: ""
-#extraConfig: |
-#  # TheHive configuration file
-#  # See https://docs.strangebee.com/thehive/overview/ under the "Configuration" section
+  # Cortex configuration
+  # You can also add Cortex servers directly from TheHive UI https://docs.strangebee.com/thehive/administration/cortex/
+  cortex:
+    enabled: false
+    # Cortex protocol (expected values are "http" or "https")
+    protocol: "http"
+    # List of Cortex hostnames to configure
+    hostnames: []
+      #- "mycortex.example.com"
+    port: 9001
+    # Cortex API keys
+    # Each API key will be mapped to a single Cortex hostname (following the order in this YAML)
+    api_keys: []
+      #- "abcdefghijklmnopqrstuvwxyz012345"
+    # Alternatively, the name of an existing k8s secret containing all API keys for TheHive to connect to Cortex servers
+    # Expected format: "<key>,<key>,..."
+    k8sSecretName: ""
+    k8sSecretKey: "api-keys"
 
-# Extra entrypoint arguments
-extraCommand: []
+  # Custom application.conf file for TheHive (included on startup)
+  applicationConf: ""
+  #applicationConf: |
+  #  # TheHive configuration file
+  #  # See https://docs.strangebee.com/thehive/overview/ under the "Configuration" section
 
-# Extra environment variables
-extraEnv: []
-  #- name: "EXAMPLE"
-  #  value: "example"
-  #- name: "FROM_CM"
-  #  valueFrom:
-  #    configMapKeyRef:
-  #      name: "cm-name"
-  #      key: "key-name"
-  #- name: "FROM_SECRET"
-  #  valueFrom:
-  #    secretKeyRef:
-  #      name: "cm-name"
-  #      key: "key-name"
+  # Extra entrypoint arguments
+  extraCommand: []
 
-# Startup probe (set "failureThreshold" to a high value to prevent CrashLoops during schema migrations)
-startupProbe:
-  enabled: true
-  initialDelaySeconds: 0
-  periodSeconds: 5
-  timeoutSeconds: 1
-  failureThreshold: 36
+  # Extra environment variables
+  extraEnv: []
+    #- name: "EXAMPLE"
+    #  value: "example"
+    #- name: "FROM_CM"
+    #  valueFrom:
+    #    configMapKeyRef:
+    #      name: "cm-name"
+    #      key: "key-name"
+    #- name: "FROM_SECRET"
+    #  valueFrom:
+    #    secretKeyRef:
+    #      name: "cm-name"
+    #      key: "key-name"
 
-# Liveness probe
-livenessProbe:
-  enabled: true
-  initialDelaySeconds: 0
-  periodSeconds: 10
-  timeoutSeconds: 1
-  failureThreshold: 3
+  # Startup probe (set "failureThreshold" to a high value to prevent CrashLoops during schema migrations)
+  startupProbe:
+    enabled: true
+    initialDelaySeconds: 0
+    periodSeconds: 5
+    timeoutSeconds: 1
+    failureThreshold: 36
 
-# Readiness probe
-readinessProbe:
-  enabled: true
-  initialDelaySeconds: 0
-  periodSeconds: 10
-  timeoutSeconds: 1
-  successThreshold: 1
-  failureThreshold: 3
+  # Liveness probe
+  livenessProbe:
+    enabled: true
+    initialDelaySeconds: 0
+    periodSeconds: 10
+    timeoutSeconds: 1
+    failureThreshold: 3
 
-serviceAccount:
-  # Create a ServiceAccount for TheHive
-  create: true
-  # The name of the service account to use (generated automatically if empty)
-  name: ""
-  # Whether to automatically mount the Service Account's token in pod
-  automount: true
-  # Annotations to add to the service account
-  annotations: {}
+  # Readiness probe
+  readinessProbe:
+    enabled: true
+    initialDelaySeconds: 0
+    periodSeconds: 10
+    timeoutSeconds: 1
+    successThreshold: 1
+    failureThreshold: 3
 
-podAnnotations: {}
-podLabels: {}
+  serviceAccount:
+    # Create a ServiceAccount for TheHive
+    create: true
+    # The name of the service account to use (generated automatically if empty)
+    name: ""
+    # Whether to automatically mount the Service Account's token in pod
+    automount: true
+    # Annotations to add to the service account
+    annotations: {}
 
-# https://kubernetes.io/docs/tasks/configure-pod-container/security-context/
-# Pod wide security context
-podSecurityContext: {}
-  #fsGroup: 2000
+  podAnnotations: {}
+  podLabels: {}
 
-# Container wide security context
-securityContext: {}
-  #allowPrivilegeEscalation: false
+  # https://kubernetes.io/docs/tasks/configure-pod-container/security-context/
+  # Pod wide security context
+  podSecurityContext: {}
+    #fsGroup: 2000
 
-service:
-  type: ClusterIP
-  port: 9000
+  # Container wide security context
+  securityContext: {}
+    #allowPrivilegeEscalation: false
 
-ingress:
-  enabled: false
-  className: ""
-  annotations: {}
-    #kubernetes.io/ingress.class: nginx
-    #kubernetes.io/tls-acme: "true"
-  hosts:
-    - host: chart-example.local
-      paths:
-        - path: /
-          pathType: ImplementationSpecific
-  tls: []
-    #- secretName: chart-example-tls
-    #  hosts:
-    #    - chart-example.local
+  service:
+    type: ClusterIP
+    port: 9000
 
-# Additional volumes for TheHive Deployment
-volumes: []
-  #- name: foo
-  #  secret:
-  #    secretName: mysecret
-  #    optional: false
+  ingress:
+    enabled: false
+    className: ""
+    annotations: {}
+      #kubernetes.io/ingress.class: nginx
+      #kubernetes.io/tls-acme: "true"
+    hosts:
+      - host: chart-example.local
+        paths:
+          - path: /
+            pathType: ImplementationSpecific
+    tls: []
+      #- secretName: chart-example-tls
+      #  hosts:
+      #    - chart-example.local
 
-# Additional volumeMounts for TheHive Deployment
-volumeMounts: []
-  #- name: foo
-  #  mountPath: "/etc/foo"
-  #  readOnly: true
+  # Additional volumes for TheHive Deployment
+  volumes: []
+    #- name: foo
+    #  secret:
+    #    secretName: mysecret
+    #    optional: false
 
-nodeSelector: {}
+  # Additional volumeMounts for TheHive Deployment
+  volumeMounts: []
+    #- name: foo
+    #  mountPath: "/etc/foo"
+    #  readOnly: true
 
-tolerations: []
+  nodeSelector: {}
 
-affinity: {}
+  tolerations: []
+
+  affinity: {}
 
 ################################
 # Cassandra subchart variables #
