@@ -13,7 +13,7 @@ dependencies:
     condition: cassandra.enabled
   - name: elasticsearch
     repository: oci://registry-1.docker.io/bitnamicharts
-    version: 21.3.26
+    version: 21.4.9
     condition: elasticsearch.enabled
   - name: minio
     repository: https://charts.min.io
