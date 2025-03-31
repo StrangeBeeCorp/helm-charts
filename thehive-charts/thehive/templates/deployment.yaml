@@ -5,21 +5,21 @@ metadata:
   labels:
     {{- include "thehive.labels" . | nindent 4 }}
 spec:
-  {{- if not .Values.autoscaling.enabled }}
-  replicas: {{ .Values.replicaCount }}
+  {{- if not .Values.thehive.autoscaling.enabled }}
+  replicas: {{ .Values.thehive.replicaCount }}
   {{- end }}
   selector:
     matchLabels:
       {{- include "thehive.selectorLabels" . | nindent 6 }}
   template:
     metadata:
-      {{- with .Values.podAnnotations }}
+      {{- with .Values.thehive.podAnnotations }}
       annotations:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       labels:
         {{- include "thehive.labels" . | nindent 8 }}
-        {{- with .Values.podLabels }}
+        {{- with .Values.thehive.podLabels }}
         {{- toYaml . | nindent 8 }}
         {{- end }}
     spec:
@@ -29,100 +29,100 @@ spec:
       {{- end }}
       serviceAccountName: {{ include "thehive.serviceAccountName" . }}
       securityContext:
-        {{- toYaml .Values.podSecurityContext | nindent 8 }}
-      {{- if or .Values.initContainers.checkCassandra.enabled .Values.initContainers.checkElasticsearch.enabled }}
+        {{- toYaml .Values.thehive.podSecurityContext | nindent 8 }}
+      {{- if or .Values.thehive.initContainers.checkCassandra.enabled .Values.thehive.initContainers.checkElasticsearch.enabled }}
       # See https://kubernetes.io/docs/concepts/workloads/pods/init-containers/#init-containers-in-use
       initContainers:
-        {{- if .Values.initContainers.checkCassandra.enabled }}
+        {{- if .Values.thehive.initContainers.checkCassandra.enabled }}
         - name: check-cassandra
-          image: "{{ .Values.initContainers.image.registry }}/{{ .Values.initContainers.image.repository }}:{{ .Values.initContainers.image.tag }}"
-          imagePullPolicy: {{ .Values.initContainers.image.pullPolicy }}
-          {{- if and (.Values.cassandra.enabled) (eq (len .Values.database.hostnames) 0) }}
+          image: "{{ .Values.thehive.initContainers.image.registry }}/{{ .Values.thehive.initContainers.image.repository }}:{{ .Values.thehive.initContainers.image.tag }}"
+          imagePullPolicy: {{ .Values.thehive.initContainers.image.pullPolicy }}
+          {{- if and (.Values.cassandra.enabled) (eq (len .Values.thehive.database.hostnames) 0) }}
           command: ['sh', '-c', "until nc -v -z {{ printf "%s-cassandra" .Release.Name | trunc 63 }} 9042; do echo 'Waiting for Cassandra'; sleep 5; done"]
           {{- else }}
-          command: ['sh', '-c', "until nc -v -z {{ index .Values.database.hostnames 0 }} 9042; do echo 'Waiting for Cassandra'; sleep 5; done"]
+          command: ['sh', '-c', "until nc -v -z {{ index .Values.thehive.database.hostnames 0 }} 9042; do echo 'Waiting for Cassandra'; sleep 5; done"]
           {{- end }}
         {{- end }}
-        {{- if .Values.initContainers.checkElasticsearch.enabled }}
+        {{- if .Values.thehive.initContainers.checkElasticsearch.enabled }}
         - name: check-elasticsearch
-          image: "{{ .Values.initContainers.image.registry }}/{{ .Values.initContainers.image.repository }}:{{ .Values.initContainers.image.tag }}"
-          imagePullPolicy: {{ .Values.initContainers.image.pullPolicy }}
-          {{- if and (.Values.elasticsearch.enabled) (eq (len .Values.index.hostnames) 0) }}
+          image: "{{ .Values.thehive.initContainers.image.registry }}/{{ .Values.thehive.initContainers.image.repository }}:{{ .Values.thehive.initContainers.image.tag }}"
+          imagePullPolicy: {{ .Values.thehive.initContainers.image.pullPolicy }}
+          {{- if and (.Values.elasticsearch.enabled) (eq (len .Values.thehive.index.hostnames) 0) }}
           command: ['sh', '-c', "until wget --no-cache --no-check-certificate --spider http://{{ printf "%s-elasticsearch" .Release.Name | trunc 63 }}:9200/_cluster/health; do echo 'Waiting for ElasticSearch'; sleep 5; done"]
           {{- else }}
-          command: ['sh', '-c', "until wget --no-cache --no-check-certificate --spider http://{{ index .Values.index.hostnames 0 }}:9200/_cluster/health; do echo 'Waiting for ElasticSearch'; sleep 5; done"]
+          command: ['sh', '-c', "until wget --no-cache --no-check-certificate --spider http://{{ index .Values.thehive.index.hostnames 0 }}:9200/_cluster/health; do echo 'Waiting for ElasticSearch'; sleep 5; done"]
           {{- end }}
         {{- end }}
       {{- end }}
       containers:
         - name: {{ .Chart.Name }}
           securityContext:
-            {{- toYaml .Values.securityContext | nindent 12 }}
-          image: "{{ .Values.image.registry }}/{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
-          imagePullPolicy: {{ .Values.image.pullPolicy }}
+            {{- toYaml .Values.thehive.securityContext | nindent 12 }}
+          image: "{{ .Values.thehive.image.registry }}/{{ .Values.thehive.image.repository }}:{{ .Values.thehive.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.thehive.image.pullPolicy }}
           command:
             - "/opt/thehive/entrypoint"
             - "--kubernetes"
             - "--kubernetes-pod-label-selector"
             - "app.kubernetes.io/name={{ include "thehive.name" . }}"
-            {{ if not .Values.database.wait -}}- "--no-cql-wait"{{- end }}
+            {{ if not .Values.thehive.database.wait -}}- "--no-cql-wait"{{- end }}
             - "--index-backend"
             - "elasticsearch"
-            {{ if .Values.storage.usePathAccessStyle -}}- "--s3-use-path-access-style"{{- end }}
+            {{ if .Values.thehive.storage.usePathAccessStyle -}}- "--s3-use-path-access-style"{{- end }}
             - "--cluster-min-nodes-count"
-            - "{{ .Values.clusterMinNodesCount }}"
-          {{- with .Values.extraCommand }}
+            - "{{ .Values.thehive.clusterMinNodesCount }}"
+          {{- with .Values.thehive.extraCommand }}
             {{- toYaml . | nindent 12 }}
           {{- end }}
           env:
-            {{- if .Values.extraEnv }}
-            {{- toYaml .Values.extraEnv | nindent 12 }}
+            {{- if .Values.thehive.extraEnv }}
+            {{- toYaml .Values.thehive.extraEnv | nindent 12 }}
             {{- end }}
             - name: JVM_OPTS
-              value: {{ .Values.jvmOpts | quote }}
+              value: {{ .Values.thehive.jvmOpts | quote }}
             - name: POD_IP
               valueFrom:
                 fieldRef:
                   fieldPath: status.podIP
-            {{- if .Values.database.k8sSecretName }}
+            {{- if .Values.thehive.database.k8sSecretName }}
             - name: TH_CQL_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: {{ .Values.database.k8sSecretName }}
-                  key: {{ .Values.database.k8sSecretKey }}
+                  name: {{ .Values.thehive.database.k8sSecretName }}
+                  key: {{ .Values.thehive.database.k8sSecretKey }}
             {{- end }}
-            {{- if .Values.index.k8sSecretName }}
+            {{- if .Values.thehive.index.k8sSecretName }}
             - name: TH_ELASTICSEARCH_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: {{ .Values.index.k8sSecretName }}
-                  key: {{ .Values.index.k8sSecretKey }}
+                  name: {{ .Values.thehive.index.k8sSecretName }}
+                  key: {{ .Values.thehive.index.k8sSecretKey }}
             {{- end }}
-            {{- if .Values.storage.k8sSecretName }}
+            {{- if .Values.thehive.storage.k8sSecretName }}
             - name: TH_S3_SECRET_KEY
               valueFrom:
                 secretKeyRef:
-                  name: {{ .Values.storage.k8sSecretName }}
-                  key: {{ .Values.storage.k8sSecretKey }}
+                  name: {{ .Values.thehive.storage.k8sSecretName }}
+                  key: {{ .Values.thehive.storage.k8sSecretKey }}
             {{- end }}
-            {{- if .Values.k8sSecretName }}
+            {{- if .Values.thehive.k8sSecretName }}
             - name: TH_SECRET
               valueFrom:
                 secretKeyRef:
-                  name: {{ .Values.k8sSecretName }}
-                  key: {{ .Values.k8sSecretKey }}
+                  name: {{ .Values.thehive.k8sSecretName }}
+                  key: {{ .Values.thehive.k8sSecretKey }}
             {{- end }}
-            {{- if .Values.cortex.k8sSecretName }}
+            {{- if .Values.thehive.cortex.k8sSecretName }}
             - name: TH_CORTEX_KEYS
               valueFrom:
                 secretKeyRef:
-                  name: {{ .Values.cortex.k8sSecretName }}
-                  key: {{ .Values.cortex.k8sSecretKey }}
+                  name: {{ .Values.thehive.cortex.k8sSecretName }}
+                  key: {{ .Values.thehive.cortex.k8sSecretKey }}
             {{- end }}
           envFrom:
             - configMapRef:
                 name: {{ include "thehive.fullname" . }}-env
-            {{- if or (not .Values.database.k8sSecretName) (not .Values.index.k8sSecretName) (not .Values.storage.k8sSecretName) (not .Values.k8sSecretName) }}
+            {{- if or (not .Values.thehive.database.k8sSecretName) (not .Values.thehive.index.k8sSecretName) (not .Values.thehive.storage.k8sSecretName) (not .Values.thehive.k8sSecretName) }}
             - secretRef:
                 name: {{ include "thehive.fullname" . }}-secrets
             {{- end }}
@@ -130,70 +130,70 @@ spec:
             - name: http
               containerPort: 9000
               protocol: TCP
-          {{- if .Values.startupProbe.enabled }}
+          {{- if .Values.thehive.startupProbe.enabled }}
           startupProbe:
             tcpSocket:
               port: http
-            initialDelaySeconds: {{ .Values.startupProbe.initialDelaySeconds }}
-            periodSeconds: {{ .Values.startupProbe.periodSeconds }}
-            timeoutSeconds: {{ .Values.startupProbe.timeoutSeconds }}
-            failureThreshold: {{ .Values.startupProbe.failureThreshold }}
+            initialDelaySeconds: {{ .Values.thehive.startupProbe.initialDelaySeconds }}
+            periodSeconds: {{ .Values.thehive.startupProbe.periodSeconds }}
+            timeoutSeconds: {{ .Values.thehive.startupProbe.timeoutSeconds }}
+            failureThreshold: {{ .Values.thehive.startupProbe.failureThreshold }}
           {{- end }}
-          {{- if .Values.livenessProbe.enabled }}
+          {{- if .Values.thehive.livenessProbe.enabled }}
           livenessProbe:
             httpGet:
               path: /api/status
               port: http
-            initialDelaySeconds: {{ .Values.livenessProbe.initialDelaySeconds }}
-            periodSeconds: {{ .Values.livenessProbe.periodSeconds }}
-            timeoutSeconds: {{ .Values.livenessProbe.timeoutSeconds }}
-            failureThreshold: {{ .Values.livenessProbe.failureThreshold }}
+            initialDelaySeconds: {{ .Values.thehive.livenessProbe.initialDelaySeconds }}
+            periodSeconds: {{ .Values.thehive.livenessProbe.periodSeconds }}
+            timeoutSeconds: {{ .Values.thehive.livenessProbe.timeoutSeconds }}
+            failureThreshold: {{ .Values.thehive.livenessProbe.failureThreshold }}
           {{- end }}
-          {{- if .Values.readinessProbe.enabled }}
+          {{- if .Values.thehive.readinessProbe.enabled }}
           readinessProbe:
             httpGet:
               path: /api/status
               port: http
-            initialDelaySeconds: {{ .Values.readinessProbe.initialDelaySeconds }}
-            periodSeconds: {{ .Values.readinessProbe.periodSeconds }}
-            timeoutSeconds: {{ .Values.readinessProbe.timeoutSeconds }}
-            successThreshold: {{ .Values.readinessProbe.successThreshold }}
-            failureThreshold: {{ .Values.readinessProbe.failureThreshold }}
+            initialDelaySeconds: {{ .Values.thehive.readinessProbe.initialDelaySeconds }}
+            periodSeconds: {{ .Values.thehive.readinessProbe.periodSeconds }}
+            timeoutSeconds: {{ .Values.thehive.readinessProbe.timeoutSeconds }}
+            successThreshold: {{ .Values.thehive.readinessProbe.successThreshold }}
+            failureThreshold: {{ .Values.thehive.readinessProbe.failureThreshold }}
           {{- end }}
           resources:
-            {{- toYaml .Values.resources | nindent 12 }}
-          {{- if or .Values.volumeMounts .Values.extraConfig }}
+            {{- toYaml .Values.thehive.resources | nindent 12 }}
+          {{- if or .Values.thehive.volumeMounts .Values.thehive.extraConfig }}
           volumeMounts:
-          {{- if .Values.extraConfig }}
+          {{- if .Values.thehive.extraConfig }}
             - name: config
               mountPath: /etc/thehive/application.conf
               subPath: application.conf
               readOnly: true
           {{- end -}}
-          {{- with .Values.volumeMounts }}
+          {{- with .Values.thehive.volumeMounts }}
             {{- toYaml . | nindent 12 }}
           {{- end }}
           {{- end }}
-      {{- if or .Values.volumes .Values.extraConfig }}
+      {{- if or .Values.thehive.volumes .Values.thehive.extraConfig }}
       volumes:
-      {{- if .Values.extraConfig }}
+      {{- if .Values.thehive.extraConfig }}
         - name: config
           configMap:
             name: {{ include "thehive.fullname" . }}-config
       {{- end -}}
-      {{- with .Values.volumes }}
+      {{- with .Values.thehive.volumes }}
         {{- toYaml . | nindent 8 }}
       {{- end }}
       {{- end }}
-      {{- with .Values.nodeSelector }}
+      {{- with .Values.thehive.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      {{- with .Values.affinity }}
+      {{- with .Values.thehive.affinity }}
       affinity:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      {{- with .Values.tolerations }}
+      {{- with .Values.thehive.tolerations }}
       tolerations:
         {{- toYaml . | nindent 8 }}
       {{- end }}
