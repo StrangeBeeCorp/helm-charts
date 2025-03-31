@@ -2,7 +2,7 @@
 apiVersion: v2
 
 name: thehive
-version: 0.2.2
+version: 0.3.0
 appVersion: "5.4.9-1"
 kubeVersion: ">= 1.23.0"
 
