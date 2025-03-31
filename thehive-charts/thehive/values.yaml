@@ -6,13 +6,14 @@ nameOverride: ""
 fullnameOverride: ""
 
 imagePullSecrets: []
+#  - name: "image-pull-secret"
 
 thehive:
-  # TheHive image
+  # TheHive container image
   image:
     registry: docker.io
     repository: strangebee/thehive
-    # Defaults to the chart appVersion
+    # Defaults to the chart appVersion if not set
     tag: ""
     pullPolicy: IfNotPresent
 
@@ -29,7 +30,7 @@ thehive:
     minReplicas: 2
     maxReplicas: 4
     targetCPUUtilizationPercentage: 80
-    # targetMemoryUtilizationPercentage: 95
+    #targetMemoryUtilizationPercentage: 95
 
   resources:
     requests:
@@ -89,7 +90,7 @@ thehive:
     region: "us-east-1"
     usePathAccessStyle: true
 
-  # Add init containers to TheHive deployment (to wait for Cassandra and ElasticSearch to be reachable)
+  # TheHive Deployment initContainers configuration
   initContainers:
     image:
       registry: docker.io
@@ -130,7 +131,7 @@ thehive:
     k8sSecretName: ""
     k8sSecretKey: "api-keys"
 
-  # Custom application.conf file for TheHive (included on startup)
+  # Custom application.conf file for TheHive
   applicationConf: ""
   #applicationConf: |
   #  # TheHive configuration file
@@ -180,20 +181,16 @@ thehive:
     failureThreshold: 3
 
   serviceAccount:
-    # Create a ServiceAccount for TheHive
     create: true
-    # The name of the service account to use (generated automatically if empty)
     name: ""
-    # Whether to automatically mount the Service Account's token in pod
-    automount: true
-    # Annotations to add to the service account
     annotations: {}
+    # Whether to automatically mount Kubernetes API credentials
+    automount: true
 
   podAnnotations: {}
   podLabels: {}
 
-  # https://kubernetes.io/docs/tasks/configure-pod-container/security-context/
-  # Pod wide security context
+  # Pod wide security context https://kubernetes.io/docs/tasks/configure-pod-container/security-context/
   podSecurityContext: {}
     #fsGroup: 2000
 
@@ -212,14 +209,14 @@ thehive:
       #kubernetes.io/ingress.class: nginx
       #kubernetes.io/tls-acme: "true"
     hosts:
-      - host: chart-example.local
+      - host: thehive.example
         paths:
           - path: /
             pathType: ImplementationSpecific
     tls: []
-      #- secretName: chart-example-tls
+      #- secretName: thehive-tls
       #  hosts:
-      #    - chart-example.local
+      #    - thehive.example
 
   # Additional volumes for TheHive Deployment
   volumes: []
@@ -273,7 +270,6 @@ cassandra:
     maxUnavailable: "1"
 
   # Resources available for each replica
-  # http://docs.datastax.com/en/archived/cassandra/2.0/cassandra/architecture/architecturePlanningHardware_c.html
   resources:
     requests:
       cpu: "1000m"
@@ -284,7 +280,6 @@ cassandra:
       memory: "3584Mi"
       ephemeral-storage: "4Gi"
 
-  # https://docs.datastax.com/en/archived/cassandra/2.0/cassandra/operations/ops_tune_jvm_c.html
   jvm:
     extraOpts: "-Xms2g -Xmx2g -Xmn200m"
     maxHeapSize: "2g"
