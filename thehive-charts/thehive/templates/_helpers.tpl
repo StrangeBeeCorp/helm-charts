@@ -43,11 +43,11 @@ app.kubernetes.io/instance: {{ .Release.Name }}
 {{- define "thehive.labels" -}}
 {{ include "thehive.commonLabels" . }}
 {{ include "thehive.selectorLabels" . }}
-app.kubernetes.io/version: {{ .Values.image.tag | default .Chart.AppVersion | quote }}
+app.kubernetes.io/version: {{ .Values.thehive.image.tag | default .Chart.AppVersion | quote }}
 app.kubernetes.io/component: "frontend"
 {{- end }}
 
 {{/* TheHive service account name */}}
 {{- define "thehive.serviceAccountName" -}}
-{{- default (include "thehive.fullname" .) .Values.serviceAccount.name }}
+{{- default (include "thehive.fullname" .) .Values.thehive.serviceAccount.name }}
 {{- end }}
