@@ -39,6 +39,11 @@ app.kubernetes.io/name: {{ include "thehive.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end }}
 
+{{/* TheHive selector labels formatted for TheHive Pekko config */}}
+{{- define "thehive.selectorLabelsForPekko" -}}
+  {{- printf "app.kubernetes.io/name=%s,app.kubernetes.io/instance=%s" (include "thehive.name" .) .Release.Name | quote }}
+{{- end }}
+
 {{/* TheHive labels */}}
 {{- define "thehive.labels" -}}
 {{ include "thehive.commonLabels" . }}
