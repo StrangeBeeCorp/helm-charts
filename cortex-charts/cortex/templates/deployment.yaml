@@ -9,6 +9,10 @@ spec:
   selector:
     matchLabels:
       {{- include "cortex.matchLabels" . | nindent 6 }}
+  {{- with .Values.cortex.strategy }}
+  strategy:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
   template:
     metadata:
       labels:

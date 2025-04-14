@@ -14,6 +14,13 @@ cortex:
 
   replicas: 2
 
+  # Cortex Deployment strategy
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+
   resources:
     requests:
       cpu: "1000m"
