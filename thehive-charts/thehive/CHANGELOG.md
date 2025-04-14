@@ -2,6 +2,7 @@
 
 - Add config to tweak TheHive Deployment strategy [#53](https://github.com/StrangeBeeCorp/helm-charts/pull/53)
 - Add missing selector labels in TheHive Pekko config [#54](https://github.com/StrangeBeeCorp/helm-charts/pull/54)
+- Move TheHive parameters from command flags to env vars in ConfigMap [#55](https://github.com/StrangeBeeCorp/helm-charts/pull/55)
 
 
 ## 0.3.0
