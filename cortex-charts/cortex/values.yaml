@@ -97,10 +97,35 @@ cortex:
     #      key: "key-name"
 
   # Custom application.conf file for Cortex
-  configFile: ""
-  #configFile: |
-  #  # Cortex configuration file
-  #  # See https://docs.strangebee.com/cortex/installation-and-configuration/#configuration-guides
+  #configFile: ""
+  configFile: |
+    # Cortex configuration file
+    # See https://docs.strangebee.com/cortex/installation-and-configuration/#configuration-guides
+    analyzer {
+      urls: [
+        "https://download.thehive-project.org/analyzers.json",
+      ]
+
+      # Customize analyzers parallelism here
+      fork-join-executor {
+        parallelism-min: 8,
+        parallelism-factor: 1.0,
+        parallelism-max: 8,
+      }
+    }
+
+      # Customize responders parallelism here
+    responder {
+      urls: [
+        "https://download.thehive-project.org/responders.json",
+      ]
+
+      fork-join-executor {
+        parallelism-min: 8,
+        parallelism-factor: 1.0,
+        parallelism-max: 8,
+      }
+    }
 
   startupProbe:
     enabled: true
