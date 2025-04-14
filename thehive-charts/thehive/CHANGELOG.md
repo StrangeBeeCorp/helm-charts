@@ -1,6 +1,6 @@
 ## Next release
 
-- Nothing yet
+- Add config to tweak TheHive Deployment strategy [#53](https://github.com/StrangeBeeCorp/helm-charts/pull/53)
 
 
 ## 0.3.0
