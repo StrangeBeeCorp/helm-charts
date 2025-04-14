@@ -19,6 +19,15 @@ thehive:
 
   replicaCount: 2
 
+  # TheHive Deployment strategy
+  strategy:
+    # Prefer "Recreate" since schema migrations can lead to errors on pods running older TheHive versions
+    type: Recreate
+    # Only used for "RollingUpdate" strategy type
+    #rollingUpdate:
+    #  maxSurge: 1
+    #  maxUnavailable: 1
+
   # TheHive nodes count
   clusterMinNodesCount: 1
 
