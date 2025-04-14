@@ -12,6 +12,8 @@ cortex:
   # Additional labels to attach to Cortex resources
   additionalLabels: {}
 
+  replicas: 2
+
   resources:
     requests:
       cpu: "1000m"
