@@ -68,7 +68,7 @@ spec:
             - "/opt/thehive/entrypoint"
             - "--kubernetes"
             - "--kubernetes-pod-label-selector"
-            - "app.kubernetes.io/name={{ include "thehive.name" . }}"
+            - {{ include "thehive.selectorLabelsForPekko" . }}
             {{ if not .Values.thehive.database.wait -}}- "--no-cql-wait"{{- end }}
             - "--index-backend"
             - "elasticsearch"
