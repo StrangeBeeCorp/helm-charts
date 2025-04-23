@@ -146,6 +146,12 @@ thehive:
   #  # TheHive configuration file
   #  # See https://docs.strangebee.com/thehive/overview/ under the "Configuration" section
 
+  # Custom logback.xml file for TheHive
+  logbackXml: ""
+  #logbackXml: |
+  #  <!-- TheHive logs configuration file -->
+  #  <!-- See https://docs.strangebee.com/thehive/configuration/logs/ -->
+
   # Extra entrypoint arguments
   extraCommand: []
 

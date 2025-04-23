@@ -157,7 +157,7 @@ spec:
           {{- end }}
           resources:
             {{- toYaml .Values.thehive.resources | nindent 12 }}
-          {{- if or .Values.thehive.volumeMounts .Values.thehive.applicationConf }}
+          {{- if or (.Values.thehive.volumeMounts) (.Values.thehive.applicationConf) (.Values.thehive.logbackXml) }}
           volumeMounts:
           {{- if .Values.thehive.applicationConf }}
             - name: config
@@ -165,13 +165,19 @@ spec:
               subPath: application.conf
               readOnly: true
           {{- end -}}
+          {{- if .Values.thehive.logbackXml }}
+            - name: config
+              mountPath: /etc/thehive/logback.xml
+              subPath: logback.xml
+              readOnly: true
+          {{- end -}}
           {{- with .Values.thehive.volumeMounts }}
             {{- toYaml . | nindent 12 }}
           {{- end }}
           {{- end }}
-      {{- if or .Values.thehive.volumes .Values.thehive.applicationConf }}
+      {{- if or (.Values.thehive.volumes) (.Values.thehive.applicationConf) (.Values.thehive.logbackXml) }}
       volumes:
-      {{- if .Values.thehive.applicationConf }}
+      {{- if or (.Values.thehive.applicationConf) (.Values.thehive.logbackXml) }}
         - name: config
           configMap:
             name: {{ include "thehive.fullname" . }}-config
