@@ -1,9 +1,14 @@
 ## Next release
 
+- Nothing yet
+
+
+## 0.3.4
+
 - Update TheHive to v5.5.3-1 [#64](https://github.com/StrangeBeeCorp/helm-charts/pull/64)
 
 
-## 0.3.2
+## 0.3.3
 
 - Move TheHive Helm Chart instructions to StrangeBee doc [#61](https://github.com/StrangeBeeCorp/helm-charts/pull/61)
 - Update TheHive to v5.5.2-1 [#62](https://github.com/StrangeBeeCorp/helm-charts/pull/62)
