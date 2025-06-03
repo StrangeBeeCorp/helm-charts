@@ -1,0 +1,15 @@
+{{- if .Values.cortex.serviceAccount.create -}}
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: {{ include "cortex.serviceAccountName" . }}-job-runner-binding
+  labels:
+    {{- include "cortex.labels" . | nindent 4 }}
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: {{ include "cortex.serviceAccountName" . }}-job-runner
+subjects:
+  - kind: ServiceAccount
+    name: {{ include "cortex.serviceAccountName" . }}
+{{- end -}}

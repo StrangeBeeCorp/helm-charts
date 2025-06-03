@@ -1,0 +1,139 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "cortex.fullname" . }}
+  labels:
+    {{- include "cortex.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.cortex.replicas }}
+  selector:
+    matchLabels:
+      {{- include "cortex.matchLabels" . | nindent 6 }}
+  {{- with .Values.cortex.strategy }}
+  strategy:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+  template:
+    metadata:
+      labels:
+        {{- include "cortex.labels" . | nindent 8 }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "cortex.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      {{ if .Values.cortex.initContainers.checkElasticsearch.enabled }}
+      # See https://kubernetes.io/docs/concepts/workloads/pods/init-containers/#init-containers-in-use
+      initContainers:
+        - name: check-elasticsearch
+          image: "{{ .Values.cortex.initContainers.image.registry }}/{{ .Values.cortex.initContainers.image.repository }}:{{ .Values.cortex.initContainers.image.tag }}"
+          imagePullPolicy: {{ .Values.cortex.initContainers.image.pullPolicy }}
+          {{- if and (.Values.elasticsearch.enabled) (eq (len .Values.cortex.index.hostnames) 0) }}
+          command: ['sh', '-c', "until wget --no-cache --no-check-certificate --spider http://{{ printf "%s-elasticsearch" .Release.Name | trunc 63 }}:9200/_cluster/health; do echo 'Waiting for ElasticSearch'; sleep 5; done"]
+          {{- else }}
+          command: ['sh', '-c', "until wget --no-cache --no-check-certificate --spider http://{{ index .Values.cortex.index.hostnames 0 }}:9200/_cluster/health; do echo 'Waiting for ElasticSearch'; sleep 5; done"]
+          {{- end }}
+      {{- end }}
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.cortex.securityContext | nindent 12 }}
+          image: "{{ .Values.cortex.image.registry }}/{{ .Values.cortex.image.repository }}:{{ .Values.cortex.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.cortex.image.pullPolicy }}
+          command:
+            - /opt/cortex/entrypoint
+            - --es-hostname
+            {{- if and (.Values.elasticsearch.enabled) (eq (len .Values.cortex.index.hostnames) 0) }}
+            - {{ printf "%s-elasticsearch" .Release.Name | trunc 63 | quote }}
+            {{- else }}
+            - {{ join "," .Values.cortex.index.hostnames | quote }}
+            {{- end}}
+            - --job-directory
+            - {{ .Values.cortex.jobDirectory }}
+            - --kubernetes-job-pvc
+            - {{ include "cortex.persistentVolumeClaimName" . }}
+          {{- with .Values.cortex.extraCommand }}
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          env:
+            {{- if .Values.cortex.extraEnv }}
+            {{- toYaml .Values.cortex.extraEnv | nindent 12 }}
+            {{- end }}
+            - name: JVM_OPTS
+              value: {{ .Values.cortex.jvmOpts | quote }}
+            {{- if .Values.cortex.k8sSecretName }}
+            - name: TH_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.cortex.k8sSecretName }}
+                  key: {{ .Values.cortex.k8sSecretKey }}
+            {{- end }}
+          envFrom:
+            {{- if not .Values.cortex.k8sSecretName }}
+            - secretRef:
+                name: {{ include "cortex.fullname" . }}-secrets
+            {{- end }}
+          ports:
+            - name: http
+              containerPort: 9001
+              protocol: TCP
+          {{- if .Values.cortex.startupProbe.enabled }}
+          startupProbe:
+            tcpSocket:
+              port: http
+            failureThreshold: 36
+            periodSeconds: 5
+          {{- end }}
+          {{- if .Values.cortex.livenessProbe.enabled }}
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http
+          {{- end }}
+          {{- if .Values.cortex.readinessProbe.enabled }}
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+          {{- end }}
+          resources:
+            {{- toYaml .Values.cortex.resources | nindent 12 }}
+          volumeMounts:
+            - name: cortex-job-shared-pvc
+              mountPath: {{ .Values.cortex.jobDirectory }}
+          {{- if .Values.cortex.configFile }}
+            - name: config
+              mountPath: /etc/cortex/application.conf
+              subPath: application.conf
+              readOnly: true
+          {{- end }}
+          {{- with .Values.cortex.volumeMounts }}
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+      volumes:
+        - name: cortex-job-shared-pvc
+          persistentVolumeClaim:
+            claimName: {{ include "cortex.persistentVolumeClaimName" . }}
+      {{- if .Values.cortex.configFile }}
+        - name: config
+          configMap:
+            name: {{ include "cortex.fullname" . }}-config
+      {{- end }}
+      {{- with .Values.cortex.volumes }}
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.cortex.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.cortex.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.cortex.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

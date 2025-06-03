@@ -7,6 +7,6 @@
 
 This repository contains a collection of Helm Charts for [StrangeBee](https://strangebee.com/) products:
 - [TheHive](./thehive-charts/thehive/)
-- Cortex (TBD)
+- [Cortex](./cortex-charts/cortex/)
 
 The code is provided as-is with no warranties. Feedbacks and contributions are welcomed.
