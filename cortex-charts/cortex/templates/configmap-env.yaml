@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "cortex.fullname" . }}-env
+  labels:
+    {{- include "cortex.labels" . | nindent 4 }}
+data:
+  kubernetes_job_pvc: {{ include "cortex.persistentVolumeClaimName" . | quote }}
+  job_directory: {{ .Values.cortex.jobDirectory | quote }}
+  {{- if and (.Values.elasticsearch.enabled) (eq (len .Values.cortex.index.hostnames) 0) }}
+  es_hostname: {{ printf "%s-elasticsearch" .Release.Name | trunc 63 | quote }}
+  {{- else }}
+  es_hostname: {{ join "," .Values.cortex.index.hostnames | quote }}
+  {{- end }}
