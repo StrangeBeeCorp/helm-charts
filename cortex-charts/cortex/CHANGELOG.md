@@ -1,6 +1,6 @@
 ## Next release
 
-- Nothing yet
+- Add `deletecollection` permission on jobs to Cortex role [#67](https://github.com/StrangeBeeCorp/helm-charts/pull/67)
 
 
 ## 0.1.0
