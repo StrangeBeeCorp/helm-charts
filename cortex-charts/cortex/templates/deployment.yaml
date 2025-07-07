@@ -45,16 +45,6 @@ spec:
           imagePullPolicy: {{ .Values.cortex.image.pullPolicy }}
           command:
             - /opt/cortex/entrypoint
-            - --es-hostname
-            {{- if and (.Values.elasticsearch.enabled) (eq (len .Values.cortex.index.hostnames) 0) }}
-            - {{ printf "%s-elasticsearch" .Release.Name | trunc 63 | quote }}
-            {{- else }}
-            - {{ join "," .Values.cortex.index.hostnames | quote }}
-            {{- end}}
-            - --job-directory
-            - {{ .Values.cortex.jobDirectory }}
-            - --kubernetes-job-pvc
-            - {{ include "cortex.persistentVolumeClaimName" . }}
           {{- with .Values.cortex.extraCommand }}
             {{- toYaml . | nindent 12 }}
           {{- end }}
@@ -72,6 +62,8 @@ spec:
                   key: {{ .Values.cortex.k8sSecretKey }}
             {{- end }}
           envFrom:
+            - configMapRef:
+                name: {{ include "cortex.fullname" . }}-env
             {{- if not .Values.cortex.k8sSecretName }}
             - secretRef:
                 name: {{ include "cortex.fullname" . }}-secrets
