@@ -110,6 +110,12 @@ spec:
               subPath: application.conf
               readOnly: true
           {{- end }}
+          {{- if .Values.cortex.logbackXml }}
+            - name: config
+              mountPath: /etc/cortex/logback.xml
+              subPath: logback.xml
+              readOnly: true
+          {{- end -}}
           {{- with .Values.cortex.volumeMounts }}
             {{- toYaml . | nindent 12 }}
           {{- end }}
@@ -117,7 +123,7 @@ spec:
         - name: cortex-job-shared-pvc
           persistentVolumeClaim:
             claimName: {{ include "cortex.persistentVolumeClaimName" . }}
-      {{- if .Values.cortex.configFile }}
+      {{- if or (.Values.cortex.configFile) (.Values.cortex.logbackXml) }}
         - name: config
           configMap:
             name: {{ include "cortex.fullname" . }}-config

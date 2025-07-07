@@ -127,6 +127,12 @@ cortex:
       }
     }
 
+  # Custom logback.xml file for Cortex
+  logbackXml: ""
+  #logbackXml: |
+  #  <!-- Cortex logs configuration file -->
+  #  <!-- See https://docs.strangebee.com/cortex/installation-and-configuration/#configuration-guides -->
+
   startupProbe:
     enabled: true
 
