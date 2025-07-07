@@ -1,4 +1,4 @@
-{{- if .Values.cortex.configFile -}}
+{{- if or (.Values.cortex.configFile) (.Values.cortex.logbackXml) -}}
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -6,5 +6,10 @@ metadata:
   labels:
     {{- include "cortex.labels" . | nindent 4 }}
 data:
+  {{- if .Values.cortex.configFile }}
   application.conf: {{- .Values.cortex.configFile | toYaml | indent 1 }}
+  {{- end }}
+  {{- if .Values.cortex.logbackXml }}
+  logback.xml: {{- .Values.cortex.logbackXml | toYaml | indent 1 }}
+  {{- end }}
 {{- end -}}
