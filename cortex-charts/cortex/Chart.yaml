@@ -3,7 +3,7 @@ apiVersion: v2
 
 name: cortex
 version: 0.1.0
-appVersion: "3.2.0-1"
+appVersion: "3.2.1-1"
 kubeVersion: ">= 1.23.0"
 
 dependencies:
@@ -35,7 +35,7 @@ annotations:
   artifacthub.io/category: security
   artifacthub.io/images: |
     - name: cortex
-      image: thehiveproject/cortex:3.2.0-1
+      image: thehiveproject/cortex:3.2.1-1
       whitelisted: true
     - name: busybox
       image: busybox:1.37.0-glibc
