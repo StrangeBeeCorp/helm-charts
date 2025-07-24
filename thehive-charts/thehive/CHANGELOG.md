@@ -1,6 +1,6 @@
 ## Next release
 
-- Nothing yet
+- (BREAKING CHANGE) Rework labels and annotations in TheHive Helm Chart [#77](https://github.com/StrangeBeeCorp/helm-charts/pull/77)
 
 
 ## 0.3.6

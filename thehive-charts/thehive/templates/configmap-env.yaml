@@ -2,6 +2,10 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: {{ include "thehive.fullname" . }}-env
+  {{- with .Values.thehive.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
   labels:
     {{- include "thehive.labels" . | nindent 4 }}
 data:

@@ -2,6 +2,10 @@ apiVersion: v1
 kind: Service
 metadata:
   name: {{ include "thehive.fullname" . }}
+  {{- with .Values.thehive.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
   labels:
     {{- include "thehive.labels" . | nindent 4 }}
 spec:
@@ -12,4 +16,4 @@ spec:
       protocol: TCP
       name: http
   selector:
-    {{- include "thehive.selectorLabels" . | nindent 4 }}
+    {{- include "thehive.matchLabels" . | nindent 4 }}

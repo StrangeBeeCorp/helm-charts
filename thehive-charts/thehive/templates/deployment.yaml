@@ -2,6 +2,10 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ include "thehive.fullname" . }}
+  {{- with .Values.thehive.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
   labels:
     {{- include "thehive.labels" . | nindent 4 }}
 spec:
@@ -10,7 +14,7 @@ spec:
   {{- end }}
   selector:
     matchLabels:
-      {{- include "thehive.selectorLabels" . | nindent 6 }}
+      {{- include "thehive.matchLabels" . | nindent 6 }}
   {{- with .Values.thehive.strategy }}
   strategy:
     {{- toYaml . | nindent 4 }}
