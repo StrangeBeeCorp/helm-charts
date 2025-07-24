@@ -161,9 +161,9 @@ spec:
           {{- end }}
           resources:
             {{- toYaml .Values.thehive.resources | nindent 12 }}
-          {{- if or (.Values.thehive.volumeMounts) (.Values.thehive.applicationConf) (.Values.thehive.logbackXml) }}
+          {{- if or (.Values.thehive.volumeMounts) (.Values.thehive.configFile) (.Values.thehive.logbackXml) }}
           volumeMounts:
-          {{- if .Values.thehive.applicationConf }}
+          {{- if .Values.thehive.configFile }}
             - name: config
               mountPath: /etc/thehive/application.conf
               subPath: application.conf
@@ -179,9 +179,9 @@ spec:
             {{- toYaml . | nindent 12 }}
           {{- end }}
           {{- end }}
-      {{- if or (.Values.thehive.volumes) (.Values.thehive.applicationConf) (.Values.thehive.logbackXml) }}
+      {{- if or (.Values.thehive.volumes) (.Values.thehive.configFile) (.Values.thehive.logbackXml) }}
       volumes:
-      {{- if or (.Values.thehive.applicationConf) (.Values.thehive.logbackXml) }}
+      {{- if or (.Values.thehive.configFile) (.Values.thehive.logbackXml) }}
         - name: config
           configMap:
             name: {{ include "thehive.fullname" . }}-config
