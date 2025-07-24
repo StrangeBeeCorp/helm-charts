@@ -18,6 +18,8 @@ thehive:
   podLabels: {}
   podAnnotations: {}
 
+  replicas: 2
+
   # TheHive container image
   image:
     registry: docker.io
@@ -25,8 +27,6 @@ thehive:
     # Defaults to the chart appVersion if not set
     tag: ""
     pullPolicy: IfNotPresent
-
-  replicaCount: 2
 
   # TheHive Deployment strategy
   strategy:

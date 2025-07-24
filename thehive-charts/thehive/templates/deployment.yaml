@@ -10,7 +10,7 @@ metadata:
     {{- include "thehive.labels" . | nindent 4 }}
 spec:
   {{- if not .Values.thehive.autoscaling.enabled }}
-  replicas: {{ .Values.thehive.replicaCount }}
+  replicas: {{ .Values.thehive.replicas }}
   {{- end }}
   selector:
     matchLabels:
