@@ -129,6 +129,11 @@ spec:
             - name: http
               containerPort: 9000
               protocol: TCP
+            {{- if .Values.thehive.monitoring.enabled }}
+            - name: kamon
+              containerPort: 9095
+              protocol: TCP
+            {{- end }}
           {{- if .Values.thehive.startupProbe.enabled }}
           startupProbe:
             tcpSocket:
