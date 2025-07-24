@@ -10,7 +10,7 @@ spec:
   {{- end }}
   selector:
     matchLabels:
-      {{- include "thehive.selectorLabels" . | nindent 6 }}
+      {{- include "thehive.matchLabels" . | nindent 6 }}
   {{- with .Values.thehive.strategy }}
   strategy:
     {{- toYaml . | nindent 4 }}
