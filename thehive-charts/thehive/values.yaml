@@ -209,7 +209,7 @@ thehive:
     name: ""
     annotations: {}
     # Whether to automatically mount Kubernetes API credentials
-    automount: true
+    automountServiceAccountToken: true
 
   # Pod wide security context https://kubernetes.io/docs/tasks/configure-pod-container/security-context/
   podSecurityContext: {}
