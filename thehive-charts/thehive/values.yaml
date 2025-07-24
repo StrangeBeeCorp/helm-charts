@@ -9,8 +9,14 @@ imagePullSecrets: []
 #  - name: "image-pull-secret"
 
 thehive:
-  # Additional labels to attach to TheHive resources
+  # Additional labels and annotations to attach to TheHive resources
+  # (dedicated keys exist for Ingress and ServiceAccount annotations)
   labels: {}
+  annotations: {}
+
+  # Additional labels and annotations to attach to TheHive pods
+  podLabels: {}
+  podAnnotations: {}
 
   # TheHive container image
   image:
@@ -204,9 +210,6 @@ thehive:
     annotations: {}
     # Whether to automatically mount Kubernetes API credentials
     automount: true
-
-  podAnnotations: {}
-  podLabels: {}
 
   # Pod wide security context https://kubernetes.io/docs/tasks/configure-pod-container/security-context/
   podSecurityContext: {}

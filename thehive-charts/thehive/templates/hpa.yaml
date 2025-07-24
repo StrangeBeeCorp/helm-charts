@@ -3,6 +3,10 @@ apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
   name: {{ include "thehive.fullname" . }}
+  {{- with .Values.thehive.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
   labels:
     {{- include "thehive.labels" . | nindent 4 }}
 spec:
