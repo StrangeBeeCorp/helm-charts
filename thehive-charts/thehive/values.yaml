@@ -18,6 +18,7 @@ thehive:
   podLabels: {}
   podAnnotations: {}
 
+  # Only used when thehive.autoscaling.enabled is set to false
   replicas: 2
 
   # TheHive Deployment strategy
