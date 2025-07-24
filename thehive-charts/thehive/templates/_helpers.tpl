@@ -31,6 +31,9 @@ app.kubernetes.io/version: {{ .Values.thehive.image.tag | default .Chart.AppVers
 app.kubernetes.io/part-of: {{ include "thehive.name" . }}
 app.kubernetes.io/managed-by: {{ .Release.Service }}
 helm.sh/chart: {{ include "thehive.chart" . }}
+{{- with .Values.thehive.labels }}
+{{ toYaml . }}
+{{- end -}}
 {{- end -}}
 
 {{/* TheHive selector labels */}}

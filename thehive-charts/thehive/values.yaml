@@ -9,6 +9,9 @@ imagePullSecrets: []
 #  - name: "image-pull-secret"
 
 thehive:
+  # Additional labels to attach to TheHive resources
+  labels: {}
+
   # TheHive container image
   image:
     registry: docker.io
