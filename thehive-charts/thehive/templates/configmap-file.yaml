@@ -1,4 +1,4 @@
-{{- if or (.Values.thehive.applicationConf) (.Values.thehive.logbackXml) }}
+{{- if or (.Values.thehive.configFile) (.Values.thehive.logbackXml) }}
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -10,8 +10,8 @@ metadata:
   labels:
     {{- include "thehive.labels" . | nindent 4 }}
 data:
-  {{- if .Values.thehive.applicationConf }}
-  application.conf: {{- .Values.thehive.applicationConf | toYaml | indent 1 }}
+  {{- if .Values.thehive.configFile }}
+  application.conf: {{- .Values.thehive.configFile | toYaml | indent 1 }}
   {{- end }}
   {{- if .Values.thehive.logbackXml }}
   logback.xml: {{- .Values.thehive.logbackXml | toYaml | indent 1 }}
