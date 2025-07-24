@@ -20,28 +20,20 @@ thehive:
 
   replicas: 2
 
-  # TheHive container image
-  image:
-    registry: docker.io
-    repository: strangebee/thehive
-    # Defaults to the chart appVersion if not set
-    tag: ""
-    pullPolicy: IfNotPresent
-
   # TheHive Deployment strategy
   strategy:
-    # Prefer "Recreate" since schema migrations can lead to errors on pods running older TheHive versions
-    type: Recreate
+    # Set to "RollingUpdate" or "Recreate" depending on HA needs and TheHive version upgrade (schema migrations)
+    type: RollingUpdate
     # Only used for "RollingUpdate" strategy type
-    #rollingUpdate:
-    #  maxSurge: 1
-    #  maxUnavailable: 1
-
-  # TheHive nodes count
-  clusterMinNodesCount: 1
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
 
   # PodDisruptionBudget configuration
   maxUnavailable: 1
+
+  # TheHive nodes count
+  clusterMinNodesCount: 1
 
   autoscaling:
     enabled: false
@@ -61,6 +53,14 @@ thehive:
       ephemeral-storage: "4Gi"
 
   jvmOpts: "-Xms2g -Xmx2g -Xmn300m"
+
+  # TheHive container image
+  image:
+    registry: docker.io
+    repository: strangebee/thehive
+    # Defaults to the chart appVersion if not set
+    tag: ""
+    pullPolicy: IfNotPresent
 
   # TheHive Cassandra configuration
   database:
