@@ -15,5 +15,11 @@ spec:
       targetPort: http
       protocol: TCP
       name: http
+    {{- if .Values.thehive.monitoring.enabled }}
+    - port: {{ .Values.thehive.monitoring.port }}
+      targetPort: kamon
+      protocol: TCP
+      name: kamon
+    {{- end }}
   selector:
     {{- include "thehive.matchLabels" . | nindent 4 }}

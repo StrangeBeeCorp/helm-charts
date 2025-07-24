@@ -224,6 +224,12 @@ thehive:
     type: ClusterIP
     port: 9000
 
+  monitoring:
+    # Whether to expose kamon port in TheHive Deployment and add port in TheHive Service
+    # NOTE - edit application.conf to disable kamon, see https://docs.strangebee.com/thehive/operations/monitoring/
+    enabled: true
+    port: 9095
+
   ingress:
     enabled: false
     className: ""
