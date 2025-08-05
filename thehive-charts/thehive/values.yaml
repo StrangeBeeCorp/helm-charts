@@ -269,10 +269,15 @@ thehive:
 # Cassandra subchart variables #
 ################################
 
-# https://github.com/bitnami/charts/blob/cassandra/12.2.2/bitnami/cassandra/values.yaml
+# https://github.com/bitnami/charts/blob/cassandra/12.3.9/bitnami/cassandra/values.yaml
 cassandra:
   # Use Cassandra dependency Helm Chart
   enabled: true
+
+  # Skip image verification to allow bitnamilegacy repository images
+  global:
+    security:
+      allowInsecureImages: true
 
   image:
     registry: docker.io
@@ -333,15 +338,20 @@ cassandra:
 # ElasticSearch subchart variables #
 ####################################
 
-# https://github.com/bitnami/charts/blob/elasticsearch/21.4.9/bitnami/elasticsearch/values.yaml
+# https://github.com/bitnami/charts/blob/elasticsearch/22.1.0/bitnami/elasticsearch/values.yaml
 elasticsearch:
   # Use ElasticSearch dependency Helm Chart
   enabled: true
 
+  # Skip image verification to allow bitnamilegacy repository images
+  global:
+    security:
+      allowInsecureImages: true
+
   image:
     registry: docker.io
     repository: bitnamilegacy/elasticsearch
-    tag: "8.17.4-debian-12-r4"
+    tag: "8.18.0-debian-12-r2"
 
   # Automatically filled by values under the "index" key defined above
   security:
@@ -412,11 +422,11 @@ minio:
 
   image:
     repository: quay.io/minio/minio
-    tag: RELEASE.2024-12-18T13-15-44Z
+    tag: RELEASE.2025-07-23T15-54-02Z
 
   mcImage:
     repository: quay.io/minio/mc
-    tag: RELEASE.2024-11-21T17-21-54Z
+    tag: RELEASE.2025-07-21T05-28-08Z
 
   rootUser: "minio"
   rootPassword: "ChangeThisPasswordForMinIO"

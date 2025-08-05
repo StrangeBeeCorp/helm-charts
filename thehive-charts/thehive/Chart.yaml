@@ -3,17 +3,17 @@ apiVersion: v2
 
 name: thehive
 version: 0.3.6
-appVersion: "5.5.5-1"
+appVersion: "5.5.7-1"
 kubeVersion: ">= 1.23.0-0"
 
 dependencies:
   - name: cassandra
     repository: oci://registry-1.docker.io/bitnamicharts
-    version: 12.2.3
+    version: 12.3.9
     condition: cassandra.enabled
   - name: elasticsearch
     repository: oci://registry-1.docker.io/bitnamicharts
-    version: 21.4.9
+    version: 22.1.0
     condition: elasticsearch.enabled
   - name: minio
     repository: https://charts.min.io
@@ -42,7 +42,7 @@ annotations:
   artifacthub.io/category: security
   artifacthub.io/images: |
     - name: thehive
-      image: strangebee/thehive:5.5.5-1
+      image: strangebee/thehive:5.5.7-1
       whitelisted: true
     - name: busybox
       image: busybox:1.37.0-glibc
