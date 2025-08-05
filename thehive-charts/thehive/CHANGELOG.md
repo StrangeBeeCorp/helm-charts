@@ -3,6 +3,7 @@
 - (BREAKING CHANGE) Rework labels and annotations in TheHive Helm Chart [#77](https://github.com/StrangeBeeCorp/helm-charts/pull/77)
 - (BREAKING CHANGE) Rework TheHive Helm Chart values and resources [#78](https://github.com/StrangeBeeCorp/helm-charts/pull/78)
 - Add monitoring configuration [#79](https://github.com/StrangeBeeCorp/helm-charts/pull/79)
+- Tweak kubeVersion constraints to accept EKS specific versions [#80](https://github.com/StrangeBeeCorp/helm-charts/pull/80) [#81](https://github.com/StrangeBeeCorp/helm-charts/pull/81)
 
 
 ## 0.3.6
