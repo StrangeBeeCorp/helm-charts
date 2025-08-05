@@ -1,5 +1,10 @@
 ## Next release
 
+- Nothing yet
+
+
+## 0.4.0
+
 - (BREAKING CHANGE) Rework labels and annotations in TheHive Helm Chart [#77](https://github.com/StrangeBeeCorp/helm-charts/pull/77)
 - (BREAKING CHANGE) Rework TheHive Helm Chart values and resources [#78](https://github.com/StrangeBeeCorp/helm-charts/pull/78)
 - Add monitoring configuration [#79](https://github.com/StrangeBeeCorp/helm-charts/pull/79)
