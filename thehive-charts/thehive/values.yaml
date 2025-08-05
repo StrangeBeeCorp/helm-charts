@@ -274,6 +274,11 @@ cassandra:
   # Use Cassandra dependency Helm Chart
   enabled: true
 
+  # Skip image verification to allow bitnamilegacy repository images
+  global:
+    security:
+      allowInsecureImages: true
+
   image:
     registry: docker.io
     repository: bitnamilegacy/cassandra
@@ -337,6 +342,11 @@ cassandra:
 elasticsearch:
   # Use ElasticSearch dependency Helm Chart
   enabled: true
+
+  # Skip image verification to allow bitnamilegacy repository images
+  global:
+    security:
+      allowInsecureImages: true
 
   image:
     registry: docker.io
