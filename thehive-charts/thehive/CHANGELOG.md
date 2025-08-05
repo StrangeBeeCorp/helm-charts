@@ -5,6 +5,7 @@
 - Add monitoring configuration [#79](https://github.com/StrangeBeeCorp/helm-charts/pull/79)
 - Tweak kubeVersion constraints to accept EKS specific versions [#80](https://github.com/StrangeBeeCorp/helm-charts/pull/80) [#81](https://github.com/StrangeBeeCorp/helm-charts/pull/81) by @julienbaladier
 - (BREAKING CHANGE) Target [Bitnami Legacy repository](https://github.com/bitnami/charts/issues/35164) for images used in dependency charts [#82](https://github.com/StrangeBeeCorp/helm-charts/pull/82)
+- Update TheHive to v5.5.7-1 and other softwares versions [#83](https://github.com/StrangeBeeCorp/helm-charts/pull/83)
 
 
 ## 0.3.6
