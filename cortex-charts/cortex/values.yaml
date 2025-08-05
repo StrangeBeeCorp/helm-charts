@@ -220,7 +220,7 @@ elasticsearch:
   # Cortex only supports ElasticSearch v7 at the time of writing
   image:
     registry: docker.io
-    repository: bitnami/elasticsearch
+    repository: bitnamilegacy/elasticsearch
     tag: "7.17.26-debian-12-r0"
 
   # Automatically filled by values under the "index" key defined above
