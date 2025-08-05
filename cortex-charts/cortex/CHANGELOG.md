@@ -1,6 +1,6 @@
 ## Next release
 
-- Nothing yet
+- Tweak kubeVersion constraints to accept EKS specific versions [#80](https://github.com/StrangeBeeCorp/helm-charts/pull/80) [#81](https://github.com/StrangeBeeCorp/helm-charts/pull/81)
 
 
 ## 0.2.0
