@@ -333,7 +333,7 @@ cassandra:
 # ElasticSearch subchart variables #
 ####################################
 
-# https://github.com/bitnami/charts/blob/elasticsearch/21.4.9/bitnami/elasticsearch/values.yaml
+# https://github.com/bitnami/charts/blob/elasticsearch/22.1.0/bitnami/elasticsearch/values.yaml
 elasticsearch:
   # Use ElasticSearch dependency Helm Chart
   enabled: true
