@@ -4,7 +4,7 @@ apiVersion: v2
 name: thehive
 version: 0.3.6
 appVersion: "5.5.5-1"
-kubeVersion: ">= 1.23.0"
+kubeVersion: ">= 1.23.0-0"
 
 dependencies:
   - name: cassandra
