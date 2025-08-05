@@ -412,11 +412,11 @@ minio:
 
   image:
     repository: quay.io/minio/minio
-    tag: RELEASE.2024-12-18T13-15-44Z
+    tag: RELEASE.2025-07-23T15-54-02Z
 
   mcImage:
     repository: quay.io/minio/mc
-    tag: RELEASE.2024-11-21T17-21-54Z
+    tag: RELEASE.2025-07-21T05-28-08Z
 
   rootUser: "minio"
   rootPassword: "ChangeThisPasswordForMinIO"
