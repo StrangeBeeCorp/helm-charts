@@ -2,6 +2,10 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ include "cortex.fullname" . }}
+  {{- with .Values.cortex.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
   labels:
     {{- include "cortex.labels" . | nindent 4 }}
 spec:
@@ -15,8 +19,15 @@ spec:
   {{- end }}
   template:
     metadata:
+      {{- with .Values.cortex.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
       labels:
         {{- include "cortex.labels" . | nindent 8 }}
+        {{- with .Values.cortex.podLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
     spec:
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets:

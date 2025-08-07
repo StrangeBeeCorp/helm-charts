@@ -3,6 +3,10 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
   name: {{ include "cortex.serviceAccountName" . }}-job-runner
+  {{- with .Values.cortex.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
   labels:
     {{- include "cortex.labels" . | nindent 4 }}
 rules:
