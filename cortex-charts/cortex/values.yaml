@@ -234,10 +234,15 @@ cortex:
 # ElasticSearch subchart variables #
 ####################################
 
-# https://github.com/bitnami/charts/blob/elasticsearch/21.4.7/bitnami/elasticsearch/values.yaml
+# https://github.com/bitnami/charts/blob/elasticsearch/22.1.0/bitnami/elasticsearch/values.yaml
 elasticsearch:
   # Use ElasticSearch dependency Helm Chart
   enabled: true
+
+  # Skip image verification to allow bitnamilegacy repository images
+  global:
+    security:
+      allowInsecureImages: true
 
   # Cortex only supports ElasticSearch v7 at the time of writing
   image:
