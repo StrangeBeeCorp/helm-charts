@@ -9,8 +9,14 @@ imagePullSecrets: []
 #  - name: "image-pull-secret"
 
 cortex:
-  # Additional labels to attach to Cortex resources
-  additionalLabels: {}
+  # Additional labels and annotations to attach to TheHive resources
+  # (dedicated keys exist for Ingress and ServiceAccount annotations)
+  labels: {}
+  annotations: {}
+
+  # Additional labels and annotations to attach to TheHive pods
+  podLabels: {}
+  podAnnotations: {}
 
   replicas: 2
 

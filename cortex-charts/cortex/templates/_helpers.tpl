@@ -31,7 +31,7 @@ app.kubernetes.io/version: {{ .Values.cortex.image.tag | default .Chart.AppVersi
 app.kubernetes.io/part-of: {{ include "cortex.name" . }}
 app.kubernetes.io/managed-by: {{ .Release.Service }}
 helm.sh/chart: {{ include "cortex.chart" . }}
-{{- with .Values.cortex.additionalLabels }}
+{{- with .Values.cortex.labels }}
 {{ toYaml . }}
 {{- end -}}
 {{- end -}}

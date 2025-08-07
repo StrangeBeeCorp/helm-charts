@@ -3,6 +3,12 @@ apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: {{ include "cortex.persistentVolumeClaimName" . }}
+  {{- with .Values.cortex.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+  labels:
+    {{- include "cortex.labels" . | nindent 4 }}
 spec:
   accessModes:
     - ReadWriteMany
