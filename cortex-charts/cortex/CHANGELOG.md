@@ -4,6 +4,7 @@
 - (BREAKING CHANGE) Target [Bitnami Legacy repository](https://github.com/bitnami/charts/issues/35164) for images used in dependency charts [#82](https://github.com/StrangeBeeCorp/helm-charts/pull/82)
 - Add missing condition in Ingress template on TLS block [#85](https://github.com/StrangeBeeCorp/helm-charts/pull/85)
 - (BREAKING CHANGE) Improve annotations and labels management [#86](https://github.com/StrangeBeeCorp/helm-charts/pull/86)
+- Improve configuration options for Deployment probes [#87](https://github.com/StrangeBeeCorp/helm-charts/pull/87)
 
 
 ## 0.2.0

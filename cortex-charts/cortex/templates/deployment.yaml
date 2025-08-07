@@ -87,20 +87,31 @@ spec:
           startupProbe:
             tcpSocket:
               port: http
-            failureThreshold: 36
-            periodSeconds: 5
+            initialDelaySeconds: {{ .Values.cortex.startupProbe.initialDelaySeconds }}
+            periodSeconds: {{ .Values.cortex.startupProbe.periodSeconds }}
+            timeoutSeconds: {{ .Values.cortex.startupProbe.timeoutSeconds }}
+            failureThreshold: {{ .Values.cortex.startupProbe.failureThreshold }}
           {{- end }}
           {{- if .Values.cortex.livenessProbe.enabled }}
           livenessProbe:
             httpGet:
               path: /
               port: http
+            initialDelaySeconds: {{ .Values.cortex.livenessProbe.initialDelaySeconds }}
+            periodSeconds: {{ .Values.cortex.livenessProbe.periodSeconds }}
+            timeoutSeconds: {{ .Values.cortex.livenessProbe.timeoutSeconds }}
+            failureThreshold: {{ .Values.cortex.livenessProbe.failureThreshold }}
           {{- end }}
           {{- if .Values.cortex.readinessProbe.enabled }}
           readinessProbe:
             httpGet:
               path: /
               port: http
+            initialDelaySeconds: {{ .Values.cortex.readinessProbe.initialDelaySeconds }}
+            periodSeconds: {{ .Values.cortex.readinessProbe.periodSeconds }}
+            timeoutSeconds: {{ .Values.cortex.readinessProbe.timeoutSeconds }}
+            successThreshold: {{ .Values.cortex.readinessProbe.successThreshold }}
+            failureThreshold: {{ .Values.cortex.readinessProbe.failureThreshold }}
           {{- end }}
           resources:
             {{- toYaml .Values.cortex.resources | nindent 12 }}
