@@ -30,6 +30,7 @@ spec:
                   number: {{ .Values.cortex.service.port }}
           {{- end }}
     {{- end }}
+  {{- if .Values.cortex.ingress.tls }}
   tls:
     {{- range .Values.cortex.ingress.tls }}
     - hosts:
@@ -38,4 +39,5 @@ spec:
         {{- end }}
       secretName: {{ .secretName }}
     {{- end }}
+  {{- end }}
 {{- end }}
