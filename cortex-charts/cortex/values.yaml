@@ -109,7 +109,7 @@ cortex:
     # See https://docs.strangebee.com/cortex/installation-and-configuration/#configuration-guides
     analyzer {
       urls: [
-        "https://download.thehive-project.org/analyzers.json",
+        "https://catalogs.download.strangebee.com/latest/json/analyzers.json",
       ]
 
       # Customize analyzers parallelism here
@@ -123,7 +123,7 @@ cortex:
       # Customize responders parallelism here
     responder {
       urls: [
-        "https://download.thehive-project.org/responders.json",
+        "https://catalogs.download.strangebee.com/latest/json/responders.json",
       ]
 
       fork-join-executor {
