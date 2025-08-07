@@ -5,6 +5,7 @@
 - Add missing condition in Ingress template on TLS block [#85](https://github.com/StrangeBeeCorp/helm-charts/pull/85)
 - (BREAKING CHANGE) Improve annotations and labels management [#86](https://github.com/StrangeBeeCorp/helm-charts/pull/86)
 - Improve configuration options for Deployment probes [#87](https://github.com/StrangeBeeCorp/helm-charts/pull/87)
+- Use new download links for analyzers and responders configuration [#88](https://github.com/StrangeBeeCorp/helm-charts/pull/88)
 
 
 ## 0.2.0
