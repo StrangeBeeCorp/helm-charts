@@ -18,6 +18,51 @@ entries:
           url: https://strangebee.com/contact-strangebee/
     apiVersion: v2
     appVersion: 3.2.1-1
+    created: "2025-08-18T12:42:16.42500564Z"
+    dependencies:
+    - condition: elasticsearch.enabled
+      name: elasticsearch
+      repository: oci://registry-1.docker.io/bitnamicharts
+      version: 22.1.0
+    description: Cortex official Helm Chart
+    digest: 2ba1ab90852cfdc5fccf7c945c667627eadef26a63ae3629e5b225074a7510c1
+    home: https://strangebee.com/cortex/
+    icon: https://strangebeecorp.github.io/helm-charts/assets/cortex-icon.svg
+    keywords:
+    - cortex
+    - thehive
+    - sirp
+    - incident-response
+    - case-management
+    - strangebee
+    kubeVersion: '>= 1.23.0-0'
+    maintainers:
+    - name: StrangeBee
+      url: https://strangebee.com/
+    name: cortex
+    sources:
+    - https://github.com/StrangeBeeCorp/helm-charts/tree/main/cortex-charts/cortex
+    type: application
+    urls:
+    - https://github.com/StrangeBeeCorp/helm-charts/releases/download/cortex-0.3.1/cortex-0.3.1.tgz
+    version: 0.3.1
+  - annotations:
+      artifacthub.io/category: security
+      artifacthub.io/images: |
+        - name: cortex
+          image: thehiveproject/cortex:3.2.1-1
+          whitelisted: true
+        - name: busybox
+          image: busybox:1.37.0-glibc
+          whitelisted: true
+      artifacthub.io/license: AGPL-3.0
+      artifacthub.io/links: |
+        - name: source
+          url: https://github.com/StrangeBeeCorp/helm-charts/tree/main/cortex-charts/cortex
+        - name: support
+          url: https://strangebee.com/contact-strangebee/
+    apiVersion: v2
+    appVersion: 3.2.1-1
     created: "2025-08-07T13:36:48.02814068Z"
     dependencies:
     - condition: elasticsearch.enabled
@@ -914,4 +959,4 @@ entries:
     urls:
     - https://github.com/StrangeBeeCorp/helm-charts/releases/download/thehive-0.1.1/thehive-0.1.1.tgz
     version: 0.1.1
-generated: "2025-08-07T13:36:48.028196504Z"
+generated: "2025-08-18T12:42:16.425072746Z"
