@@ -1,5 +1,10 @@
 ## Next release
 
+- Nothing yet
+
+
+## 0.3.1
+
 - fix(cortex helm): nil pointer when rendering ingress [#91](https://github.com/StrangeBeeCorp/helm-charts/pull/91) by @julienbaladier
 
 
