@@ -4,7 +4,7 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: {{ include "cortex.fullname" . }}
+  name: {{ $fullName }}
   labels:
     {{- include "cortex.labels" . | nindent 4 }}
   {{- with .Values.cortex.ingress.annotations }}
