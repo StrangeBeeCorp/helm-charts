@@ -1,6 +1,6 @@
 ## Next release
 
-- Nothing yet
+- Fix nil pointer when rendering Ingress template [#92](https://github.com/StrangeBeeCorp/helm-charts/pull/92) by @hzlnqodrey
 
 
 ## 0.4.0
