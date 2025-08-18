@@ -1,8 +1,10 @@
 {{- if .Values.thehive.ingress.enabled -}}
+{{- $fullName := include "thehive.fullname" . -}}
+{{- $servicePort := .Values.thehive.service.port -}}
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: {{ include "thehive.fullname" . }}
+  name: {{ $fullName }}
   labels:
     {{- include "thehive.labels" . | nindent 4 }}
   {{- with .Values.thehive.ingress.annotations }}
@@ -25,19 +27,13 @@ spec:
             {{- end }}
             backend:
               service:
-                name: {{ include "thehive.fullname" . }}
+                name: {{ $fullName }}
                 port:
-                  number: {{ .Values.thehive.service.port }}
+                  number: {{ $servicePort }}
           {{- end }}
     {{- end }}
-  {{- if .Values.thehive.ingress.tls }}
+  {{- with .Values.thehive.ingress.tls }}
   tls:
-    {{- range .Values.thehive.ingress.tls }}
-    - hosts:
-        {{- range .hosts }}
-        - {{ . | quote }}
-        {{- end }}
-      secretName: {{ .secretName }}
-    {{- end }}
+    {{- tpl (toYaml .) $ | nindent 4 }}
   {{- end }}
 {{- end }}

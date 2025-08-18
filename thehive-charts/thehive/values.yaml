@@ -241,6 +241,7 @@ thehive:
         paths:
           - path: /
             pathType: ImplementationSpecific
+    # TLS configuration for the ingress (supports the use of custom Helm templates)
     tls: []
       #- secretName: thehive-tls
       #  hosts:
