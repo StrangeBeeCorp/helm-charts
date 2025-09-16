@@ -1,6 +1,6 @@
 ## Next release
 
-- Nothing yet
+- Update TheHive to v5.5.9-1 [#98](https://github.com/StrangeBeeCorp/helm-charts/pull/98)
 
 
 ## 0.4.2
