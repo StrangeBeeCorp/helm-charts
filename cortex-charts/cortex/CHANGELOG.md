@@ -1,5 +1,10 @@
 ## Next release
 
+- Nothing yet
+
+
+## 0.3.2
+
 - Target [Bitnami Legacy repository](https://github.com/bitnami/charts/issues/35164) for remaining images in dependency charts [#102](https://github.com/StrangeBeeCorp/helm-charts/pull/102)
 
 
