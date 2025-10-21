@@ -335,6 +335,24 @@ cassandra:
     - name: CASSANDRA_AUTHORIZER
       value: CassandraAuthorizer
 
+dynamicSeedDiscovery:
+  image:
+    registry: docker.io
+    repository: bitnamilegacy/os-shell
+    tag: 12-debian-12-r48
+
+volumePermissions:
+  image:
+    registry: docker.io
+    repository: bitnamilegacy/os-shell
+    tag: 12-debian-12-r48
+
+metrics:
+  image:
+    registry: docker.io
+    repository: bitnamilegacy/cassandra-exporter
+    tag: 2.3.8-debian-12-r49
+
 ####################################
 # ElasticSearch subchart variables #
 ####################################
@@ -410,6 +428,23 @@ elasticsearch:
   ingest:
     # Disable ingestion-dedicated nodes
     replicaCount: 0
+
+  metrics:
+    image:
+      registry: docker.io
+      repository: bitnamilegacy/elasticsearch-exporter
+      tag: 1.9.0-debian-12-r14
+
+  volumePermissions:
+    image:
+      registry: docker.io
+      repository: bitnamilegacy/os-shell
+      tag: 12-debian-12-r49
+
+  sysctlImage:
+    registry: docker.io
+    repository: bitnamilegacy/os-shell
+    tag: 12-debian-12-r49
 
 ############################
 # MinIO subchart variables #
