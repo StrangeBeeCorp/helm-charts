@@ -231,6 +231,58 @@ entries:
       artifacthub.io/category: security
       artifacthub.io/images: |
         - name: thehive
+          image: strangebee/thehive:5.5.11-1
+          whitelisted: true
+        - name: busybox
+          image: busybox:1.37.0-glibc
+          whitelisted: true
+      artifacthub.io/license: AGPL-3.0
+      artifacthub.io/links: |
+        - name: source
+          url: https://github.com/StrangeBeeCorp/helm-charts/tree/main/thehive-charts/thehive
+        - name: support
+          url: https://strangebee.com/contact-strangebee/
+    apiVersion: v2
+    appVersion: 5.5.11-1
+    created: "2025-10-28T12:56:25.019579835Z"
+    dependencies:
+    - condition: cassandra.enabled
+      name: cassandra
+      repository: oci://registry-1.docker.io/bitnamicharts
+      version: 12.3.9
+    - condition: elasticsearch.enabled
+      name: elasticsearch
+      repository: oci://registry-1.docker.io/bitnamicharts
+      version: 22.1.0
+    - condition: minio.enabled
+      name: minio
+      repository: https://charts.min.io
+      version: 5.4.0
+    description: The official Helm Chart of TheHive for Kubernetes
+    digest: 6c265d743d15c58585ded06bdcd953db04ad14cdac5dd1ed8ff07010543e81dc
+    home: https://strangebee.com/thehive/
+    icon: https://strangebeecorp.github.io/helm-charts/assets/thehive-icon.svg
+    keywords:
+    - thehive
+    - sirp
+    - incident-response
+    - case-management
+    - strangebee
+    kubeVersion: '>= 1.23.0-0'
+    maintainers:
+    - name: StrangeBee
+      url: https://strangebee.com/
+    name: thehive
+    sources:
+    - https://github.com/StrangeBeeCorp/helm-charts/tree/main/thehive-charts/thehive
+    type: application
+    urls:
+    - https://github.com/StrangeBeeCorp/helm-charts/releases/download/thehive-0.4.6/thehive-0.4.6.tgz
+    version: 0.4.6
+  - annotations:
+      artifacthub.io/category: security
+      artifacthub.io/images: |
+        - name: thehive
           image: strangebee/thehive:5.5.10-1
           whitelisted: true
         - name: busybox
@@ -1264,4 +1316,4 @@ entries:
     urls:
     - https://github.com/StrangeBeeCorp/helm-charts/releases/download/thehive-0.1.1/thehive-0.1.1.tgz
     version: 0.1.1
-generated: "2025-10-21T09:01:45.157773854Z"
+generated: "2025-10-28T12:56:25.019752526Z"
