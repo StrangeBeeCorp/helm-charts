@@ -124,6 +124,7 @@ thehive:
     # Wait for ElasticSearch "/_cluster/health" route on port 9200 to answer
     checkElasticsearch:
       enabled: true
+      useHttps: false
 
   # TheHive HTTP secret
   httpSecret: ""

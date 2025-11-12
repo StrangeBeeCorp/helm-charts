@@ -56,9 +56,9 @@ spec:
           image: "{{ .Values.thehive.initContainers.image.registry }}/{{ .Values.thehive.initContainers.image.repository }}:{{ .Values.thehive.initContainers.image.tag }}"
           imagePullPolicy: {{ .Values.thehive.initContainers.image.pullPolicy }}
           {{- if and (.Values.elasticsearch.enabled) (eq (len .Values.thehive.index.hostnames) 0) }}
-          command: ['sh', '-c', "until wget --no-cache --no-check-certificate --spider http://{{ printf "%s-elasticsearch" .Release.Name | trunc 63 }}:9200/_cluster/health; do echo 'Waiting for ElasticSearch'; sleep 5; done"]
+          command: ['sh', '-c', "until wget --no-cache --no-check-certificate --spider {{ if .Values.thehive.initContainers.checkElasticsearch.useHttps }}https{{ else }}http{{ end }}://{{ printf "%s-elasticsearch" .Release.Name | trunc 63 }}:9200/_cluster/health; do echo 'Waiting for ElasticSearch'; sleep 5; done"]
           {{- else }}
-          command: ['sh', '-c', "until wget --no-cache --no-check-certificate --spider http://{{ index .Values.thehive.index.hostnames 0 }}:9200/_cluster/health; do echo 'Waiting for ElasticSearch'; sleep 5; done"]
+          command: ['sh', '-c', "until wget --no-cache --no-check-certificate --spider {{ if .Values.thehive.initContainers.checkElasticsearch.useHttps }}https{{ else }}http{{ end }}://{{ index .Values.thehive.index.hostnames 0 }}:9200/_cluster/health; do echo 'Waiting for ElasticSearch'; sleep 5; done"]
           {{- end }}
         {{- end }}
       {{- end }}
