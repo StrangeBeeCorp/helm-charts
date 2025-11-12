@@ -1,6 +1,6 @@
 ## Next release
 
-- Nothing yet
+- Add HTTPS option for the init-container checking ElasticSearch availability [#107](https://github.com/StrangeBeeCorp/helm-charts/pull/107)
 
 
 ## 0.3.2
