@@ -182,6 +182,7 @@ cortex:
     # Wait for ElasticSearch "/_cluster/health" route on port 9200 to answer
     checkElasticsearch:
       enabled: true
+      useHttps: false
 
   # Pod wide security context https://kubernetes.io/docs/tasks/configure-pod-container/security-context/
   podSecurityContext: {}
