@@ -133,6 +133,13 @@ cortex:
       }
     }
 
+    # ElasticSearch
+    search {
+      # Get credentials using environment variables
+      user = ${?CORTEX_ELASTICSEARCH_USERNAME}
+      password = ${?CORTEX_ELASTICSEARCH_PASSWORD}
+    }
+
   # Custom logback.xml file for Cortex
   logbackXml: ""
   #logbackXml: |

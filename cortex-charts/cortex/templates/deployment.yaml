@@ -65,6 +65,13 @@ spec:
             {{- end }}
             - name: JVM_OPTS
               value: {{ .Values.cortex.jvmOpts | quote }}
+            {{- if .Values.cortex.index.k8sSecretName }}
+            - name: CORTEX_ELASTICSEARCH_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.cortex.index.k8sSecretName }}
+                  key: {{ .Values.cortex.index.k8sSecretKey }}
+            {{- end }}
             {{- if .Values.cortex.k8sSecretName }}
             - name: SECRET
               valueFrom:
@@ -75,7 +82,7 @@ spec:
           envFrom:
             - configMapRef:
                 name: {{ include "cortex.fullname" . }}-env
-            {{- if not .Values.cortex.k8sSecretName }}
+            {{- if or (not .Values.cortex.index.k8sSecretName) (not .Values.cortex.k8sSecretName) }}
             - secretRef:
                 name: {{ include "cortex.fullname" . }}-secrets
             {{- end }}
