@@ -19,7 +19,7 @@ thehive:
   podAnnotations: {}
 
   # Only used when thehive.autoscaling.enabled is set to false
-  replicas: 2
+  replicas: 1
 
   # TheHive Deployment strategy
   strategy:
@@ -298,7 +298,7 @@ cassandra:
     datacenter: "DC1-TheHive"
     rack: "Rack1-TheHive"
 
-  replicaCount: 2
+  replicaCount: 1
 
   pdb:
     create: true
@@ -387,7 +387,7 @@ elasticsearch:
     masterOnly: false
 
     # Number of master-elegible replicas to deploy
-    replicaCount: 2
+    replicaCount: 1
     pdb:
       create: true
       maxUnavailable: "1"

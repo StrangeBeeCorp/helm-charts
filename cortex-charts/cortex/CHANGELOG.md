@@ -1,6 +1,6 @@
 ## Next release
 
-- Nothing yet
+- Set all replicas to 1 by default [#110](https://github.com/StrangeBeeCorp/helm-charts/pull/110)
 
 
 ## 0.3.3
