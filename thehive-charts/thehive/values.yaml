@@ -127,7 +127,7 @@ thehive:
       useHttps: false
 
   # TheHive HTTP secret
-  httpSecret: ""
+  httpSecret: "ChangeThisSecretWithOneContainingAtLeast32Chars"
   # The name of an existing k8s secret containing the HTTP secret used by TheHive
   k8sSecretName: ""
   k8sSecretKey: "http-secret"
