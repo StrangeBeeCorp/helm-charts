@@ -18,7 +18,7 @@ cortex:
   podLabels: {}
   podAnnotations: {}
 
-  replicas: 2
+  replicas: 1
 
   # Cortex Deployment strategy
   strategy:
@@ -266,7 +266,7 @@ elasticsearch:
     masterOnly: false
 
     # Number of master-elegible replicas to deploy
-    replicaCount: 2
+    replicaCount: 1
     pdb:
       create: true
       maxUnavailable: "1"
