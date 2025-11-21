@@ -65,7 +65,7 @@ cortex:
   jobDirectory: "/tmp/cortex-jobs"
 
   # Cortex HTTP secret
-  httpSecret: ""
+  httpSecret: "ChangeThisSecretWithOneContainingAtLeast32Chars"
   # The name of an existing k8s secret containing the HTTP secret used by Cortex
   k8sSecretName: ""
   k8sSecretKey: "http-secret"
@@ -184,8 +184,8 @@ cortex:
   initContainers:
     image:
       registry: docker.io
-      repository: busybox
-      tag: "1.37.0-glibc"
+      repository: curlimages/curl
+      tag: "8.17.0"
       pullPolicy: IfNotPresent
 
     # Wait for ElasticSearch "/_cluster/health" route on port 9200 to answer

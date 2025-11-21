@@ -37,8 +37,8 @@ annotations:
     - name: cortex
       image: thehiveproject/cortex:3.2.1-1
       whitelisted: true
-    - name: busybox
-      image: busybox:1.37.0-glibc
+    - name: curl
+      image: curlimages/curl:8.17.0
       whitelisted: true
   artifacthub.io/license: AGPL-3.0
   artifacthub.io/links: |

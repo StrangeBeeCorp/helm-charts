@@ -62,3 +62,21 @@ app.kubernetes.io/component: "server"
   {{- printf "%s-shared-fs-claim" (include "cortex.fullname" .) -}}
 {{- end -}}
 {{- end -}}
+
+{{/* Cortex init-container command to check ElasticSearch availability */}}
+{{- define "cortex.initContainerCheckEsCurlOptions" -}}
+{{- if or (.Values.cortex.index.password) (.Values.cortex.index.k8sSecretName) -}}
+  -fkLsS -u '{{ .Values.cortex.index.username | default "elastic" }}:${CORTEX_ELASTICSEARCH_PASSWORD}' --out-null --no-keepalive
+{{- else -}}
+  -fkLsS --out-null --no-keepalive
+{{- end -}}
+{{- end -}}
+
+{{/* Cortex init-container command to check ElasticSearch availability */}}
+{{- define "cortex.initContainerCheckEsCommand" -}}
+{{- if and (.Values.elasticsearch.enabled) (eq (len .Values.cortex.index.hostnames) 0) -}}
+  until curl {{ include "cortex.initContainerCheckEsCurlOptions" . }} {{ if .Values.cortex.initContainers.checkElasticsearch.useHttps }}https{{ else }}http{{ end }}://{{ printf "%s-elasticsearch" .Release.Name | trunc 63 }}:9200/_cluster/health; do echo 'Waiting for ElasticSearch'; sleep 5; done
+{{- else -}}
+  until curl {{ include "cortex.initContainerCheckEsCurlOptions" . }} {{ if .Values.cortex.initContainers.checkElasticsearch.useHttps }}https{{ else }}http{{ end }}://{{ index .Values.cortex.index.hostnames 0 }}:9200/_cluster/health; do echo 'Waiting for ElasticSearch'; sleep 5; done
+{{- end -}}
+{{- end -}}
