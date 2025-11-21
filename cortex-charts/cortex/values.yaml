@@ -135,7 +135,9 @@ cortex:
 
     # ElasticSearch
     search {
-      # Get credentials using environment variables
+      # Set default value for the password
+      password = ""
+      # Override credentials (if these environment variables exist)
       user = ${?CORTEX_ELASTICSEARCH_USERNAME}
       password = ${?CORTEX_ELASTICSEARCH_PASSWORD}
     }
