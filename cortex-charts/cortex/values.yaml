@@ -133,6 +133,15 @@ cortex:
       }
     }
 
+    # ElasticSearch
+    search {
+      # Set default value for the password
+      password = ""
+      # Override credentials (if these environment variables exist)
+      user = ${?CORTEX_ELASTICSEARCH_USERNAME}
+      password = ${?CORTEX_ELASTICSEARCH_PASSWORD}
+    }
+
   # Custom logback.xml file for Cortex
   logbackXml: ""
   #logbackXml: |
