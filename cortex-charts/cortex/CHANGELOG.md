@@ -2,6 +2,8 @@
 
 - Set all replicas to 1 by default [#110](https://github.com/StrangeBeeCorp/helm-charts/pull/110)
 - Fix the env var providing the HTTP secret to Cortex [#112](https://github.com/StrangeBeeCorp/helm-charts/pull/112)
+- Configure Cortex to actually use provided ElasticSearch credentials [#113](https://github.com/StrangeBeeCorp/helm-charts/pull/113)
+- Implement authenticated API call to ElasticSearch for the init-container [#114](https://github.com/StrangeBeeCorp/helm-charts/pull/114)
 
 
 ## 0.3.3
