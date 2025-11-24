@@ -358,7 +358,7 @@ metrics:
 # ElasticSearch subchart variables #
 ####################################
 
-# https://github.com/bitnami/charts/blob/elasticsearch/22.1.0/bitnami/elasticsearch/values.yaml
+# https://github.com/bitnami/charts/blob/elasticsearch/22.1.6/bitnami/elasticsearch/values.yaml
 elasticsearch:
   # Use ElasticSearch dependency Helm Chart
   enabled: true
@@ -434,18 +434,18 @@ elasticsearch:
     image:
       registry: docker.io
       repository: bitnamilegacy/elasticsearch-exporter
-      tag: 1.9.0-debian-12-r14
+      tag: 1.9.0-debian-12-r16
 
   volumePermissions:
     image:
       registry: docker.io
       repository: bitnamilegacy/os-shell
-      tag: 12-debian-12-r49
+      tag: 12-debian-12-r51
 
   sysctlImage:
     registry: docker.io
     repository: bitnamilegacy/os-shell
-    tag: 12-debian-12-r49
+    tag: 12-debian-12-r51
 
 ############################
 # MinIO subchart variables #
