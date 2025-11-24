@@ -42,10 +42,22 @@ spec:
         - name: check-elasticsearch
           image: "{{ .Values.cortex.initContainers.image.registry }}/{{ .Values.cortex.initContainers.image.repository }}:{{ .Values.cortex.initContainers.image.tag }}"
           imagePullPolicy: {{ .Values.cortex.initContainers.image.pullPolicy }}
-          {{- if and (.Values.elasticsearch.enabled) (eq (len .Values.cortex.index.hostnames) 0) }}
-          command: ['sh', '-c', "until wget --no-cache --no-check-certificate --spider {{ if .Values.cortex.initContainers.checkElasticsearch.useHttps }}https{{ else }}http{{ end }}://{{ printf "%s-elasticsearch" .Release.Name | trunc 63 }}:9200/_cluster/health; do echo 'Waiting for ElasticSearch'; sleep 5; done"]
-          {{- else }}
-          command: ['sh', '-c', "until wget --no-cache --no-check-certificate --spider {{ if .Values.cortex.initContainers.checkElasticsearch.useHttps }}https{{ else }}http{{ end }}://{{ index .Values.cortex.index.hostnames 0 }}:9200/_cluster/health; do echo 'Waiting for ElasticSearch'; sleep 5; done"]
+          command: ['sh', '-c', {{ include "cortex.initContainerCheckEsCommand" . | quote }}]
+          {{- if or (.Values.cortex.index.password) (.Values.cortex.index.k8sSecretName) }}
+          env:
+            {{- if .Values.cortex.index.password }}
+            - name: CORTEX_ELASTICSEARCH_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "cortex.fullname" . }}-secrets
+                  key: CORTEX_ELASTICSEARCH_PASSWORD
+            {{- else }}
+            - name: CORTEX_ELASTICSEARCH_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.cortex.index.k8sSecretName }}
+                  key: {{ .Values.cortex.index.k8sSecretKey }}
+            {{- end }}
           {{- end }}
       {{- end }}
       containers:

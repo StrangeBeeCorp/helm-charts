@@ -2,6 +2,7 @@
 
 - Set all replicas to 1 by default [#110](https://github.com/StrangeBeeCorp/helm-charts/pull/110)
 - Set default HTTP secret in TheHive values.yaml [#111](https://github.com/StrangeBeeCorp/helm-charts/pull/111)
+- Implement authenticated API call to ElasticSearch for the init-container [#114](https://github.com/StrangeBeeCorp/helm-charts/pull/114)
 
 
 ## 0.4.7
