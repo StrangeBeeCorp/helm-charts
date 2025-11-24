@@ -113,8 +113,8 @@ thehive:
   initContainers:
     image:
       registry: docker.io
-      repository: busybox
-      tag: "1.37.0-glibc"
+      repository: curlimages/curl
+      tag: "8.17.0"
       pullPolicy: IfNotPresent
 
     # Wait for Cassandra to be reachable on port 9042

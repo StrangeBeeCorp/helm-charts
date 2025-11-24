@@ -55,10 +55,22 @@ spec:
         - name: check-elasticsearch
           image: "{{ .Values.thehive.initContainers.image.registry }}/{{ .Values.thehive.initContainers.image.repository }}:{{ .Values.thehive.initContainers.image.tag }}"
           imagePullPolicy: {{ .Values.thehive.initContainers.image.pullPolicy }}
-          {{- if and (.Values.elasticsearch.enabled) (eq (len .Values.thehive.index.hostnames) 0) }}
-          command: ['sh', '-c', "until wget --no-cache --no-check-certificate --spider {{ if .Values.thehive.initContainers.checkElasticsearch.useHttps }}https{{ else }}http{{ end }}://{{ printf "%s-elasticsearch" .Release.Name | trunc 63 }}:9200/_cluster/health; do echo 'Waiting for ElasticSearch'; sleep 5; done"]
-          {{- else }}
-          command: ['sh', '-c', "until wget --no-cache --no-check-certificate --spider {{ if .Values.thehive.initContainers.checkElasticsearch.useHttps }}https{{ else }}http{{ end }}://{{ index .Values.thehive.index.hostnames 0 }}:9200/_cluster/health; do echo 'Waiting for ElasticSearch'; sleep 5; done"]
+          command: ['sh', '-c', {{ include "thehive.initContainerCheckEsCommand" . | quote }}]
+          {{- if or (.Values.thehive.index.password) (.Values.thehive.index.k8sSecretName) }}
+          env:
+            {{- if .Values.thehive.index.password }}
+            - name: CORTEX_ELASTICSEARCH_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "thehive.fullname" . }}-secrets
+                  key: CORTEX_ELASTICSEARCH_PASSWORD
+            {{- else }}
+            - name: CORTEX_ELASTICSEARCH_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.thehive.index.k8sSecretName }}
+                  key: {{ .Values.thehive.index.k8sSecretKey }}
+            {{- end }}
           {{- end }}
         {{- end }}
       {{- end }}
