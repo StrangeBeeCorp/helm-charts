@@ -1,0 +1,55 @@
+name: Generate Helm Docs
+
+on:
+  pull_request:
+    paths:
+      - "thehive-charts/thehive/values.yaml"
+      - "thehive-charts/thehive/README.md.gotmpl"
+  push:
+    branches:
+      - main
+    paths:
+      - "thehive-charts/thehive/values.yaml"
+      - "thehive-charts/thehive/README.md.gotmpl"
+
+jobs:
+  generate-docs:
+    runs-on: ubuntu-2404
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install helm-docs
+        run: |
+          cd /tmp
+          wget https://github.com/norwoodj/helm-docs/releases/download/v1.14.2/helm-docs_1.14.2_Linux_x86_64.tar.gz
+          tar -xzf helm-docs_1.14.2_Linux_x86_64.tar.gz
+          sudo mv helm-docs /usr/local/bin/helm-docs
+          helm-docs --version
+
+      - name: Generate documentation for TheHive chart
+        run: |
+          cd thehive-charts/thehive
+          helm-docs -t README.md.gotmpl .
+
+      - name: Check for documentation changes
+        id: check_changes
+        run: |
+          git diff --exit-code || echo "changes=true" >> $GITHUB_OUTPUT
+
+      - name: Commit and push documentation changes
+        if: steps.check_changes.outputs.changes == 'true' && github.event_name == 'push'
+        run: |
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+          git add thehive-charts/thehive/README.md
+          git commit -m "docs: auto-generate helm chart documentation [skip ci]"
+          git push
+
+      - name: Fail if documentation is out of sync (PR only)
+        if: steps.check_changes.outputs.changes == 'true' && github.event_name == 'pull_request'
+        run: |
+          echo "::error::Documentation is out of sync. Please run 'helm-docs' locally and commit the changes."
+          exit 1
