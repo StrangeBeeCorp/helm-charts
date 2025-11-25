@@ -3,7 +3,7 @@ apiVersion: v2
 
 name: cortex
 version: 0.3.3
-appVersion: "3.2.1-1"
+appVersion: "4.0.0-1"
 kubeVersion: ">= 1.23.0-0"
 
 dependencies:
@@ -35,7 +35,7 @@ annotations:
   artifacthub.io/category: security
   artifacthub.io/images: |
     - name: cortex
-      image: thehiveproject/cortex:3.2.1-1
+      image: thehiveproject/cortex:4.0.0-1
       whitelisted: true
     - name: curl
       image: curlimages/curl:8.17.0
