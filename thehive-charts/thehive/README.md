@@ -36,219 +36,191 @@ Kubernetes: `>= 1.23.0-0`
 
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
-| cassandra.cluster.datacenter | string | `"DC1-TheHive"` |  |
-| cassandra.cluster.name | string | `"TheHive"` |  |
-| cassandra.cluster.rack | string | `"Rack1-TheHive"` |  |
-| cassandra.dbUser.existingSecret | string | `""` |  |
-| cassandra.dbUser.forcePassword | bool | `false` |  |
-| cassandra.dbUser.password | string | `"ChangeThisPasswordForCassandra"` |  |
-| cassandra.dbUser.user | string | `"cassandra"` |  |
-| cassandra.enabled | bool | `true` |  |
-| cassandra.extraEnvVars[0].name | string | `"CASSANDRA_AUTHENTICATOR"` |  |
-| cassandra.extraEnvVars[0].value | string | `"PasswordAuthenticator"` |  |
-| cassandra.extraEnvVars[1].name | string | `"CASSANDRA_AUTHORIZER"` |  |
-| cassandra.extraEnvVars[1].value | string | `"CassandraAuthorizer"` |  |
-| cassandra.global.security.allowInsecureImages | bool | `true` |  |
-| cassandra.image.registry | string | `"docker.io"` |  |
-| cassandra.image.repository | string | `"bitnamilegacy/cassandra"` |  |
-| cassandra.image.tag | string | `"4.1.7-debian-12-r3"` |  |
-| cassandra.jvm.extraOpts | string | `"-Xms2g -Xmx2g -Xmn200m"` |  |
-| cassandra.jvm.maxHeapSize | string | `"2g"` |  |
-| cassandra.jvm.newHeapSize | string | `"200m"` |  |
-| cassandra.networkPolicy.enabled | bool | `false` |  |
-| cassandra.pdb.create | bool | `true` |  |
-| cassandra.pdb.maxUnavailable | string | `"1"` |  |
-| cassandra.persistence.enabled | bool | `true` |  |
-| cassandra.persistence.size | string | `"10Gi"` |  |
-| cassandra.persistence.storageClass | string | `""` |  |
-| cassandra.replicaCount | int | `1` |  |
-| cassandra.resources.limits.cpu | string | `"2000m"` |  |
-| cassandra.resources.limits.ephemeral-storage | string | `"4Gi"` |  |
-| cassandra.resources.limits.memory | string | `"3584Mi"` |  |
-| cassandra.resources.requests.cpu | string | `"1000m"` |  |
-| cassandra.resources.requests.ephemeral-storage | string | `"4Gi"` |  |
-| cassandra.resources.requests.memory | string | `"2048Mi"` |  |
-| dynamicSeedDiscovery.image.registry | string | `"docker.io"` |  |
-| dynamicSeedDiscovery.image.repository | string | `"bitnamilegacy/os-shell"` |  |
-| dynamicSeedDiscovery.image.tag | string | `"12-debian-12-r48"` |  |
-| elasticsearch.coordinating.replicaCount | int | `0` |  |
-| elasticsearch.data.replicaCount | int | `0` |  |
-| elasticsearch.enabled | bool | `true` |  |
-| elasticsearch.global.security.allowInsecureImages | bool | `true` |  |
-| elasticsearch.image.registry | string | `"docker.io"` |  |
-| elasticsearch.image.repository | string | `"bitnamilegacy/elasticsearch"` |  |
-| elasticsearch.image.tag | string | `"8.18.0-debian-12-r2"` |  |
-| elasticsearch.ingest.replicaCount | int | `0` |  |
-| elasticsearch.master.extraEnvVars[0].name | string | `"JVM_OPTS"` |  |
-| elasticsearch.master.extraEnvVars[0].value | string | `"-Xms2g -Xmx2g -Xmn200m"` |  |
-| elasticsearch.master.heapSize | string | `"2g"` |  |
-| elasticsearch.master.masterOnly | bool | `false` |  |
-| elasticsearch.master.networkPolicy.enabled | bool | `false` |  |
-| elasticsearch.master.pdb.create | bool | `true` |  |
-| elasticsearch.master.pdb.maxUnavailable | string | `"1"` |  |
-| elasticsearch.master.persistence.enabled | bool | `true` |  |
-| elasticsearch.master.persistence.size | string | `"10Gi"` |  |
-| elasticsearch.master.persistence.storageClass | string | `""` |  |
-| elasticsearch.master.replicaCount | int | `1` |  |
-| elasticsearch.master.resources.limits.cpu | string | `"2000m"` |  |
-| elasticsearch.master.resources.limits.ephemeral-storage | string | `"4Gi"` |  |
-| elasticsearch.master.resources.limits.memory | string | `"3584Mi"` |  |
-| elasticsearch.master.resources.requests.cpu | string | `"1000m"` |  |
-| elasticsearch.master.resources.requests.ephemeral-storage | string | `"4Gi"` |  |
-| elasticsearch.master.resources.requests.memory | string | `"2048Mi"` |  |
-| elasticsearch.metrics.image.registry | string | `"docker.io"` |  |
-| elasticsearch.metrics.image.repository | string | `"bitnamilegacy/elasticsearch-exporter"` |  |
-| elasticsearch.metrics.image.tag | string | `"1.9.0-debian-12-r14"` |  |
-| elasticsearch.security.elasticPassword | string | `""` |  |
-| elasticsearch.security.enabled | bool | `false` |  |
-| elasticsearch.security.existingSecret | string | `""` |  |
-| elasticsearch.security.tls | object | `{}` |  |
-| elasticsearch.sysctlImage.registry | string | `"docker.io"` |  |
-| elasticsearch.sysctlImage.repository | string | `"bitnamilegacy/os-shell"` |  |
-| elasticsearch.sysctlImage.tag | string | `"12-debian-12-r49"` |  |
-| elasticsearch.volumePermissions.image.registry | string | `"docker.io"` |  |
-| elasticsearch.volumePermissions.image.repository | string | `"bitnamilegacy/os-shell"` |  |
-| elasticsearch.volumePermissions.image.tag | string | `"12-debian-12-r49"` |  |
-| fullnameOverride | string | `""` |  |
-| imagePullSecrets | list | `[]` |  |
-| metrics.image.registry | string | `"docker.io"` |  |
-| metrics.image.repository | string | `"bitnamilegacy/cassandra-exporter"` |  |
-| metrics.image.tag | string | `"2.3.8-debian-12-r49"` |  |
-| minio.buckets[0].name | string | `"thehive"` |  |
-| minio.buckets[0].objectlocking | bool | `false` |  |
-| minio.buckets[0].policy | string | `"none"` |  |
-| minio.buckets[0].purge | bool | `false` |  |
-| minio.buckets[0].versioning | bool | `false` |  |
-| minio.drivesPerNode | int | `1` |  |
-| minio.enabled | bool | `true` |  |
-| minio.existingSecret | string | `""` |  |
-| minio.image.repository | string | `"quay.io/minio/minio"` |  |
-| minio.image.tag | string | `"RELEASE.2025-07-23T15-54-02Z"` |  |
-| minio.mcImage.repository | string | `"quay.io/minio/mc"` |  |
-| minio.mcImage.tag | string | `"RELEASE.2025-07-21T05-28-08Z"` |  |
-| minio.mode | string | `"standalone"` |  |
-| minio.persistence.enabled | bool | `true` |  |
-| minio.persistence.size | string | `"10Gi"` |  |
-| minio.persistence.storageClass | string | `""` |  |
-| minio.podDisruptionBudget.enabled | bool | `true` |  |
-| minio.podDisruptionBudget.maxUnavailable | int | `1` |  |
-| minio.pools | int | `1` |  |
-| minio.replicas | int | `1` |  |
-| minio.resources.limits.cpu | string | `"1000m"` |  |
-| minio.resources.limits.ephemeral-storage | string | `"4Gi"` |  |
-| minio.resources.limits.memory | string | `"2Gi"` |  |
-| minio.resources.requests.cpu | string | `"500m"` |  |
-| minio.resources.requests.ephemeral-storage | string | `"4Gi"` |  |
-| minio.resources.requests.memory | string | `"2Gi"` |  |
-| minio.rootPassword | string | `"ChangeThisPasswordForMinIO"` |  |
-| minio.rootUser | string | `"minio"` |  |
-| nameOverride | string | `""` |  |
-| thehive.affinity | object | `{}` |  |
-| thehive.annotations | object | `{}` |  |
-| thehive.autoscaling.enabled | bool | `false` |  |
-| thehive.autoscaling.maxReplicas | int | `4` |  |
-| thehive.autoscaling.minReplicas | int | `2` |  |
-| thehive.autoscaling.targetCPUUtilizationPercentage | int | `80` |  |
-| thehive.clusterMinNodesCount | int | `1` |  |
-| thehive.configFile | string | `""` |  |
-| thehive.cortex.api_keys | list | `[]` |  |
-| thehive.cortex.enabled | bool | `false` |  |
-| thehive.cortex.hostnames | list | `[]` |  |
-| thehive.cortex.k8sSecretKey | string | `"api-keys"` |  |
-| thehive.cortex.k8sSecretName | string | `""` |  |
-| thehive.cortex.port | int | `9001` |  |
-| thehive.cortex.protocol | string | `"http"` |  |
-| thehive.database.hostnames | list | `[]` |  |
-| thehive.database.k8sSecretKey | string | `"cassandra-password"` |  |
-| thehive.database.k8sSecretName | string | `""` |  |
-| thehive.database.password | string | `"ChangeThisPasswordForCassandra"` |  |
-| thehive.database.username | string | `"cassandra"` |  |
-| thehive.database.wait | bool | `false` |  |
-| thehive.extraCommand | list | `[]` |  |
-| thehive.extraEnv | list | `[]` |  |
-| thehive.httpSecret | string | `"ChangeThisSecretWithOneContainingAtLeast32Chars"` |  |
-| thehive.image.pullPolicy | string | `"IfNotPresent"` |  |
-| thehive.image.registry | string | `"docker.io"` |  |
-| thehive.image.repository | string | `"strangebee/thehive"` |  |
-| thehive.image.tag | string | `""` |  |
-| thehive.index.hostnames | list | `[]` |  |
-| thehive.index.k8sSecretKey | string | `"elasticsearch-password"` |  |
-| thehive.index.k8sSecretName | string | `""` |  |
-| thehive.index.password | string | `""` |  |
-| thehive.index.username | string | `"elastic"` |  |
-| thehive.ingress.annotations | object | `{}` |  |
-| thehive.ingress.className | string | `""` |  |
-| thehive.ingress.enabled | bool | `false` |  |
-| thehive.ingress.hosts[0].host | string | `"thehive.example"` |  |
-| thehive.ingress.hosts[0].paths[0].path | string | `"/"` |  |
-| thehive.ingress.hosts[0].paths[0].pathType | string | `"ImplementationSpecific"` |  |
-| thehive.ingress.tls | list | `[]` |  |
-| thehive.initContainers.checkCassandra.enabled | bool | `true` |  |
-| thehive.initContainers.checkElasticsearch.enabled | bool | `true` |  |
-| thehive.initContainers.checkElasticsearch.useHttps | bool | `false` |  |
-| thehive.initContainers.image.pullPolicy | string | `"IfNotPresent"` |  |
-| thehive.initContainers.image.registry | string | `"docker.io"` |  |
-| thehive.initContainers.image.repository | string | `"curlimages/curl"` |  |
-| thehive.initContainers.image.tag | string | `"8.17.0"` |  |
-| thehive.jvmOpts | string | `"-Xms2g -Xmx2g -Xmn300m"` |  |
-| thehive.k8sSecretKey | string | `"http-secret"` |  |
-| thehive.k8sSecretName | string | `""` |  |
-| thehive.labels | object | `{}` |  |
-| thehive.livenessProbe.enabled | bool | `true` |  |
-| thehive.livenessProbe.failureThreshold | int | `3` |  |
-| thehive.livenessProbe.initialDelaySeconds | int | `0` |  |
-| thehive.livenessProbe.periodSeconds | int | `10` |  |
-| thehive.livenessProbe.timeoutSeconds | int | `1` |  |
-| thehive.logbackXml | string | `""` |  |
-| thehive.maxUnavailable | int | `1` |  |
-| thehive.monitoring.enabled | bool | `true` |  |
-| thehive.monitoring.port | int | `9095` |  |
-| thehive.nodeSelector | object | `{}` |  |
-| thehive.podAnnotations | object | `{}` |  |
-| thehive.podLabels | object | `{}` |  |
-| thehive.podSecurityContext | object | `{}` |  |
-| thehive.readinessProbe.enabled | bool | `true` |  |
-| thehive.readinessProbe.failureThreshold | int | `3` |  |
-| thehive.readinessProbe.initialDelaySeconds | int | `0` |  |
-| thehive.readinessProbe.periodSeconds | int | `10` |  |
-| thehive.readinessProbe.successThreshold | int | `1` |  |
-| thehive.readinessProbe.timeoutSeconds | int | `1` |  |
-| thehive.replicas | int | `1` |  |
-| thehive.resources.limits.cpu | string | `"3000m"` |  |
-| thehive.resources.limits.ephemeral-storage | string | `"4Gi"` |  |
-| thehive.resources.limits.memory | string | `"3584Mi"` |  |
-| thehive.resources.requests.cpu | string | `"1000m"` |  |
-| thehive.resources.requests.ephemeral-storage | string | `"4Gi"` |  |
-| thehive.resources.requests.memory | string | `"2048Mi"` |  |
-| thehive.securityContext | object | `{}` |  |
-| thehive.service.port | int | `9000` |  |
-| thehive.service.type | string | `"ClusterIP"` |  |
-| thehive.serviceAccount.annotations | object | `{}` |  |
-| thehive.serviceAccount.automountServiceAccountToken | bool | `true` |  |
-| thehive.serviceAccount.create | bool | `true` |  |
-| thehive.serviceAccount.name | string | `""` |  |
-| thehive.startupProbe.enabled | bool | `true` |  |
-| thehive.startupProbe.failureThreshold | int | `36` |  |
-| thehive.startupProbe.initialDelaySeconds | int | `0` |  |
-| thehive.startupProbe.periodSeconds | int | `5` |  |
-| thehive.startupProbe.timeoutSeconds | int | `1` |  |
-| thehive.storage.accessKey | string | `"minio"` |  |
-| thehive.storage.bucket | string | `"thehive"` |  |
-| thehive.storage.endpoint | string | `""` |  |
-| thehive.storage.k8sSecretKey | string | `"rootPassword"` |  |
-| thehive.storage.k8sSecretName | string | `""` |  |
-| thehive.storage.region | string | `"us-east-1"` |  |
-| thehive.storage.secretKey | string | `"ChangeThisPasswordForMinIO"` |  |
-| thehive.storage.usePathAccessStyle | bool | `true` |  |
-| thehive.strategy.rollingUpdate.maxSurge | int | `1` |  |
-| thehive.strategy.rollingUpdate.maxUnavailable | int | `1` |  |
-| thehive.strategy.type | string | `"RollingUpdate"` |  |
-| thehive.tolerations | list | `[]` |  |
-| thehive.volumeMounts | list | `[]` |  |
-| thehive.volumes | list | `[]` |  |
-| volumePermissions.image.registry | string | `"docker.io"` |  |
-| volumePermissions.image.repository | string | `"bitnamilegacy/os-shell"` |  |
-| volumePermissions.image.tag | string | `"12-debian-12-r48"` |  |
+| cassandra.cluster.datacenter | string | `"DC1-TheHive"` | Cassandra datacenter name |
+| cassandra.cluster.name | string | `"TheHive"` | Cassandra cluster name |
+| cassandra.cluster.rack | string | `"Rack1-TheHive"` | Cassandra rack name |
+| cassandra.dbUser.existingSecret | string | `""` | Name of existing secret with Cassandra password (expects .data.cassandra-password key) |
+| cassandra.dbUser.forcePassword | bool | `false` | Force password update on deployment |
+| cassandra.dbUser.password | string | `"ChangeThisPasswordForCassandra"` | Cassandra database password |
+| cassandra.dbUser.user | string | `"cassandra"` | Cassandra database username |
+| cassandra.enabled | bool | `true` | Enable Cassandra dependency subchart deployment |
+| cassandra.extraEnvVars | list | `[{"name":"CASSANDRA_AUTHENTICATOR","value":"PasswordAuthenticator"},{"name":"CASSANDRA_AUTHORIZER","value":"CassandraAuthorizer"}]` | Extra environment variables for Cassandra |
+| cassandra.extraEnvVars[0] | object | `{"name":"CASSANDRA_AUTHENTICATOR","value":"PasswordAuthenticator"}` | Cassandra authenticator (use AllowAllAuthenticator for passwordless) |
+| cassandra.extraEnvVars[1] | object | `{"name":"CASSANDRA_AUTHORIZER","value":"CassandraAuthorizer"}` | Cassandra authorizer (use AllowAllAuthorizer for passwordless) |
+| cassandra.global.security.allowInsecureImages | bool | `true` | Allow insecure images to use bitnamilegacy repository |
+| cassandra.image.registry | string | `"docker.io"` | Cassandra image registry |
+| cassandra.image.repository | string | `"bitnamilegacy/cassandra"` | Cassandra image repository |
+| cassandra.image.tag | string | `"4.1.7-debian-12-r3"` | Cassandra image tag |
+| cassandra.jvm.extraOpts | string | `"-Xms2g -Xmx2g -Xmn200m"` | Additional JVM options for Cassandra |
+| cassandra.jvm.maxHeapSize | string | `"2g"` | Maximum heap size for Cassandra JVM |
+| cassandra.jvm.newHeapSize | string | `"200m"` | New generation heap size for Cassandra JVM |
+| cassandra.networkPolicy.enabled | bool | `false` | Enable network policy for Cassandra |
+| cassandra.pdb.create | bool | `true` | Create PodDisruptionBudget for Cassandra |
+| cassandra.pdb.maxUnavailable | string | `"1"` | Maximum unavailable Cassandra pods |
+| cassandra.persistence.enabled | bool | `true` | Enable persistent volume for Cassandra data |
+| cassandra.persistence.size | string | `"10Gi"` | Size of Cassandra persistent volume |
+| cassandra.persistence.storageClass | string | `""` | Storage class for Cassandra persistent volume |
+| cassandra.replicaCount | int | `1` | Number of Cassandra replicas |
+| cassandra.resources | object | `{"limits":{"cpu":"2000m","ephemeral-storage":"4Gi","memory":"3584Mi"},"requests":{"cpu":"1000m","ephemeral-storage":"4Gi","memory":"2048Mi"}}` | Resource requests and limits for Cassandra pods |
+| dynamicSeedDiscovery.image.registry | string | `"docker.io"` | Dynamic seed discovery image registry |
+| dynamicSeedDiscovery.image.repository | string | `"bitnamilegacy/os-shell"` | Dynamic seed discovery image repository |
+| dynamicSeedDiscovery.image.tag | string | `"12-debian-12-r48"` | Dynamic seed discovery image tag |
+| elasticsearch.coordinating.replicaCount | int | `0` | Number of coordinating-dedicated node replicas (disabled by default) |
+| elasticsearch.data.replicaCount | int | `0` | Number of data-dedicated node replicas (disabled by default) |
+| elasticsearch.enabled | bool | `true` | Enable ElasticSearch dependency subchart deployment |
+| elasticsearch.global.security.allowInsecureImages | bool | `true` | Allow insecure images to use bitnamilegacy repository |
+| elasticsearch.image.registry | string | `"docker.io"` | ElasticSearch image registry |
+| elasticsearch.image.repository | string | `"bitnamilegacy/elasticsearch"` | ElasticSearch image repository |
+| elasticsearch.image.tag | string | `"8.18.0-debian-12-r2"` | ElasticSearch image tag |
+| elasticsearch.ingest.replicaCount | int | `0` | Number of ingest-dedicated node replicas (disabled by default) |
+| elasticsearch.master.extraEnvVars | list | `[{"name":"JVM_OPTS","value":"-Xms2g -Xmx2g -Xmn200m"}]` | Extra environment variables for ElasticSearch master nodes |
+| elasticsearch.master.heapSize | string | `"2g"` | Heap size for ElasticSearch master nodes |
+| elasticsearch.master.masterOnly | bool | `false` | Deploy master-only nodes or multipurpose nodes (master, data, coordinating, ingest) |
+| elasticsearch.master.networkPolicy.enabled | bool | `false` | Enable network policy for ElasticSearch master nodes |
+| elasticsearch.master.pdb.create | bool | `true` | Create PodDisruptionBudget for ElasticSearch master nodes |
+| elasticsearch.master.pdb.maxUnavailable | string | `"1"` | Maximum unavailable master nodes |
+| elasticsearch.master.persistence.enabled | bool | `true` | Enable persistent volume for ElasticSearch master nodes |
+| elasticsearch.master.persistence.size | string | `"10Gi"` | Size of ElasticSearch master node persistent volume |
+| elasticsearch.master.persistence.storageClass | string | `""` | Storage class for ElasticSearch master node persistent volume |
+| elasticsearch.master.replicaCount | int | `1` | Number of master-eligible ElasticSearch replicas |
+| elasticsearch.master.resources | object | `{"limits":{"cpu":"2000m","ephemeral-storage":"4Gi","memory":"3584Mi"},"requests":{"cpu":"1000m","ephemeral-storage":"4Gi","memory":"2048Mi"}}` | Resource requests and limits for ElasticSearch master nodes |
+| elasticsearch.metrics.image.registry | string | `"docker.io"` | ElasticSearch metrics exporter image registry |
+| elasticsearch.metrics.image.repository | string | `"bitnamilegacy/elasticsearch-exporter"` | ElasticSearch metrics exporter image repository |
+| elasticsearch.metrics.image.tag | string | `"1.9.0-debian-12-r14"` | ElasticSearch metrics exporter image tag |
+| elasticsearch.security.elasticPassword | string | `""` | ElasticSearch elastic user password |
+| elasticsearch.security.enabled | bool | `false` | Enable security features (requires TLS configuration) |
+| elasticsearch.security.existingSecret | string | `""` | Name of existing secret with ElasticSearch password (expects .data.elasticsearch-password key) |
+| elasticsearch.security.tls | object | `{}` | TLS configuration for ElasticSearch |
+| elasticsearch.sysctlImage.registry | string | `"docker.io"` | Sysctl init container image registry |
+| elasticsearch.sysctlImage.repository | string | `"bitnamilegacy/os-shell"` | Sysctl init container image repository |
+| elasticsearch.sysctlImage.tag | string | `"12-debian-12-r49"` | Sysctl init container image tag |
+| elasticsearch.volumePermissions.image.registry | string | `"docker.io"` | Volume permissions init container image registry |
+| elasticsearch.volumePermissions.image.repository | string | `"bitnamilegacy/os-shell"` | Volume permissions init container image repository |
+| elasticsearch.volumePermissions.image.tag | string | `"12-debian-12-r49"` | Volume permissions init container image tag |
+| fullnameOverride | string | `""` | Override the full name of the chart |
+| imagePullSecrets | list | `[]` | Image pull secrets for private registries |
+| metrics.image.registry | string | `"docker.io"` | Cassandra metrics exporter image registry |
+| metrics.image.repository | string | `"bitnamilegacy/cassandra-exporter"` | Cassandra metrics exporter image repository |
+| metrics.image.tag | string | `"2.3.8-debian-12-r49"` | Cassandra metrics exporter image tag |
+| minio.buckets | list | `[{"name":"thehive","objectlocking":false,"policy":"none","purge":false,"versioning":false}]` | MinIO bucket configuration |
+| minio.drivesPerNode | int | `1` | Number of drives per MinIO node |
+| minio.enabled | bool | `true` | Enable MinIO dependency subchart deployment (disable if using external S3-compatible storage) |
+| minio.existingSecret | string | `""` | Name of existing secret with MinIO credentials (expects .data.rootUser and .data.rootPassword keys) |
+| minio.image.repository | string | `"quay.io/minio/minio"` | MinIO image repository |
+| minio.image.tag | string | `"RELEASE.2025-07-23T15-54-02Z"` | MinIO image tag |
+| minio.mcImage.repository | string | `"quay.io/minio/mc"` | MinIO client (mc) image repository |
+| minio.mcImage.tag | string | `"RELEASE.2025-07-21T05-28-08Z"` | MinIO client (mc) image tag |
+| minio.mode | string | `"standalone"` | MinIO deployment mode (standalone or distributed) |
+| minio.persistence.enabled | bool | `true` | Enable persistent volume for MinIO data |
+| minio.persistence.size | string | `"10Gi"` | Size of MinIO persistent volume |
+| minio.persistence.storageClass | string | `""` | Storage class for MinIO persistent volume |
+| minio.podDisruptionBudget.enabled | bool | `true` | Enable PodDisruptionBudget for MinIO |
+| minio.podDisruptionBudget.maxUnavailable | int | `1` | Maximum unavailable MinIO pods |
+| minio.pools | int | `1` | Number of expanded MinIO clusters |
+| minio.replicas | int | `1` | Number of MinIO pod replicas |
+| minio.resources | object | `{"limits":{"cpu":"1000m","ephemeral-storage":"4Gi","memory":"2Gi"},"requests":{"cpu":"500m","ephemeral-storage":"4Gi","memory":"2Gi"}}` | Resource requests and limits for MinIO pods |
+| minio.rootPassword | string | `"ChangeThisPasswordForMinIO"` | MinIO root password |
+| minio.rootUser | string | `"minio"` | MinIO root username |
+| nameOverride | string | `""` | Override the name of the chart |
+| thehive.affinity | object | `{}` | Affinity rules for pod assignment |
+| thehive.annotations | object | `{}` | Additional annotations to attach to TheHive resources |
+| thehive.autoscaling.enabled | bool | `false` | Enable horizontal pod autoscaling |
+| thehive.autoscaling.maxReplicas | int | `4` | Maximum number of replicas for autoscaling |
+| thehive.autoscaling.minReplicas | int | `2` | Minimum number of replicas for autoscaling |
+| thehive.autoscaling.targetCPUUtilizationPercentage | int | `80` | Target CPU utilization percentage for autoscaling |
+| thehive.clusterMinNodesCount | int | `1` | Minimum number of TheHive nodes in cluster |
+| thehive.configFile | string | `""` | Custom application.conf configuration file content for TheHive |
+| thehive.cortex.api_keys | list | `[]` | Cortex API keys (each key maps to a hostname in order) |
+| thehive.cortex.enabled | bool | `false` | Enable Cortex integration (can also configure Cortex servers from TheHive UI) |
+| thehive.cortex.hostnames | list | `[]` | List of Cortex server hostnames |
+| thehive.cortex.k8sSecretKey | string | `"api-keys"` | Key in the secret containing Cortex API keys |
+| thehive.cortex.k8sSecretName | string | `""` | Name of existing Kubernetes secret containing Cortex API keys (comma-separated format) |
+| thehive.cortex.port | int | `9001` | Cortex server port |
+| thehive.cortex.protocol | string | `"http"` | Cortex protocol (http or https) |
+| thehive.database.hostnames | list | `[]` | List of Cassandra hostnames (auto-configured if Cassandra subchart is enabled and this is empty) |
+| thehive.database.k8sSecretKey | string | `"cassandra-password"` | Key in the secret containing Cassandra password |
+| thehive.database.k8sSecretName | string | `""` | Name of existing Kubernetes secret containing Cassandra password |
+| thehive.database.password | string | `"ChangeThisPasswordForCassandra"` | Cassandra password for database connection (should match Cassandra subchart credentials if enabled) |
+| thehive.database.username | string | `"cassandra"` | Cassandra username for database connection |
+| thehive.database.wait | bool | `false` | Wait 30 seconds before starting TheHive to allow database initialization |
+| thehive.extraCommand | list | `[]` | Extra command-line arguments for TheHive entrypoint |
+| thehive.extraEnv | list | `[]` | Extra environment variables for TheHive container |
+| thehive.httpSecret | string | `"ChangeThisSecretWithOneContainingAtLeast32Chars"` | HTTP secret for TheHive application (must be at least 32 characters) |
+| thehive.image.pullPolicy | string | `"IfNotPresent"` | Image pull policy |
+| thehive.image.registry | string | `"docker.io"` | Docker registry for TheHive image |
+| thehive.image.repository | string | `"strangebee/thehive"` | TheHive image repository |
+| thehive.image.tag | string | `""` | TheHive image tag (defaults to chart appVersion if not set) |
+| thehive.index.hostnames | list | `[]` | List of ElasticSearch hostnames (auto-configured if ElasticSearch subchart is enabled and this is empty) |
+| thehive.index.k8sSecretKey | string | `"elasticsearch-password"` | Key in the secret containing ElasticSearch password |
+| thehive.index.k8sSecretName | string | `""` | Name of existing Kubernetes secret containing ElasticSearch password |
+| thehive.index.password | string | `""` | ElasticSearch password for index connection (should match ElasticSearch subchart credentials if enabled) |
+| thehive.index.username | string | `"elastic"` | ElasticSearch username for index connection |
+| thehive.ingress.annotations | object | `{}` | Ingress annotations |
+| thehive.ingress.className | string | `""` | Ingress class name |
+| thehive.ingress.enabled | bool | `false` | Enable ingress resource creation |
+| thehive.ingress.hosts | list | `[{"host":"thehive.example","paths":[{"path":"/","pathType":"ImplementationSpecific"}]}]` | Ingress hosts configuration |
+| thehive.ingress.tls | list | `[]` | Ingress TLS configuration |
+| thehive.initContainers.checkCassandra.enabled | bool | `true` | Enable init container to wait for Cassandra readiness on port 9042 |
+| thehive.initContainers.checkElasticsearch.enabled | bool | `true` | Enable init container to wait for ElasticSearch readiness |
+| thehive.initContainers.checkElasticsearch.useHttps | bool | `false` | Use HTTPS for ElasticSearch health check |
+| thehive.initContainers.image.pullPolicy | string | `"IfNotPresent"` | Init container image pull policy |
+| thehive.initContainers.image.registry | string | `"docker.io"` | Docker registry for init container image |
+| thehive.initContainers.image.repository | string | `"curlimages/curl"` | Init container image repository |
+| thehive.initContainers.image.tag | string | `"8.17.0"` | Init container image tag |
+| thehive.jvmOpts | string | `"-Xms2g -Xmx2g -Xmn300m"` | JVM options for TheHive application |
+| thehive.k8sSecretKey | string | `"http-secret"` | Key in the secret containing TheHive HTTP secret |
+| thehive.k8sSecretName | string | `""` | Name of existing Kubernetes secret containing TheHive HTTP secret |
+| thehive.labels | object | `{}` | Additional labels to attach to TheHive resources |
+| thehive.livenessProbe.enabled | bool | `true` | Enable liveness probe |
+| thehive.livenessProbe.failureThreshold | int | `3` | Number of failures before restarting container |
+| thehive.livenessProbe.initialDelaySeconds | int | `0` | Initial delay before liveness probe begins |
+| thehive.livenessProbe.periodSeconds | int | `10` | Frequency of liveness probe checks |
+| thehive.livenessProbe.timeoutSeconds | int | `1` | Timeout for each liveness probe attempt |
+| thehive.logbackXml | string | `""` | Custom logback.xml logging configuration file content for TheHive |
+| thehive.maxUnavailable | int | `1` | Maximum number of unavailable pods in PodDisruptionBudget |
+| thehive.monitoring.enabled | bool | `true` | Enable monitoring port exposure (edit application.conf to configure Kamon) |
+| thehive.monitoring.port | int | `9095` | Monitoring metrics port |
+| thehive.nodeSelector | object | `{}` | Node selector for pod assignment |
+| thehive.podAnnotations | object | `{}` | Additional annotations to attach to TheHive pods |
+| thehive.podLabels | object | `{}` | Additional labels to attach to TheHive pods |
+| thehive.podSecurityContext | object | `{}` | Pod-wide security context |
+| thehive.readinessProbe.enabled | bool | `true` | Enable readiness probe |
+| thehive.readinessProbe.failureThreshold | int | `3` | Number of failures before marking pod as not ready |
+| thehive.readinessProbe.initialDelaySeconds | int | `0` | Initial delay before readiness probe begins |
+| thehive.readinessProbe.periodSeconds | int | `10` | Frequency of readiness probe checks |
+| thehive.readinessProbe.successThreshold | int | `1` | Number of successes before marking pod as ready |
+| thehive.readinessProbe.timeoutSeconds | int | `1` | Timeout for each readiness probe attempt |
+| thehive.replicas | int | `1` | Number of TheHive replicas (only used when autoscaling.enabled is false) |
+| thehive.resources | object | `{"limits":{"cpu":"3000m","ephemeral-storage":"4Gi","memory":"3584Mi"},"requests":{"cpu":"1000m","ephemeral-storage":"4Gi","memory":"2048Mi"}}` | Resource requests and limits for TheHive pods |
+| thehive.securityContext | object | `{}` | Container-level security context |
+| thehive.service.port | int | `9000` | TheHive application port |
+| thehive.service.type | string | `"ClusterIP"` | Kubernetes service type |
+| thehive.serviceAccount.annotations | object | `{}` | Annotations for the service account |
+| thehive.serviceAccount.automountServiceAccountToken | bool | `true` | Automatically mount Kubernetes API credentials |
+| thehive.serviceAccount.create | bool | `true` | Create a service account for TheHive |
+| thehive.serviceAccount.name | string | `""` | Name of the service account (generated if empty) |
+| thehive.startupProbe.enabled | bool | `true` | Enable startup probe (set failureThreshold high to prevent CrashLoops during schema migrations) |
+| thehive.startupProbe.failureThreshold | int | `36` | Number of failures before marking pod as failed |
+| thehive.startupProbe.initialDelaySeconds | int | `0` | Initial delay before startup probe begins |
+| thehive.startupProbe.periodSeconds | int | `5` | Frequency of startup probe checks |
+| thehive.startupProbe.timeoutSeconds | int | `1` | Timeout for each startup probe attempt |
+| thehive.storage.accessKey | string | `"minio"` | Access key for object storage connection (should match MinIO subchart credentials if enabled) |
+| thehive.storage.bucket | string | `"thehive"` | Object storage bucket name for TheHive data |
+| thehive.storage.endpoint | string | `""` | Object storage endpoint URL (auto-configured if MinIO subchart is enabled and this is empty) |
+| thehive.storage.k8sSecretKey | string | `"rootPassword"` | Key in the secret containing object storage secret key |
+| thehive.storage.k8sSecretName | string | `""` | Name of existing Kubernetes secret containing object storage secret key |
+| thehive.storage.region | string | `"us-east-1"` | Object storage region |
+| thehive.storage.secretKey | string | `"ChangeThisPasswordForMinIO"` | Secret key for object storage connection (should match MinIO subchart credentials if enabled) |
+| thehive.storage.usePathAccessStyle | bool | `true` | Use path-style access for object storage (required for MinIO) |
+| thehive.strategy.rollingUpdate.maxSurge | int | `1` | Maximum number of pods that can be created over the desired number of pods (only for RollingUpdate) |
+| thehive.strategy.rollingUpdate.maxUnavailable | int | `1` | Maximum number of pods that can be unavailable during the update (only for RollingUpdate) |
+| thehive.strategy.type | string | `"RollingUpdate"` | Deployment strategy type. Set to "RollingUpdate" or "Recreate" depending on HA needs and TheHive version upgrade (schema migrations) |
+| thehive.tolerations | list | `[]` | Tolerations for pod assignment |
+| thehive.volumeMounts | list | `[]` | Additional volume mounts for TheHive container |
+| thehive.volumes | list | `[]` | Additional volumes for TheHive deployment |
+| volumePermissions.image.registry | string | `"docker.io"` | Volume permissions init container image registry |
+| volumePermissions.image.repository | string | `"bitnamilegacy/os-shell"` | Volume permissions init container image repository |
+| volumePermissions.image.tag | string | `"12-debian-12-r48"` | Volume permissions init container image tag |
 
 ----------------------------------------------
 Autogenerated from chart metadata using [helm-docs v1.14.2](https://github.com/norwoodj/helm-docs/releases/v1.14.2)
