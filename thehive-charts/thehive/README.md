@@ -159,6 +159,7 @@ Kubernetes: `>= 1.23.0-0`
 | thehive.ingress.className | string | `""` | Ingress class name |
 | thehive.ingress.enabled | bool | `false` | Enable ingress resource creation |
 | thehive.ingress.hosts | list | `[{"host":"thehive.example","paths":[{"path":"/","pathType":"ImplementationSpecific"}]}]` | Ingress hosts configuration |
+| thehive.ingress.hosts[0] | object | `{"host":"thehive.example","paths":[{"path":"/","pathType":"ImplementationSpecific"}]}` | a DNS name to access TheHive |
 | thehive.ingress.tls | list | `[]` | Ingress TLS configuration |
 | thehive.initContainers.checkCassandra.enabled | bool | `true` | Enable init container to wait for Cassandra readiness on port 9042 |
 | thehive.initContainers.checkElasticsearch.enabled | bool | `true` | Enable init container to wait for ElasticSearch readiness |
