@@ -90,7 +90,7 @@ thehive:
     # -- List of Cassandra hostnames (auto-configured if Cassandra subchart is enabled and this is empty)
     hostnames: []
       #- "mycassandra.example.com"
-    # -- Wait 30 seconds before starting TheHive to allow database initialization
+    # -- Wait for the database to be available
     wait: false
 
   index:
