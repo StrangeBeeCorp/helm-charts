@@ -279,6 +279,7 @@ thehive:
       #kubernetes.io/tls-acme: "true"
     # -- Ingress hosts configuration
     hosts:
+      # -- a DNS name to access TheHive
       - host: thehive.example
         paths:
           - path: /
