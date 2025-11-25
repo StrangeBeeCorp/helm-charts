@@ -1,0 +1,24 @@
+# {{ block "chart.name" . }}{{ end }}
+
+{{ block "chart.description" . }}{{ end }}
+
+{{ template "chart.badgesSection" . }}
+
+## Description
+
+{{ template "chart.description" . }}
+
+Please refer to [StrangeBee's official documentation page](https://docs.strangebee.com/thehive/installation/kubernetes/) for installation instructions and configuration.
+
+
+{{ template "chart.homepageLine" . }}
+
+{{ template "chart.maintainersSection" . }}
+
+{{ template "chart.sourcesSection" . }}
+
+{{ template "chart.requirementsSection" . }}
+
+{{ template "chart.valuesSection" . }}
+
+{{ template "helm-docs.versionFooter" . }}
