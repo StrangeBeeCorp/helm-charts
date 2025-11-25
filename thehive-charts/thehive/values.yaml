@@ -316,6 +316,7 @@ thehive:
 # Cassandra subchart variables #
 ################################
 
+# https://github.com/bitnami/charts/blob/cassandra/12.3.11/bitnami/cassandra/values.yaml
 cassandra:
   # -- Enable Cassandra dependency subchart deployment
   enabled: true
@@ -406,8 +407,7 @@ dynamicSeedDiscovery:
     registry: docker.io
     # -- Dynamic seed discovery image repository
     repository: bitnamilegacy/os-shell
-    # -- Dynamic seed discovery image tag
-    tag: 12-debian-12-r48
+    tag: 12-debian-12-r51
 
 volumePermissions:
   image:
@@ -415,8 +415,7 @@ volumePermissions:
     registry: docker.io
     # -- Volume permissions init container image repository
     repository: bitnamilegacy/os-shell
-    # -- Volume permissions init container image tag
-    tag: 12-debian-12-r48
+    tag: 12-debian-12-r51
 
 metrics:
   image:
@@ -424,13 +423,13 @@ metrics:
     registry: docker.io
     # -- Cassandra metrics exporter image repository
     repository: bitnamilegacy/cassandra-exporter
-    # -- Cassandra metrics exporter image tag
-    tag: 2.3.8-debian-12-r49
+    tag: 2.3.8-debian-12-r51
 
 ####################################
 # ElasticSearch subchart variables #
 ####################################
 
+# https://github.com/bitnami/charts/blob/elasticsearch/22.1.6/bitnami/elasticsearch/values.yaml
 elasticsearch:
   # -- Enable ElasticSearch dependency subchart deployment
   enabled: true
@@ -445,8 +444,7 @@ elasticsearch:
     registry: docker.io
     # -- ElasticSearch image repository
     repository: bitnamilegacy/elasticsearch
-    # -- ElasticSearch image tag
-    tag: "8.18.0-debian-12-r2"
+    tag: "9.1.2-debian-12-r0"
 
   security:
     # -- TLS configuration for ElasticSearch
@@ -518,8 +516,7 @@ elasticsearch:
       registry: docker.io
       # -- ElasticSearch metrics exporter image repository
       repository: bitnamilegacy/elasticsearch-exporter
-      # -- ElasticSearch metrics exporter image tag
-      tag: 1.9.0-debian-12-r14
+      tag: 1.9.0-debian-12-r16
 
   volumePermissions:
     image:
@@ -527,16 +524,14 @@ elasticsearch:
       registry: docker.io
       # -- Volume permissions init container image repository
       repository: bitnamilegacy/os-shell
-      # -- Volume permissions init container image tag
-      tag: 12-debian-12-r49
+      tag: 12-debian-12-r51
 
   sysctlImage:
     # -- Sysctl init container image registry
     registry: docker.io
     # -- Sysctl init container image repository
     repository: bitnamilegacy/os-shell
-    # -- Sysctl init container image tag
-    tag: 12-debian-12-r49
+    tag: 12-debian-12-r51
 
 ############################
 # MinIO subchart variables #
@@ -549,14 +544,12 @@ minio:
   image:
     # -- MinIO image repository
     repository: quay.io/minio/minio
-    # -- MinIO image tag
-    tag: RELEASE.2025-07-23T15-54-02Z
+    tag: RELEASE.2025-09-07T16-13-09Z
 
   mcImage:
     # -- MinIO client (mc) image repository
     repository: quay.io/minio/mc
-    # -- MinIO client (mc) image tag
-    tag: RELEASE.2025-07-21T05-28-08Z
+    tag: RELEASE.2025-08-13T08-35-41Z
 
   # -- MinIO root username
   rootUser: "minio"
