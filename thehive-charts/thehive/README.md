@@ -142,7 +142,7 @@ Kubernetes: `>= 1.23.0-0`
 | thehive.database.k8sSecretName | string | `""` | Name of existing Kubernetes secret containing Cassandra password |
 | thehive.database.password | string | `"ChangeThisPasswordForCassandra"` | Cassandra password for database connection (should match Cassandra subchart credentials if enabled) |
 | thehive.database.username | string | `"cassandra"` | Cassandra username for database connection |
-| thehive.database.wait | bool | `false` | Wait 30 seconds before starting TheHive to allow database initialization |
+| thehive.database.wait | bool | `false` | Wait for the database to be available |
 | thehive.extraCommand | list | `[]` | Extra command-line arguments for TheHive entrypoint |
 | thehive.extraEnv | list | `[]` | Extra environment variables for TheHive container |
 | thehive.httpSecret | string | `"ChangeThisSecretWithOneContainingAtLeast32Chars"` | HTTP secret for TheHive application (must be at least 32 characters) |
