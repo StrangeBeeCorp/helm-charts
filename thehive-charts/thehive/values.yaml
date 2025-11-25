@@ -271,7 +271,7 @@ thehive:
 # Cassandra subchart variables #
 ################################
 
-# https://github.com/bitnami/charts/blob/cassandra/12.3.13/bitnami/cassandra/values.yaml
+# https://github.com/bitnami/charts/blob/cassandra/12.3.11/bitnami/cassandra/values.yaml
 cassandra:
   # Use Cassandra dependency Helm Chart
   enabled: true
