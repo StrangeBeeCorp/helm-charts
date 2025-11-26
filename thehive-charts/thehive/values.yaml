@@ -22,7 +22,7 @@ thehive:
   # -- Additional annotations to attach to TheHive pods
   podAnnotations: {}
 
-  # -- Number of TheHive replicas (only used when autoscaling.enabled is false)
+  # -- Number of TheHive replicas (only used when thehive.autoscaling.enabled is false)
   replicas: 1
 
   strategy:
@@ -37,7 +37,7 @@ thehive:
   # -- Maximum number of unavailable pods in PodDisruptionBudget
   maxUnavailable: 1
 
-  # -- Minimum number of TheHive nodes in cluster
+  # -- Minimum number of TheHive nodes to form a cluster
   clusterMinNodesCount: 1
 
   autoscaling:
@@ -88,7 +88,7 @@ thehive:
     # -- List of Cassandra hostnames (auto-configured if Cassandra subchart is enabled and this is empty)
     hostnames: []
       #- "mycassandra.example.com"
-    # -- Wait for the database to be available
+    # -- Wait 30 seconds before starting TheHive (can be used to give time for Cassandra to start)
     wait: false
 
   index:
@@ -134,13 +134,13 @@ thehive:
       pullPolicy: IfNotPresent
 
     checkCassandra:
-      # -- Enable init container to wait for Cassandra readiness on port 9042
+      # -- Add an init container waiting for Cassandra to listen on port 9042
       enabled: true
 
     checkElasticsearch:
-      # -- Enable init container to wait for ElasticSearch readiness
+      # -- Add an init container waiting for ElasticSearch to answer when requested /_cluster/health route on port 9200
       enabled: true
-      # -- Use HTTPS for ElasticSearch health check
+      # -- Use HTTPS for ElasticSearch availability check
       useHttps: false
 
   # -- HTTP secret for TheHive application (must be at least 32 characters)
@@ -277,7 +277,7 @@ thehive:
       #kubernetes.io/tls-acme: "true"
     # -- Ingress hosts configuration
     hosts:
-      # -- a DNS name to access TheHive
+      # -- A DNS name to access TheHive
       - host: thehive.example
         paths:
           - path: /
@@ -321,7 +321,7 @@ cassandra:
 
   global:
     security:
-      # -- Allow insecure images to use bitnamilegacy repository
+      # -- Allow the use of insecure images from bitnamilegacy repository
       allowInsecureImages: true
 
   image:
@@ -437,7 +437,7 @@ elasticsearch:
 
   global:
     security:
-      # -- Allow insecure images to use bitnamilegacy repository
+      # -- Allow the use of insecure images from bitnamilegacy repository
       allowInsecureImages: true
 
   image:
@@ -543,7 +543,7 @@ elasticsearch:
 ############################
 
 minio:
-  # -- Enable MinIO dependency subchart deployment (disable if using external S3-compatible storage)
+  # -- Enable MinIO dependency subchart deployment (disable if using external S3-compatible storage or a filesystem shared between pods)
   enabled: true
 
   image:
