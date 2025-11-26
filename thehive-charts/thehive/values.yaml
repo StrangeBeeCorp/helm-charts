@@ -2,8 +2,6 @@
 # TheHive Helm Chart variables #
 ################################
 
-# Refer to [this documentation page](https://docs.strangebee.com/thehive/installation/kubernetes/) for installation instructions and configuration.
-
 # -- Override the name of the chart
 nameOverride: ""
 # -- Override the full name of the chart
@@ -407,6 +405,7 @@ dynamicSeedDiscovery:
     registry: docker.io
     # -- Dynamic seed discovery image repository
     repository: bitnamilegacy/os-shell
+    # -- Dynamic seed discovery image tag
     tag: 12-debian-12-r51
 
 volumePermissions:
@@ -415,6 +414,7 @@ volumePermissions:
     registry: docker.io
     # -- Volume permissions init container image repository
     repository: bitnamilegacy/os-shell
+    # -- Volume permissions init container image tag
     tag: 12-debian-12-r51
 
 metrics:
@@ -423,6 +423,7 @@ metrics:
     registry: docker.io
     # -- Cassandra metrics exporter image repository
     repository: bitnamilegacy/cassandra-exporter
+    # -- Cassandra metrics exporter image tag
     tag: 2.3.8-debian-12-r51
 
 ####################################
@@ -444,6 +445,7 @@ elasticsearch:
     registry: docker.io
     # -- ElasticSearch image repository
     repository: bitnamilegacy/elasticsearch
+    # -- ElasticSearch image tag
     tag: "9.1.2-debian-12-r0"
 
   security:
@@ -516,6 +518,7 @@ elasticsearch:
       registry: docker.io
       # -- ElasticSearch metrics exporter image repository
       repository: bitnamilegacy/elasticsearch-exporter
+      # -- ElasticSearch metrics exporter image tag
       tag: 1.9.0-debian-12-r16
 
   volumePermissions:
@@ -524,6 +527,7 @@ elasticsearch:
       registry: docker.io
       # -- Volume permissions init container image repository
       repository: bitnamilegacy/os-shell
+      # -- Volume permissions init container image tag
       tag: 12-debian-12-r51
 
   sysctlImage:
@@ -531,6 +535,7 @@ elasticsearch:
     registry: docker.io
     # -- Sysctl init container image repository
     repository: bitnamilegacy/os-shell
+    # -- Sysctl init container image tag
     tag: 12-debian-12-r51
 
 ############################
@@ -544,11 +549,13 @@ minio:
   image:
     # -- MinIO image repository
     repository: quay.io/minio/minio
+    # -- MinIO image tag
     tag: RELEASE.2025-09-07T16-13-09Z
 
   mcImage:
     # -- MinIO client (mc) image repository
     repository: quay.io/minio/mc
+    # -- MinIO client (mc) image tag
     tag: RELEASE.2025-08-13T08-35-41Z
 
   # -- MinIO root username

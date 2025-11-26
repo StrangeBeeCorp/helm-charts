@@ -64,14 +64,14 @@ Kubernetes: `>= 1.23.0-0`
 | cassandra.resources | object | `{"limits":{"cpu":"2000m","ephemeral-storage":"4Gi","memory":"3584Mi"},"requests":{"cpu":"1000m","ephemeral-storage":"4Gi","memory":"2048Mi"}}` | Resource requests and limits for Cassandra pods |
 | dynamicSeedDiscovery.image.registry | string | `"docker.io"` | Dynamic seed discovery image registry |
 | dynamicSeedDiscovery.image.repository | string | `"bitnamilegacy/os-shell"` | Dynamic seed discovery image repository |
-| dynamicSeedDiscovery.image.tag | string | `"12-debian-12-r51"` |  |
+| dynamicSeedDiscovery.image.tag | string | `"12-debian-12-r51"` | Dynamic seed discovery image tag |
 | elasticsearch.coordinating.replicaCount | int | `0` | Number of coordinating-dedicated node replicas (disabled by default) |
 | elasticsearch.data.replicaCount | int | `0` | Number of data-dedicated node replicas (disabled by default) |
 | elasticsearch.enabled | bool | `true` | Enable ElasticSearch dependency subchart deployment |
 | elasticsearch.global.security.allowInsecureImages | bool | `true` | Allow insecure images to use bitnamilegacy repository |
 | elasticsearch.image.registry | string | `"docker.io"` | ElasticSearch image registry |
 | elasticsearch.image.repository | string | `"bitnamilegacy/elasticsearch"` | ElasticSearch image repository |
-| elasticsearch.image.tag | string | `"9.1.2-debian-12-r0"` |  |
+| elasticsearch.image.tag | string | `"9.1.2-debian-12-r0"` | ElasticSearch image tag |
 | elasticsearch.ingest.replicaCount | int | `0` | Number of ingest-dedicated node replicas (disabled by default) |
 | elasticsearch.master.extraEnvVars | list | `[{"name":"JVM_OPTS","value":"-Xms2g -Xmx2g -Xmn200m"}]` | Extra environment variables for ElasticSearch master nodes |
 | elasticsearch.master.heapSize | string | `"2g"` | Heap size for ElasticSearch master nodes |
@@ -86,30 +86,30 @@ Kubernetes: `>= 1.23.0-0`
 | elasticsearch.master.resources | object | `{"limits":{"cpu":"2000m","ephemeral-storage":"4Gi","memory":"3584Mi"},"requests":{"cpu":"1000m","ephemeral-storage":"4Gi","memory":"2048Mi"}}` | Resource requests and limits for ElasticSearch master nodes |
 | elasticsearch.metrics.image.registry | string | `"docker.io"` | ElasticSearch metrics exporter image registry |
 | elasticsearch.metrics.image.repository | string | `"bitnamilegacy/elasticsearch-exporter"` | ElasticSearch metrics exporter image repository |
-| elasticsearch.metrics.image.tag | string | `"1.9.0-debian-12-r16"` |  |
+| elasticsearch.metrics.image.tag | string | `"1.9.0-debian-12-r16"` | ElasticSearch metrics exporter image tag |
 | elasticsearch.security.elasticPassword | string | `""` | ElasticSearch elastic user password |
 | elasticsearch.security.enabled | bool | `false` | Enable security features (requires TLS configuration) |
 | elasticsearch.security.existingSecret | string | `""` | Name of existing secret with ElasticSearch password (expects .data.elasticsearch-password key) |
 | elasticsearch.security.tls | object | `{}` | TLS configuration for ElasticSearch |
 | elasticsearch.sysctlImage.registry | string | `"docker.io"` | Sysctl init container image registry |
 | elasticsearch.sysctlImage.repository | string | `"bitnamilegacy/os-shell"` | Sysctl init container image repository |
-| elasticsearch.sysctlImage.tag | string | `"12-debian-12-r51"` |  |
+| elasticsearch.sysctlImage.tag | string | `"12-debian-12-r51"` | Sysctl init container image tag |
 | elasticsearch.volumePermissions.image.registry | string | `"docker.io"` | Volume permissions init container image registry |
 | elasticsearch.volumePermissions.image.repository | string | `"bitnamilegacy/os-shell"` | Volume permissions init container image repository |
-| elasticsearch.volumePermissions.image.tag | string | `"12-debian-12-r51"` |  |
+| elasticsearch.volumePermissions.image.tag | string | `"12-debian-12-r51"` | Volume permissions init container image tag |
 | fullnameOverride | string | `""` | Override the full name of the chart |
 | imagePullSecrets | list | `[]` | Image pull secrets for private registries |
 | metrics.image.registry | string | `"docker.io"` | Cassandra metrics exporter image registry |
 | metrics.image.repository | string | `"bitnamilegacy/cassandra-exporter"` | Cassandra metrics exporter image repository |
-| metrics.image.tag | string | `"2.3.8-debian-12-r51"` |  |
+| metrics.image.tag | string | `"2.3.8-debian-12-r51"` | Cassandra metrics exporter image tag |
 | minio.buckets | list | `[{"name":"thehive","objectlocking":false,"policy":"none","purge":false,"versioning":false}]` | MinIO bucket configuration |
 | minio.drivesPerNode | int | `1` | Number of drives per MinIO node |
 | minio.enabled | bool | `true` | Enable MinIO dependency subchart deployment (disable if using external S3-compatible storage) |
 | minio.existingSecret | string | `""` | Name of existing secret with MinIO credentials (expects .data.rootUser and .data.rootPassword keys) |
 | minio.image.repository | string | `"quay.io/minio/minio"` | MinIO image repository |
-| minio.image.tag | string | `"RELEASE.2025-09-07T16-13-09Z"` |  |
+| minio.image.tag | string | `"RELEASE.2025-09-07T16-13-09Z"` | MinIO image tag |
 | minio.mcImage.repository | string | `"quay.io/minio/mc"` | MinIO client (mc) image repository |
-| minio.mcImage.tag | string | `"RELEASE.2025-08-13T08-35-41Z"` |  |
+| minio.mcImage.tag | string | `"RELEASE.2025-08-13T08-35-41Z"` | MinIO client (mc) image tag |
 | minio.mode | string | `"standalone"` | MinIO deployment mode (standalone or distributed) |
 | minio.persistence.enabled | bool | `true` | Enable persistent volume for MinIO data |
 | minio.persistence.size | string | `"10Gi"` | Size of MinIO persistent volume |
@@ -221,7 +221,7 @@ Kubernetes: `>= 1.23.0-0`
 | thehive.volumes | list | `[]` | Additional volumes for TheHive deployment |
 | volumePermissions.image.registry | string | `"docker.io"` | Volume permissions init container image registry |
 | volumePermissions.image.repository | string | `"bitnamilegacy/os-shell"` | Volume permissions init container image repository |
-| volumePermissions.image.tag | string | `"12-debian-12-r51"` |  |
+| volumePermissions.image.tag | string | `"12-debian-12-r51"` | Volume permissions init container image tag |
 
 ----------------------------------------------
 Autogenerated from chart metadata using [helm-docs v1.14.2](https://github.com/norwoodj/helm-docs/releases/v1.14.2)
