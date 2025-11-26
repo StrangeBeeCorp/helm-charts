@@ -47,7 +47,7 @@ Kubernetes: `>= 1.23.0-0`
 | cassandra.extraEnvVars | list | `[{"name":"CASSANDRA_AUTHENTICATOR","value":"PasswordAuthenticator"},{"name":"CASSANDRA_AUTHORIZER","value":"CassandraAuthorizer"}]` | Extra environment variables for Cassandra |
 | cassandra.extraEnvVars[0] | object | `{"name":"CASSANDRA_AUTHENTICATOR","value":"PasswordAuthenticator"}` | Cassandra authenticator (use AllowAllAuthenticator for passwordless) |
 | cassandra.extraEnvVars[1] | object | `{"name":"CASSANDRA_AUTHORIZER","value":"CassandraAuthorizer"}` | Cassandra authorizer (use AllowAllAuthorizer for passwordless) |
-| cassandra.global.security.allowInsecureImages | bool | `true` | Allow insecure images to use bitnamilegacy repository |
+| cassandra.global.security.allowInsecureImages | bool | `true` | Allow the use of insecure images from bitnamilegacy repository |
 | cassandra.image.registry | string | `"docker.io"` | Cassandra image registry |
 | cassandra.image.repository | string | `"bitnamilegacy/cassandra"` | Cassandra image repository |
 | cassandra.image.tag | string | `"4.1.7-debian-12-r3"` | Cassandra image tag |
@@ -68,7 +68,7 @@ Kubernetes: `>= 1.23.0-0`
 | elasticsearch.coordinating.replicaCount | int | `0` | Number of coordinating-dedicated node replicas (disabled by default) |
 | elasticsearch.data.replicaCount | int | `0` | Number of data-dedicated node replicas (disabled by default) |
 | elasticsearch.enabled | bool | `true` | Enable ElasticSearch dependency subchart deployment |
-| elasticsearch.global.security.allowInsecureImages | bool | `true` | Allow insecure images to use bitnamilegacy repository |
+| elasticsearch.global.security.allowInsecureImages | bool | `true` | Allow the use of insecure images from bitnamilegacy repository |
 | elasticsearch.image.registry | string | `"docker.io"` | ElasticSearch image registry |
 | elasticsearch.image.repository | string | `"bitnamilegacy/elasticsearch"` | ElasticSearch image repository |
 | elasticsearch.image.tag | string | `"9.1.2-debian-12-r0"` | ElasticSearch image tag |
@@ -104,7 +104,7 @@ Kubernetes: `>= 1.23.0-0`
 | metrics.image.tag | string | `"2.3.8-debian-12-r51"` | Cassandra metrics exporter image tag |
 | minio.buckets | list | `[{"name":"thehive","objectlocking":false,"policy":"none","purge":false,"versioning":false}]` | MinIO bucket configuration |
 | minio.drivesPerNode | int | `1` | Number of drives per MinIO node |
-| minio.enabled | bool | `true` | Enable MinIO dependency subchart deployment (disable if using external S3-compatible storage) |
+| minio.enabled | bool | `true` | Enable MinIO dependency subchart deployment (disable if using external S3-compatible storage or a filesystem shared between pods) |
 | minio.existingSecret | string | `""` | Name of existing secret with MinIO credentials (expects .data.rootUser and .data.rootPassword keys) |
 | minio.image.repository | string | `"quay.io/minio/minio"` | MinIO image repository |
 | minio.image.tag | string | `"RELEASE.2025-09-07T16-13-09Z"` | MinIO image tag |
@@ -128,7 +128,7 @@ Kubernetes: `>= 1.23.0-0`
 | thehive.autoscaling.maxReplicas | int | `4` | Maximum number of replicas for autoscaling |
 | thehive.autoscaling.minReplicas | int | `2` | Minimum number of replicas for autoscaling |
 | thehive.autoscaling.targetCPUUtilizationPercentage | int | `80` | Target CPU utilization percentage for autoscaling |
-| thehive.clusterMinNodesCount | int | `1` | Minimum number of TheHive nodes in cluster |
+| thehive.clusterMinNodesCount | int | `1` | Minimum number of TheHive nodes to form a cluster |
 | thehive.configFile | string | `""` | Custom application.conf configuration file content for TheHive |
 | thehive.cortex.api_keys | list | `[]` | Cortex API keys (each key maps to a hostname in order) |
 | thehive.cortex.enabled | bool | `false` | Enable Cortex integration (can also configure Cortex servers from TheHive UI) |
@@ -142,7 +142,7 @@ Kubernetes: `>= 1.23.0-0`
 | thehive.database.k8sSecretName | string | `""` | Name of existing Kubernetes secret containing Cassandra password |
 | thehive.database.password | string | `"ChangeThisPasswordForCassandra"` | Cassandra password for database connection (should match Cassandra subchart credentials if enabled) |
 | thehive.database.username | string | `"cassandra"` | Cassandra username for database connection |
-| thehive.database.wait | bool | `false` | Wait for the database to be available |
+| thehive.database.wait | bool | `false` | Wait 30 seconds before starting TheHive (can be used to give time for Cassandra to start) |
 | thehive.extraCommand | list | `[]` | Extra command-line arguments for TheHive entrypoint |
 | thehive.extraEnv | list | `[]` | Extra environment variables for TheHive container |
 | thehive.httpSecret | string | `"ChangeThisSecretWithOneContainingAtLeast32Chars"` | HTTP secret for TheHive application (must be at least 32 characters) |
@@ -159,11 +159,11 @@ Kubernetes: `>= 1.23.0-0`
 | thehive.ingress.className | string | `""` | Ingress class name |
 | thehive.ingress.enabled | bool | `false` | Enable ingress resource creation |
 | thehive.ingress.hosts | list | `[{"host":"thehive.example","paths":[{"path":"/","pathType":"ImplementationSpecific"}]}]` | Ingress hosts configuration |
-| thehive.ingress.hosts[0] | object | `{"host":"thehive.example","paths":[{"path":"/","pathType":"ImplementationSpecific"}]}` | a DNS name to access TheHive |
+| thehive.ingress.hosts[0] | object | `{"host":"thehive.example","paths":[{"path":"/","pathType":"ImplementationSpecific"}]}` | A DNS name to access TheHive |
 | thehive.ingress.tls | list | `[]` | Ingress TLS configuration |
-| thehive.initContainers.checkCassandra.enabled | bool | `true` | Enable init container to wait for Cassandra readiness on port 9042 |
-| thehive.initContainers.checkElasticsearch.enabled | bool | `true` | Enable init container to wait for ElasticSearch readiness |
-| thehive.initContainers.checkElasticsearch.useHttps | bool | `false` | Use HTTPS for ElasticSearch health check |
+| thehive.initContainers.checkCassandra.enabled | bool | `true` | Add an init container waiting for Cassandra to listen on port 9042 |
+| thehive.initContainers.checkElasticsearch.enabled | bool | `true` | Add an init container waiting for ElasticSearch to answer when requested /_cluster/health route on port 9200 |
+| thehive.initContainers.checkElasticsearch.useHttps | bool | `false` | Use HTTPS for ElasticSearch availability check |
 | thehive.initContainers.image.pullPolicy | string | `"IfNotPresent"` | Init container image pull policy |
 | thehive.initContainers.image.registry | string | `"docker.io"` | Docker registry for init container image |
 | thehive.initContainers.image.repository | string | `"curlimages/curl"` | Init container image repository |
@@ -191,7 +191,7 @@ Kubernetes: `>= 1.23.0-0`
 | thehive.readinessProbe.periodSeconds | int | `10` | Frequency of readiness probe checks |
 | thehive.readinessProbe.successThreshold | int | `1` | Number of successes before marking pod as ready |
 | thehive.readinessProbe.timeoutSeconds | int | `1` | Timeout for each readiness probe attempt |
-| thehive.replicas | int | `1` | Number of TheHive replicas (only used when autoscaling.enabled is false) |
+| thehive.replicas | int | `1` | Number of TheHive replicas (only used when thehive.autoscaling.enabled is false) |
 | thehive.resources | object | `{"limits":{"cpu":"3000m","ephemeral-storage":"4Gi","memory":"3584Mi"},"requests":{"cpu":"1000m","ephemeral-storage":"4Gi","memory":"2048Mi"}}` | Resource requests and limits for TheHive pods |
 | thehive.securityContext | object | `{}` | Container-level security context |
 | thehive.service.port | int | `9000` | TheHive application port |
