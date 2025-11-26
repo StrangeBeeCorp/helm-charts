@@ -543,7 +543,7 @@ elasticsearch:
 ############################
 
 minio:
-  # -- Enable MinIO dependency subchart deployment (disable if using external S3-compatible storage or a filesystem shared between pods)
+  # -- Enable [MinIO](https://github.com/minio/minio/blob/master/helm/minio/values.yaml) dependency subchart deployment (disable if using external S3-compatible storage or a filesystem shared between pods)
   enabled: true
 
   image:

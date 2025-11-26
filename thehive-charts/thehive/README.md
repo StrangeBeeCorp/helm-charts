@@ -104,7 +104,7 @@ Kubernetes: `>= 1.23.0-0`
 | metrics.image.tag | string | `"2.3.8-debian-12-r51"` | Cassandra metrics exporter image tag |
 | minio.buckets | list | `[{"name":"thehive","objectlocking":false,"policy":"none","purge":false,"versioning":false}]` | MinIO bucket configuration |
 | minio.drivesPerNode | int | `1` | Number of drives per MinIO node |
-| minio.enabled | bool | `true` | Enable MinIO dependency subchart deployment (disable if using external S3-compatible storage or a filesystem shared between pods) |
+| minio.enabled | bool | `true` | Enable [MinIO](https://github.com/minio/minio/blob/master/helm/minio/values.yaml) dependency subchart deployment (disable if using external S3-compatible storage or a filesystem shared between pods) |
 | minio.existingSecret | string | `""` | Name of existing secret with MinIO credentials (expects .data.rootUser and .data.rootPassword keys) |
 | minio.image.repository | string | `"quay.io/minio/minio"` | MinIO image repository |
 | minio.image.tag | string | `"RELEASE.2025-09-07T16-13-09Z"` | MinIO image tag |
