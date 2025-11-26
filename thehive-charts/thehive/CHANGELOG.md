@@ -4,42 +4,35 @@
 - Set default HTTP secret in TheHive values.yaml [#111](https://github.com/StrangeBeeCorp/helm-charts/pull/111)
 - Implement authenticated API call to ElasticSearch for the init-container [#114](https://github.com/StrangeBeeCorp/helm-charts/pull/114)
 - (BREAKING CHANGE) Update TheHive to v5.5.13-1 and ElasticSearch to v9.1.2 along with other dependencies [#115](https://github.com/StrangeBeeCorp/helm-charts/pull/115)
-
+- Add Helm documentation for `thehive` chart in `helm-docs` format [#118](https://github.com/StrangeBeeCorp/helm-charts/pull/118)
 
 ## 0.4.7
 
 - Add HTTPS option for the init-container checking ElasticSearch availability [#107](https://github.com/StrangeBeeCorp/helm-charts/pull/107)
 
-
 ## 0.4.6
 
 - Update TheHive to v5.5.11-1 [#105](https://github.com/StrangeBeeCorp/helm-charts/pull/105)
-
 
 ## 0.4.5
 
 - Target [Bitnami Legacy repository](https://github.com/bitnami/charts/issues/35164) for remaining images in dependency charts [#102](https://github.com/StrangeBeeCorp/helm-charts/pull/102)
 
-
 ## 0.4.4
 
 - Update TheHive to v5.5.10-1 [#100](https://github.com/StrangeBeeCorp/helm-charts/pull/100)
-
 
 ## 0.4.3
 
 - Update TheHive to v5.5.9-1 [#98](https://github.com/StrangeBeeCorp/helm-charts/pull/98)
 
-
 ## 0.4.2
 
 - Update TheHive to v5.5.8-1 [#96](https://github.com/StrangeBeeCorp/helm-charts/pull/96)
 
-
 ## 0.4.1
 
 - Fix nil pointer when rendering Ingress template [#92](https://github.com/StrangeBeeCorp/helm-charts/pull/92) [#93](https://github.com/StrangeBeeCorp/helm-charts/pull/93) by @hzlnqodrey
-
 
 ## 0.4.0
 
@@ -50,32 +43,26 @@
 - (BREAKING CHANGE) Target [Bitnami Legacy repository](https://github.com/bitnami/charts/issues/35164) for images used in dependency charts [#82](https://github.com/StrangeBeeCorp/helm-charts/pull/82)
 - Update TheHive to v5.5.7-1 and other softwares versions [#83](https://github.com/StrangeBeeCorp/helm-charts/pull/83)
 
-
 ## 0.3.6
 
 - Update TheHive to v5.5.5-1 [#73](https://github.com/StrangeBeeCorp/helm-charts/pull/73)
-
 
 ## 0.3.5
 
 - Update TheHive to v5.5.4-1 [#68](https://github.com/StrangeBeeCorp/helm-charts/pull/68)
 
-
 ## 0.3.4
 
 - Update TheHive to v5.5.3-1 [#64](https://github.com/StrangeBeeCorp/helm-charts/pull/64)
-
 
 ## 0.3.3
 
 - Move TheHive Helm Chart instructions to StrangeBee doc [#61](https://github.com/StrangeBeeCorp/helm-charts/pull/61)
 - Update TheHive to v5.5.2-1 [#62](https://github.com/StrangeBeeCorp/helm-charts/pull/62)
 
-
 ## 0.3.2
 
 - Update TheHive to v5.5.1-1 [#59](https://github.com/StrangeBeeCorp/helm-charts/pull/59)
-
 
 ## 0.3.1
 
@@ -84,7 +71,6 @@
 - Move TheHive parameters from command flags to env vars in ConfigMap [#55](https://github.com/StrangeBeeCorp/helm-charts/pull/55)
 - Add "logback.xml" optional file in ConfigMap [#56](https://github.com/StrangeBeeCorp/helm-charts/pull/56)
 - Update TheHive to v5.5.0-1 and other softwares versions [#57](https://github.com/StrangeBeeCorp/helm-charts/pull/57)
-
 
 ## 0.3.0
 
@@ -98,7 +84,6 @@
 - Update README and values.yaml comments [#50](https://github.com/StrangeBeeCorp/helm-charts/pull/50)
 - Update TheHive to v5.4.9-1 and other softwares versions [#51](https://github.com/StrangeBeeCorp/helm-charts/pull/51)
 
-
 ## 0.2.2
 
 - Update TheHive version from 5.4.7-1 to 5.4.8-1 [#37](https://github.com/StrangeBeeCorp/helm-charts/pull/37)
@@ -106,14 +91,12 @@
 - Reorganize charts folders [#39](https://github.com/StrangeBeeCorp/helm-charts/pull/39)
 - Update "helm/chart-releaser-action" from v1.6.0 to v1.7.0 [#40](https://github.com/StrangeBeeCorp/helm-charts/pull/40)
 
-
 ## 0.2.1
 
 - Fix TheHive crashLoop on first start using a startupProbe [#31](https://github.com/StrangeBeeCorp/helm-charts/pull/31)
 - Fix the CM template used to create a custom "application.conf" file [#32](https://github.com/StrangeBeeCorp/helm-charts/pull/32)
 - Update TheHive Helm Chart README [#33](https://github.com/StrangeBeeCorp/helm-charts/pull/33)
 - Update TheHive softwares versions [#34](https://github.com/StrangeBeeCorp/helm-charts/pull/34)
-
 
 ## 0.2.0
 
@@ -128,7 +111,6 @@
 - Improve default values for production use [#27](https://github.com/StrangeBeeCorp/helm-charts/pull/27)
 - Fix MinIO bucket configuration [#28](https://github.com/StrangeBeeCorp/helm-charts/pull/28)
 - Fix ConfigMap mount to prevent overwriting files in "/etc/thehive" folder [#29](https://github.com/StrangeBeeCorp/helm-charts/pull/29)
-
 
 ## 0.1.7
 

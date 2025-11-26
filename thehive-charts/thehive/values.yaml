@@ -2,47 +2,57 @@
 # TheHive Helm Chart variables #
 ################################
 
+# -- Override the name of the chart
 nameOverride: ""
+# -- Override the full name of the chart
 fullnameOverride: ""
 
+# -- Image pull secrets for private registries
 imagePullSecrets: []
 #  - name: "image-pull-secret"
 
 thehive:
-  # Additional labels and annotations to attach to TheHive resources
-  # (dedicated keys exist for Ingress and ServiceAccount annotations)
+  # -- Additional labels to attach to TheHive resources
   labels: {}
+  # -- Additional annotations to attach to TheHive resources
   annotations: {}
 
-  # Additional labels and annotations to attach to TheHive pods
+  # -- Additional labels to attach to TheHive pods
   podLabels: {}
+  # -- Additional annotations to attach to TheHive pods
   podAnnotations: {}
 
-  # Only used when thehive.autoscaling.enabled is set to false
+  # -- Number of TheHive replicas (only used when thehive.autoscaling.enabled is false)
   replicas: 1
 
-  # TheHive Deployment strategy
   strategy:
-    # Set to "RollingUpdate" or "Recreate" depending on HA needs and TheHive version upgrade (schema migrations)
+    # -- Deployment strategy type. Set to "RollingUpdate" or "Recreate" depending on HA needs and TheHive version upgrade (schema migrations)
     type: RollingUpdate
-    # Only used for "RollingUpdate" strategy type
     rollingUpdate:
+      # -- Maximum number of pods that can be created over the desired number of pods (only for RollingUpdate)
       maxSurge: 1
+      # -- Maximum number of pods that can be unavailable during the update (only for RollingUpdate)
       maxUnavailable: 1
 
-  # PodDisruptionBudget configuration
+  # -- Maximum number of unavailable pods in PodDisruptionBudget
   maxUnavailable: 1
 
-  # TheHive nodes count
+  # -- Minimum number of TheHive nodes to form a cluster
   clusterMinNodesCount: 1
 
   autoscaling:
+    # -- Enable horizontal pod autoscaling
     enabled: false
+    # -- Minimum number of replicas for autoscaling
     minReplicas: 2
+    # -- Maximum number of replicas for autoscaling
     maxReplicas: 4
+    # -- Target CPU utilization percentage for autoscaling
     targetCPUUtilizationPercentage: 80
+    # -- Target memory utilization percentage for autoscaling
     #targetMemoryUtilizationPercentage: 95
 
+  # -- Resource requests and limits for TheHive pods
   resources:
     requests:
       cpu: "1000m"
@@ -53,120 +63,127 @@ thehive:
       memory: "3584Mi"
       ephemeral-storage: "4Gi"
 
+  # -- JVM options for TheHive application
   jvmOpts: "-Xms2g -Xmx2g -Xmn300m"
 
-  # TheHive container image
   image:
+    # -- Docker registry for TheHive image
     registry: docker.io
+    # -- TheHive image repository
     repository: strangebee/thehive
-    # Defaults to the chart appVersion if not set
+    # -- TheHive image tag (defaults to chart appVersion if not set)
     tag: ""
+    # -- Image pull policy
     pullPolicy: IfNotPresent
 
-  # TheHive Cassandra configuration
   database:
-    # Credentials to connect to Cassandra
-    # They should match the credentials for Cassandra subchart below (if enabled)
+    # -- Cassandra username for database connection
     username: "cassandra"
+    # -- Cassandra password for database connection (should match Cassandra subchart credentials if enabled)
     password: "ChangeThisPasswordForCassandra"
-    # The name of an existing k8s secret containing Cassandra password
+    # -- Name of existing Kubernetes secret containing Cassandra password
     k8sSecretName: ""
+    # -- Key in the secret containing Cassandra password
     k8sSecretKey: "cassandra-password"
-    # List of Cassandra hostnames
-    # Auto set to Cassandra subchart service if enabled and this list is empty: "{{ .Release.Name }}-cassandra"
+    # -- List of Cassandra hostnames (auto-configured if Cassandra subchart is enabled and this is empty)
     hostnames: []
       #- "mycassandra.example.com"
-    # Set to true for TheHive to wait 30 seconds before starting the app
+    # -- Wait 30 seconds before starting TheHive (can be used to give time for Cassandra to start)
     wait: false
 
-  # TheHive ElasticSearch configuration
   index:
-    # Credentials to connect to ElasticSearch
-    # They should match the credentials for ElasticSearch subchart below (if enabled)
+    # -- ElasticSearch username for index connection
     username: "elastic"
+    # -- ElasticSearch password for index connection (should match ElasticSearch subchart credentials if enabled)
     password: ""
-    # The name of an existing k8s secret containing ElasticSearch password
+    # -- Name of existing Kubernetes secret containing ElasticSearch password
     k8sSecretName: ""
+    # -- Key in the secret containing ElasticSearch password
     k8sSecretKey: "elasticsearch-password"
-    # List of ElasticSearch hostnames
-    # Auto set to ElasticSearch subchart service if enabled and this list is empty: "{{ .Release.Name }}-elasticsearch"
+    # -- List of ElasticSearch hostnames (auto-configured if ElasticSearch subchart is enabled and this is empty)
     hostnames: []
       #- "myelasticsearch.example.com"
 
-  # TheHive object storage configuration
   storage:
-    # Credentials to connect to the object storage
-    # They should match the credentials for MinIO subchart below (if enabled)
+    # -- Access key for object storage connection (should match MinIO subchart credentials if enabled)
     accessKey: "minio"
+    # -- Secret key for object storage connection (should match MinIO subchart credentials if enabled)
     secretKey: "ChangeThisPasswordForMinIO"
-    # The name of an existing k8s secret containing the object storage secret key
+    # -- Name of existing Kubernetes secret containing object storage secret key
     k8sSecretName: ""
+    # -- Key in the secret containing object storage secret key
     k8sSecretKey: "rootPassword"
-    # Bucket information
-    # Auto set to MinIO subchart service if enabled and this string is empty: "http://{{ .Release.Name }}-minio:9000"
+    # -- Object storage endpoint URL (auto-configured if MinIO subchart is enabled and this is empty)
     endpoint: ""
+    # -- Object storage bucket name for TheHive data
     bucket: "thehive"
+    # -- Object storage region
     region: "us-east-1"
+    # -- Use path-style access for object storage (required for MinIO)
     usePathAccessStyle: true
 
-  # TheHive Deployment initContainers configuration
   initContainers:
     image:
+      # -- Docker registry for init container image
       registry: docker.io
+      # -- Init container image repository
       repository: curlimages/curl
+      # -- Init container image tag
       tag: "8.17.0"
+      # -- Init container image pull policy
       pullPolicy: IfNotPresent
 
-    # Wait for Cassandra to be reachable on port 9042
     checkCassandra:
+      # -- Add an init container waiting for Cassandra to listen on port 9042
       enabled: true
 
-    # Wait for ElasticSearch "/_cluster/health" route on port 9200 to answer
     checkElasticsearch:
+      # -- Add an init container waiting for ElasticSearch to answer when requested /_cluster/health route on port 9200
       enabled: true
+      # -- Use HTTPS for ElasticSearch availability check
       useHttps: false
 
-  # TheHive HTTP secret
+  # -- HTTP secret for TheHive application (must be at least 32 characters)
   httpSecret: "ChangeThisSecretWithOneContainingAtLeast32Chars"
-  # The name of an existing k8s secret containing the HTTP secret used by TheHive
+  # -- Name of existing Kubernetes secret containing TheHive HTTP secret
   k8sSecretName: ""
+  # -- Key in the secret containing TheHive HTTP secret
   k8sSecretKey: "http-secret"
 
-  # Cortex configuration
-  # You can also add Cortex servers directly from TheHive UI https://docs.strangebee.com/thehive/administration/cortex/
   cortex:
+    # -- Enable Cortex integration (can also configure Cortex servers from TheHive UI)
     enabled: false
-    # Cortex protocol (expected values are "http" or "https")
+    # -- Cortex protocol (http or https)
     protocol: "http"
-    # List of Cortex hostnames to configure
+    # -- List of Cortex server hostnames
     hostnames: []
       #- "mycortex.example.com"
+    # -- Cortex server port
     port: 9001
-    # Cortex API keys
-    # Each API key will be mapped to a single Cortex hostname (following the order in this YAML)
+    # -- Cortex API keys (each key maps to a hostname in order)
     api_keys: []
       #- "abcdefghijklmnopqrstuvwxyz012345"
-    # Alternatively, the name of an existing k8s secret containing all API keys for TheHive to connect to Cortex servers
-    # Expected format: "<key>,<key>,..."
+    # -- Name of existing Kubernetes secret containing Cortex API keys (comma-separated format)
     k8sSecretName: ""
+    # -- Key in the secret containing Cortex API keys
     k8sSecretKey: "api-keys"
 
-  # Custom application.conf file for TheHive
+  # -- Custom application.conf configuration file content for TheHive
   configFile: ""
   #configFile: |
   #  # TheHive configuration file
   #  # See https://docs.strangebee.com/thehive/overview/ under the "Configuration" section
 
-  # Custom logback.xml file for TheHive
+  # -- Custom logback.xml logging configuration file content for TheHive
   logbackXml: ""
   #logbackXml: |
   #  <!-- TheHive logs configuration file -->
   #  <!-- See https://docs.strangebee.com/thehive/configuration/logs/ -->
 
-  # Extra entrypoint arguments
+  # -- Extra command-line arguments for TheHive entrypoint
   extraCommand: []
 
-  # Extra environment variables
+  # -- Extra environment variables for TheHive container
   extraEnv: []
     #- name: "EXAMPLE"
     #  value: "example"
@@ -181,90 +198,116 @@ thehive:
     #      name: "cm-name"
     #      key: "key-name"
 
-  # Startup probe (set "failureThreshold" to a high value to prevent CrashLoops during schema migrations)
   startupProbe:
+    # -- Enable startup probe (set failureThreshold high to prevent CrashLoops during schema migrations)
     enabled: true
+    # -- Initial delay before startup probe begins
     initialDelaySeconds: 0
+    # -- Frequency of startup probe checks
     periodSeconds: 5
+    # -- Timeout for each startup probe attempt
     timeoutSeconds: 1
+    # -- Number of failures before marking pod as failed
     failureThreshold: 36
 
-  # Liveness probe
   livenessProbe:
+    # -- Enable liveness probe
     enabled: true
+    # -- Initial delay before liveness probe begins
     initialDelaySeconds: 0
+    # -- Frequency of liveness probe checks
     periodSeconds: 10
+    # -- Timeout for each liveness probe attempt
     timeoutSeconds: 1
+    # -- Number of failures before restarting container
     failureThreshold: 3
 
-  # Readiness probe
   readinessProbe:
+    # -- Enable readiness probe
     enabled: true
+    # -- Initial delay before readiness probe begins
     initialDelaySeconds: 0
+    # -- Frequency of readiness probe checks
     periodSeconds: 10
+    # -- Timeout for each readiness probe attempt
     timeoutSeconds: 1
+    # -- Number of successes before marking pod as ready
     successThreshold: 1
+    # -- Number of failures before marking pod as not ready
     failureThreshold: 3
 
   serviceAccount:
+    # -- Create a service account for TheHive
     create: true
+    # -- Name of the service account (generated if empty)
     name: ""
+    # -- Annotations for the service account
     annotations: {}
-    # Whether to automatically mount Kubernetes API credentials
+    # -- Automatically mount Kubernetes API credentials
     automountServiceAccountToken: true
 
-  # Pod wide security context https://kubernetes.io/docs/tasks/configure-pod-container/security-context/
+  # -- Pod-wide security context
   podSecurityContext: {}
     #fsGroup: 2000
 
-  # Container wide security context
+  # -- Container-level security context
   securityContext: {}
     #allowPrivilegeEscalation: false
 
   service:
+    # -- Kubernetes service type
     type: ClusterIP
+    # -- TheHive application port
     port: 9000
 
   monitoring:
-    # Whether to expose kamon port in TheHive Deployment and add port in TheHive Service
-    # NOTE - edit application.conf to disable kamon, see https://docs.strangebee.com/thehive/operations/monitoring/
+    # -- Enable monitoring port exposure (edit application.conf to configure Kamon)
     enabled: true
+    # -- Monitoring metrics port
     port: 9095
 
   ingress:
+    # -- Enable ingress resource creation
     enabled: false
+    # -- Ingress class name
     className: ""
+    # -- Ingress annotations
     annotations: {}
       #kubernetes.io/ingress.class: nginx
       #kubernetes.io/tls-acme: "true"
+    # -- Ingress hosts configuration
     hosts:
+      # -- A DNS name to access TheHive
       - host: thehive.example
         paths:
           - path: /
             pathType: ImplementationSpecific
-    # TLS configuration for the ingress (supports the use of custom Helm templates)
+    # -- Ingress TLS configuration
     tls: []
       #- secretName: thehive-tls
       #  hosts:
       #    - thehive.example
 
-  # Additional volumes for TheHive Deployment
+  # -- Additional volumes for TheHive deployment
   volumes: []
     #- name: foo
     #  secret:
     #    secretName: mysecret
     #    optional: false
 
-  # Additional volumeMounts for TheHive Deployment
+  # -- Additional volume mounts for TheHive container
   volumeMounts: []
     #- name: foo
     #  mountPath: "/etc/foo"
     #  readOnly: true
 
+  # -- Node selector for pod assignment
   nodeSelector: {}
 
+  # -- Tolerations for pod assignment
   tolerations: []
 
+  # -- Affinity rules for pod assignment
   affinity: {}
 
 ################################
@@ -273,38 +316,50 @@ thehive:
 
 # https://github.com/bitnami/charts/blob/cassandra/12.3.11/bitnami/cassandra/values.yaml
 cassandra:
-  # Use Cassandra dependency Helm Chart
+  # -- Enable Cassandra dependency subchart deployment
   enabled: true
 
-  # Skip image verification to allow bitnamilegacy repository images
   global:
     security:
+      # -- Allow the use of insecure images from bitnamilegacy repository
       allowInsecureImages: true
 
   image:
+    # -- Cassandra image registry
     registry: docker.io
+    # -- Cassandra image repository
     repository: bitnamilegacy/cassandra
+    # -- Cassandra image tag
     tag: "4.1.7-debian-12-r3"
 
   dbUser:
+    # -- Cassandra database username
     user: "cassandra"
+    # -- Cassandra database password
     password: "ChangeThisPasswordForCassandra"
+    # -- Force password update on deployment
     forcePassword: false
-    # The name of an existing k8s secret (Cassandra subchart expects a ".data.cassandra-password" key)
+    # -- Name of existing secret with Cassandra password (expects .data.cassandra-password key)
     existingSecret: ""
 
   cluster:
+    # -- Cassandra cluster name
     name: "TheHive"
+    # -- Cassandra datacenter name
     datacenter: "DC1-TheHive"
+    # -- Cassandra rack name
     rack: "Rack1-TheHive"
 
+  # -- Number of Cassandra replicas
   replicaCount: 1
 
   pdb:
+    # -- Create PodDisruptionBudget for Cassandra
     create: true
+    # -- Maximum unavailable Cassandra pods
     maxUnavailable: "1"
 
-  # Resources available for each replica
+  # -- Resource requests and limits for Cassandra pods
   resources:
     requests:
       cpu: "1000m"
@@ -316,42 +371,59 @@ cassandra:
       ephemeral-storage: "4Gi"
 
   jvm:
+    # -- Additional JVM options for Cassandra
     extraOpts: "-Xms2g -Xmx2g -Xmn200m"
+    # -- Maximum heap size for Cassandra JVM
     maxHeapSize: "2g"
+    # -- New generation heap size for Cassandra JVM
     newHeapSize: "200m"
 
   persistence:
+    # -- Enable persistent volume for Cassandra data
     enabled: true
+    # -- Storage class for Cassandra persistent volume
     storageClass: ""
+    # -- Size of Cassandra persistent volume
     size: "10Gi"
 
   networkPolicy:
+    # -- Enable network policy for Cassandra
     enabled: false
 
+  # -- Extra environment variables for Cassandra
   extraEnvVars:
-    # Can be set to "AllowAllAuthenticator" to allow passwordless authentication
+    # -- Cassandra authenticator (use AllowAllAuthenticator for passwordless)
     - name: CASSANDRA_AUTHENTICATOR
       value: PasswordAuthenticator
-    # Can be set to "AllowAllAuthorizer" to allow passwordless authentication
+    # -- Cassandra authorizer (use AllowAllAuthorizer for passwordless)
     - name: CASSANDRA_AUTHORIZER
       value: CassandraAuthorizer
 
 dynamicSeedDiscovery:
   image:
+    # -- Dynamic seed discovery image registry
     registry: docker.io
+    # -- Dynamic seed discovery image repository
     repository: bitnamilegacy/os-shell
+    # -- Dynamic seed discovery image tag
     tag: 12-debian-12-r51
 
 volumePermissions:
   image:
+    # -- Volume permissions init container image registry
     registry: docker.io
+    # -- Volume permissions init container image repository
     repository: bitnamilegacy/os-shell
+    # -- Volume permissions init container image tag
     tag: 12-debian-12-r51
 
 metrics:
   image:
+    # -- Cassandra metrics exporter image registry
     registry: docker.io
+    # -- Cassandra metrics exporter image repository
     repository: bitnamilegacy/cassandra-exporter
+    # -- Cassandra metrics exporter image tag
     tag: 2.3.8-debian-12-r51
 
 ####################################
@@ -360,39 +432,45 @@ metrics:
 
 # https://github.com/bitnami/charts/blob/elasticsearch/22.1.6/bitnami/elasticsearch/values.yaml
 elasticsearch:
-  # Use ElasticSearch dependency Helm Chart
+  # -- Enable ElasticSearch dependency subchart deployment
   enabled: true
 
-  # Skip image verification to allow bitnamilegacy repository images
   global:
     security:
+      # -- Allow the use of insecure images from bitnamilegacy repository
       allowInsecureImages: true
 
   image:
+    # -- ElasticSearch image registry
     registry: docker.io
+    # -- ElasticSearch image repository
     repository: bitnamilegacy/elasticsearch
+    # -- ElasticSearch image tag
     tag: "9.1.2-debian-12-r0"
 
-  # Automatically filled by values under the "index" key defined above
   security:
+    # -- TLS configuration for ElasticSearch
     tls: {}
-    # TLS configuration is required to enable password authentication
+    # -- Enable security features (requires TLS configuration)
     enabled: false
+    # -- ElasticSearch elastic user password
     elasticPassword: ""
-    # The name of an existing k8s secret (ElasticSearch subchart expects a ".data.elasticsearch-password" key)
+    # -- Name of existing secret with ElasticSearch password (expects .data.elasticsearch-password key)
     existingSecret: ""
 
   master:
-    # Whether nodes are master only or multipurpose (master, data, coordinating and ingest)
+    # -- Deploy master-only nodes or multipurpose nodes (master, data, coordinating, ingest)
     masterOnly: false
 
-    # Number of master-elegible replicas to deploy
+    # -- Number of master-eligible ElasticSearch replicas
     replicaCount: 1
     pdb:
+      # -- Create PodDisruptionBudget for ElasticSearch master nodes
       create: true
+      # -- Maximum unavailable master nodes
       maxUnavailable: "1"
 
-    # Resources available for each replica
+    # -- Resource requests and limits for ElasticSearch master nodes
     resources:
       requests:
         cpu: "1000m"
@@ -403,86 +481,106 @@ elasticsearch:
         memory: "3584Mi"
         ephemeral-storage: "4Gi"
 
-    # Master nodes heap size
+    # -- Heap size for ElasticSearch master nodes
     heapSize: "2g"
-    # Configure JVM options as env variable
+    # -- Extra environment variables for ElasticSearch master nodes
     extraEnvVars:
       - name: JVM_OPTS
         value: "-Xms2g -Xmx2g -Xmn200m"
 
     persistence:
+      # -- Enable persistent volume for ElasticSearch master nodes
       enabled: true
+      # -- Storage class for ElasticSearch master node persistent volume
       storageClass: ""
+      # -- Size of ElasticSearch master node persistent volume
       size: "10Gi"
 
     networkPolicy:
+      # -- Enable network policy for ElasticSearch master nodes
       enabled: false
 
   data:
-    # Disable data-dedicated nodes
+    # -- Number of data-dedicated node replicas (disabled by default)
     replicaCount: 0
 
   coordinating:
-    # Disable coordination-dedicated nodes
+    # -- Number of coordinating-dedicated node replicas (disabled by default)
     replicaCount: 0
 
   ingest:
-    # Disable ingestion-dedicated nodes
+    # -- Number of ingest-dedicated node replicas (disabled by default)
     replicaCount: 0
 
   metrics:
     image:
+      # -- ElasticSearch metrics exporter image registry
       registry: docker.io
+      # -- ElasticSearch metrics exporter image repository
       repository: bitnamilegacy/elasticsearch-exporter
+      # -- ElasticSearch metrics exporter image tag
       tag: 1.9.0-debian-12-r16
 
   volumePermissions:
     image:
+      # -- Volume permissions init container image registry
       registry: docker.io
+      # -- Volume permissions init container image repository
       repository: bitnamilegacy/os-shell
+      # -- Volume permissions init container image tag
       tag: 12-debian-12-r51
 
   sysctlImage:
+    # -- Sysctl init container image registry
     registry: docker.io
+    # -- Sysctl init container image repository
     repository: bitnamilegacy/os-shell
+    # -- Sysctl init container image tag
     tag: 12-debian-12-r51
 
 ############################
 # MinIO subchart variables #
 ############################
 
-# https://github.com/minio/minio/blob/master/helm/minio/values.yaml
 minio:
-  # Use MinIO dependency Helm Chart
-  # You should disable it if you plan to use another s3-compatible object storage for TheHive
+  # -- Enable [MinIO](https://github.com/minio/minio/blob/master/helm/minio/values.yaml) dependency subchart deployment (disable if using external S3-compatible storage or a filesystem shared between pods)
   enabled: true
 
   image:
+    # -- MinIO image repository
     repository: quay.io/minio/minio
+    # -- MinIO image tag
     tag: RELEASE.2025-09-07T16-13-09Z
 
   mcImage:
+    # -- MinIO client (mc) image repository
     repository: quay.io/minio/mc
+    # -- MinIO client (mc) image tag
     tag: RELEASE.2025-08-13T08-35-41Z
 
+  # -- MinIO root username
   rootUser: "minio"
+  # -- MinIO root password
   rootPassword: "ChangeThisPasswordForMinIO"
-  # The name of an existing k8s secret (MinIO subchart expects ".data.rootUser" and ".data.rootPassword" keys)
+  # -- Name of existing secret with MinIO credentials (expects .data.rootUser and .data.rootPassword keys)
   existingSecret: ""
 
-  # Set to "distributed" with multiple replicas in production
+  # -- MinIO deployment mode (standalone or distributed)
   mode: standalone
-  # Number of drives attached to a node
+  # -- Number of drives per MinIO node
   drivesPerNode: 1
-  # Number of MinIO pods running
+  # -- Number of MinIO pod replicas
   replicas: 1
-  # Number of expanded MinIO clusters
+  # -- Number of expanded MinIO clusters
   pools: 1
 
   podDisruptionBudget:
+    # -- Enable PodDisruptionBudget for MinIO
     enabled: true
+    # -- Maximum unavailable MinIO pods
     maxUnavailable: 1
 
+  # -- MinIO bucket configuration
   buckets:
     - name: thehive
       policy: none
@@ -490,6 +588,7 @@ minio:
       versioning: false
       objectlocking: false
 
+  # -- Resource requests and limits for MinIO pods
   resources:
     requests:
       cpu: "500m"
@@ -501,6 +600,9 @@ minio:
       ephemeral-storage: "4Gi"
 
   persistence:
+    # -- Enable persistent volume for MinIO data
     enabled: true
+    # -- Storage class for MinIO persistent volume
     storageClass: ""
+    # -- Size of MinIO persistent volume
     size: "10Gi"
