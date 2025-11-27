@@ -5,12 +5,16 @@ on:
     paths:
       - "thehive-charts/thehive/values.yaml"
       - "thehive-charts/thehive/README.md.gotmpl"
+      - "cortex-charts/cortex/values.yaml"
+      - "cortex-charts/cortex/README.md.gotmpl"
   push:
     branches:
       - main
     paths:
       - "thehive-charts/thehive/values.yaml"
       - "thehive-charts/thehive/README.md.gotmpl"
+      - "cortex-charts/cortex/values.yaml"
+      - "cortex-charts/cortex/README.md.gotmpl"
 
 jobs:
   generate-docs:
@@ -34,6 +38,11 @@ jobs:
           cd thehive-charts/thehive
           helm-docs -t README.md.gotmpl .
 
+      - name: Generate documentation for Cortex chart
+        run: |
+          cd cortex-charts/cortex
+          helm-docs -t README.md.gotmpl .
+
       - name: Check for documentation changes
         id: check_changes
         run: |
@@ -44,7 +53,7 @@ jobs:
         run: |
           git config --global user.name 'github-actions[bot]'
           git config --global user.email 'github-actions[bot]@users.noreply.github.com'
-          git add thehive-charts/thehive/README.md
+          git add thehive-charts/thehive/README.md cortex-charts/cortex/README.md
           git commit -m "docs: auto-generate helm chart documentation [skip ci]"
           git push
 

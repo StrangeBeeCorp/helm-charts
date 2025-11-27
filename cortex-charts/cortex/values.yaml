@@ -2,31 +2,41 @@
 # Cortex Helm Chart variables #
 ###############################
 
+# Refer to [this documentation page](https://docs.strangebee.com/cortex/installation-and-configuration/deploy-cortex-on-kubernetes/) for installation instructions and configuration.
+
+# -- Override the name of the chart
 nameOverride: ""
+# -- Override the full name of the chart
 fullnameOverride: ""
 
+# -- Image pull secrets for private registries
 imagePullSecrets: []
 #  - name: "image-pull-secret"
 
 cortex:
-  # Additional labels and annotations to attach to Cortex resources
-  # (dedicated keys exist for Ingress and ServiceAccount annotations)
+  # -- Additional labels to attach to Cortex resources
   labels: {}
+  # -- Additional annotations to attach to Cortex resources
   annotations: {}
 
-  # Additional labels and annotations to attach to Cortex pods
+  # -- Additional labels to attach to Cortex pods
   podLabels: {}
+  # -- Additional annotations to attach to Cortex pods
   podAnnotations: {}
 
+  # -- Number of Cortex replicas
   replicas: 1
 
-  # Cortex Deployment strategy
   strategy:
+    # -- Deployment strategy type
     type: RollingUpdate
     rollingUpdate:
+      # -- Maximum number of pods that can be created over the desired number of pods
       maxSurge: 1
+      # -- Maximum number of pods that can be unavailable during the update
       maxUnavailable: 0
 
+  # -- Resource requests and limits for Cortex pods
   resources:
     requests:
       cpu: "1000m"
@@ -37,57 +47,56 @@ cortex:
       memory: "3584Mi"
       ephemeral-storage: "4Gi"
 
+  # -- JVM options for Cortex application
   jvmOpts: "-Xms2g -Xmx2g -Xmn300m"
 
-  # Cortex container image
   image:
+    # -- Docker registry for Cortex image
     registry: docker.io
+    # -- Cortex image repository
     repository: thehiveproject/cortex
-    # Defaults to the chart appVersion if not set
+    # -- Cortex image tag (defaults to chart appVersion if not set)
     tag: ""
+    # -- Image pull policy
     pullPolicy: IfNotPresent
 
-  # Cortex ElasticSearch configuration
   index:
-    # Credentials to connect to ElasticSearch
-    # They should match the credentials for ElasticSearch subchart below (if enabled)
+    # -- ElasticSearch username for index connection
     username: "elastic"
+    # -- ElasticSearch password for index connection (should match ElasticSearch subchart credentials if enabled)
     password: ""
-    # The name of an existing k8s secret containing ElasticSearch password
+    # -- Name of existing Kubernetes secret containing ElasticSearch password
     k8sSecretName: ""
+    # -- Key in the secret containing ElasticSearch password
     k8sSecretKey: "elasticsearch-password"
-    # List of ElasticSearch hostnames
-    # Auto set to ElasticSearch subchart service if enabled and this list is empty: "{{ .Release.Name }}-elasticsearch"
+    # -- List of ElasticSearch hostnames (auto-configured if ElasticSearch subchart is enabled and this is empty)
     hostnames: []
       #- "myelasticsearch.example.com"
 
-  # The directory in Cortex container used to communicate with running jobs (write inputs and read outputs)
+  # -- Directory in Cortex container used to communicate with running jobs (write inputs and read outputs)
   jobDirectory: "/tmp/cortex-jobs"
 
-  # Cortex HTTP secret
+  # -- HTTP secret for Cortex application (must be at least 32 characters)
   httpSecret: "ChangeThisSecretWithOneContainingAtLeast32Chars"
-  # The name of an existing k8s secret containing the HTTP secret used by Cortex
+  # -- Name of existing Kubernetes secret containing Cortex HTTP secret
   k8sSecretName: ""
+  # -- Key in the secret containing Cortex HTTP secret
   k8sSecretKey: "http-secret"
 
-  # A persistentVolume with "ReadWriteMany" accessMode is MANDATORY for cortex to work
-  # It will be used by cortex to share data with pods running cortex jobs
   persistentVolumeClaim:
-    # Whether to create a PVC or use an existing one
+    # -- Create a PVC or use an existing one (ReadWriteMany accessMode is MANDATORY for Cortex to share data with job pods)
     create: true
-    # The name of the PVC to create/use (if create is set to true, the name can be automatically generated)
+    # -- Name of the PVC to create/use (auto-generated if empty and create is true)
     name: ""
-    # Information for the PVC (only used if create is set to true)
-    # - If defined, storageClassName: <storageClass>
-    # - If set to "-", storageClassName: "" (disables dynamic provisioning)
-    # - If set to "", no storageClassName spec is set (use the default provisioner of your cluster)
+    # -- Storage class for persistent volume (use "-" to disable dynamic provisioning, "" for default provisioner)
     storageClass: ""
+    # -- Size of the persistent volume
     size: 10Gi
 
-  # Extra entrypoint arguments
+  # -- Extra command-line arguments for Cortex entrypoint
   extraCommand: []
 
-  # Extra environment variables
+  # -- Extra environment variables for Cortex container
   extraEnv: []
     #- name: "EXAMPLE"
     #  value: "example"
@@ -102,8 +111,7 @@ cortex:
     #      name: "cm-name"
     #      key: "key-name"
 
-  # Custom application.conf file for Cortex
-  #configFile: ""
+  # -- Custom application.conf configuration file content for Cortex
   configFile: |
     # Cortex configuration file
     # See https://docs.strangebee.com/cortex/installation-and-configuration/#configuration-guides
@@ -145,145 +153,179 @@ cortex:
     play.http.parser.maxDiskBuffer = 100MB
     play.http.parser.maxMemoryBuffer = 100MB
 
-  # Custom logback.xml file for Cortex
+  # -- Custom logback.xml logging configuration file content for Cortex
   logbackXml: ""
   #logbackXml: |
   #  <!-- Cortex logs configuration file -->
   #  <!-- See https://docs.strangebee.com/cortex/installation-and-configuration/#configuration-guides -->
 
-  # Startup probe (set "failureThreshold" to a high value to prevent CrashLoops during schema migrations)
   startupProbe:
+    # -- Enable startup probe (set failureThreshold high to prevent CrashLoops during schema migrations)
     enabled: true
+    # -- Initial delay before startup probe begins
     initialDelaySeconds: 0
+    # -- Frequency of startup probe checks
     periodSeconds: 5
+    # -- Timeout for each startup probe attempt
     timeoutSeconds: 1
+    # -- Number of failures before marking pod as failed
     failureThreshold: 36
 
-  # Liveness probe
   livenessProbe:
+    # -- Enable liveness probe
     enabled: true
+    # -- Initial delay before liveness probe begins
     initialDelaySeconds: 0
+    # -- Frequency of liveness probe checks
     periodSeconds: 10
+    # -- Timeout for each liveness probe attempt
     timeoutSeconds: 1
+    # -- Number of failures before restarting container
     failureThreshold: 3
 
-  # Readiness probe
   readinessProbe:
+    # -- Enable readiness probe
     enabled: true
+    # -- Initial delay before readiness probe begins
     initialDelaySeconds: 0
+    # -- Frequency of readiness probe checks
     periodSeconds: 10
+    # -- Timeout for each readiness probe attempt
     timeoutSeconds: 1
+    # -- Number of successes before marking pod as ready
     successThreshold: 1
+    # -- Number of failures before marking pod as not ready
     failureThreshold: 3
 
   serviceAccount:
+    # -- Create a service account for Cortex
     create: true
+    # -- Name of the service account (generated if empty)
     name: ""
+    # -- Annotations for the service account
     annotations: {}
-    # Whether to automatically mount Kubernetes API credentials
+    # -- Automatically mount Kubernetes API credentials
     automountServiceAccountToken: true
 
-  # Cortex Deployment initContainers configuration
   initContainers:
     image:
+      # -- Docker registry for init container image
       registry: docker.io
+      # -- Init container image repository
       repository: curlimages/curl
+      # -- Init container image tag
       tag: "8.17.0"
+      # -- Init container image pull policy
       pullPolicy: IfNotPresent
 
-    # Wait for ElasticSearch "/_cluster/health" route on port 9200 to answer
     checkElasticsearch:
+      # -- Add an init container waiting for ElasticSearch to answer when requested /_cluster/health route on port 9200
       enabled: true
+      # -- Use HTTPS for ElasticSearch readiness check
       useHttps: false
 
-  # Pod wide security context https://kubernetes.io/docs/tasks/configure-pod-container/security-context/
+  # -- Pod-wide security context
   podSecurityContext: {}
     #fsGroup: 2000
 
-  # Container wide security context
+  # -- Container-level security context
   securityContext: {}
     #allowPrivilegeEscalation: false
 
   service:
+    # -- Kubernetes service type
     type: ClusterIP
+    # -- Cortex application port
     port: 9001
 
   ingress:
+    # -- Enable ingress resource creation
     enabled: false
+    # -- Ingress class name
     className: ""
+    # -- Ingress annotations
     annotations: {}
       #kubernetes.io/ingress.class: nginx
       #kubernetes.io/tls-acme: "true"
+    # -- Ingress hosts configuration
     hosts:
       - host: cortex.example
         paths:
           - path: /
             pathType: ImplementationSpecific
-    # TLS configuration for the ingress (supports the use of custom Helm templates)
+    # -- Ingress TLS configuration
     tls: []
       #- secretName: cortex-tls
       #  hosts:
       #    - cortex.example
 
-  # Additional volumes for Cortex Deployment
+  # -- Additional volumes for Cortex deployment
   volumes: []
     #- name: foo
     #  secret:
     #    secretName: mysecret
     #    optional: false
 
-  # Additional volumeMounts for Cortex Deployment
+  # -- Additional volume mounts for Cortex container
   volumeMounts: []
     #- name: foo
     #  mountPath: "/etc/foo"
     #  readOnly: true
 
+  # -- Node selector for pod assignment
   nodeSelector: {}
 
+  # -- Tolerations for pod assignment
   tolerations: []
 
+  # -- Affinity rules for pod assignment
   affinity: {}
 
 ####################################
 # ElasticSearch subchart variables #
 ####################################
 
-# https://github.com/bitnami/charts/blob/elasticsearch/22.1.6/bitnami/elasticsearch/values.yaml
 elasticsearch:
-  # Use ElasticSearch dependency Helm Chart
+  # -- Enable [ElasticSearch](https://github.com/bitnami/charts/blob/elasticsearch/22.1.6/bitnami/elasticsearch/values.yaml) dependency subchart deployment
   enabled: true
 
-  # Skip image verification to allow bitnamilegacy repository images
   global:
     security:
+      # -- Allow the use of insecure images from bitnamilegacy repository
       allowInsecureImages: true
 
-  # Cortex only supports ElasticSearch v7 at the time of writing
   image:
+    # -- ElasticSearch image registry (Cortex only supports ElasticSearch v7)
     registry: docker.io
-    repository: bitnamilegacy/elasticsearch
+    # -- ElasticSearch image repository
+    repository:
+      bitnamilegacy/elasticsearch
+      # -- ElasticSearch image tag
     tag: "8.18.0-debian-12-r2"
 
-  # Automatically filled by values under the "index" key defined above
   security:
+    # -- TLS configuration for ElasticSearch
     tls: {}
-    # TLS configuration is required to enable password authentication
+    # -- Enable security features (requires TLS configuration)
     enabled: false
+    # -- ElasticSearch elastic user password
     elasticPassword: ""
-    # The name of an existing k8s secret (ElasticSearch subchart expects a ".data.elasticsearch-password" key)
+    # -- Name of existing secret with ElasticSearch password (expects .data.elasticsearch-password key)
     existingSecret: ""
 
   master:
-    # Whether nodes are master only or multipurpose (master, data, coordinating and ingest)
+    # -- Deploy master-only nodes or multipurpose nodes (master, data, coordinating, ingest)
     masterOnly: false
 
-    # Number of master-elegible replicas to deploy
+    # -- Number of master-eligible ElasticSearch replicas
     replicaCount: 1
     pdb:
+      # -- Create PodDisruptionBudget for ElasticSearch master nodes
       create: true
+      # -- Maximum unavailable master nodes
       maxUnavailable: "1"
 
-    # Resources available for each replica
+    # -- Resource requests and limits for ElasticSearch master nodes
     resources:
       requests:
         cpu: "1000m"
@@ -294,46 +336,59 @@ elasticsearch:
         memory: "3584Mi"
         ephemeral-storage: "4Gi"
 
-    # Master nodes heap size
+    # -- Heap size for ElasticSearch master nodes
     heapSize: "2g"
-    # Configure JVM options as env variable
+    # -- Extra environment variables for ElasticSearch master nodes
     extraEnvVars:
       - name: JVM_OPTS
         value: "-Xms2g -Xmx2g -Xmn200m"
 
     persistence:
+      # -- Enable persistent volume for ElasticSearch master nodes
       enabled: true
+      # -- Storage class for ElasticSearch master node persistent volume
       storageClass: ""
+      # -- Size of ElasticSearch master node persistent volume
       size: "10Gi"
 
     networkPolicy:
+      # -- Enable network policy for ElasticSearch master nodes
       enabled: false
 
   data:
-    # Disable data-dedicated nodes
+    # -- Number of data-dedicated node replicas (disabled by default)
     replicaCount: 0
 
   coordinating:
-    # Disable coordination-dedicated nodes
+    # -- Number of coordinating-dedicated node replicas (disabled by default)
     replicaCount: 0
 
   ingest:
-    # Disable ingestion-dedicated nodes
+    # -- Number of ingest-dedicated node replicas (disabled by default)
     replicaCount: 0
 
   metrics:
     image:
+      # -- ElasticSearch metrics exporter image registry
       registry: docker.io
+      # -- ElasticSearch metrics exporter image repository
       repository: bitnamilegacy/elasticsearch-exporter
+      # -- ElasticSearch metrics exporter image tag
       tag: 1.9.0-debian-12-r16
 
   volumePermissions:
     image:
+      # -- Volume permissions init container image registry
       registry: docker.io
+      # -- Volume permissions init container image repository
       repository: bitnamilegacy/os-shell
+      # -- Volume permissions init container image tag
       tag: 12-debian-12-r51
 
   sysctlImage:
+    # -- Sysctl init container image registry
     registry: docker.io
+    # -- Sysctl init container image repository
     repository: bitnamilegacy/os-shell
+    # -- Sysctl init container image tag
     tag: 12-debian-12-r51
