@@ -2,7 +2,7 @@
 apiVersion: v2
 
 name: cortex
-version: 0.3.3
+version: 1.0.0
 appVersion: "4.0.0-1"
 kubeVersion: ">= 1.23.0-0"
 
