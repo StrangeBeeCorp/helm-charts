@@ -216,7 +216,7 @@ cortex:
       pullPolicy: IfNotPresent
 
     checkElasticsearch:
-      # -- Enable init container to wait for ElasticSearch readiness
+      # -- Add an init container waiting for ElasticSearch to answer when requested /_cluster/health route on port 9200
       enabled: true
       # -- Use HTTPS for ElasticSearch readiness check
       useHttps: false
@@ -288,7 +288,7 @@ elasticsearch:
 
   global:
     security:
-      # -- Allow insecure images to use bitnamilegacy repository
+      # -- Allow the use of insecure images from bitnamilegacy repository
       allowInsecureImages: true
 
   image:
