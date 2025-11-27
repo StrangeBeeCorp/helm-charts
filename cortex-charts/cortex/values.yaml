@@ -142,6 +142,9 @@ cortex:
       password = ${?CORTEX_ELASTICSEARCH_PASSWORD}
     }
 
+    play.http.parser.maxDiskBuffer = 100MB
+    play.http.parser.maxMemoryBuffer = 100MB
+
   # Custom logback.xml file for Cortex
   logbackXml: ""
   #logbackXml: |
