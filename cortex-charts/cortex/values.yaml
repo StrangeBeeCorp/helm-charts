@@ -112,7 +112,6 @@ cortex:
     #      key: "key-name"
 
   # -- Custom application.conf configuration file content for Cortex
-  #configFile: ""
   configFile: |
     # Cortex configuration file
     # See https://docs.strangebee.com/cortex/installation-and-configuration/#configuration-guides
@@ -219,7 +218,7 @@ cortex:
     checkElasticsearch:
       # -- Enable init container to wait for ElasticSearch readiness
       enabled: true
-      # -- Use HTTPS for ElasticSearch health check
+      # -- Use HTTPS for ElasticSearch readiness check
       useHttps: false
 
   # -- Pod-wide security context

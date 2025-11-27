@@ -36,7 +36,7 @@ Kubernetes: `>= 1.23.0-0`
 |-----|------|---------|-------------|
 | cortex.affinity | object | `{}` | Affinity rules for pod assignment |
 | cortex.annotations | object | `{}` | Additional annotations to attach to Cortex resources |
-| cortex.configFile | string | `"# Cortex configuration file\n# See https://docs.strangebee.com/cortex/installation-and-configuration/#configuration-guides\nanalyzer {\n  urls: [\n    \"https://catalogs.download.strangebee.com/latest/json/analyzers.json\",\n  ]\n\n  # Customize analyzers parallelism here\n  fork-join-executor {\n    parallelism-min: 8,\n    parallelism-factor: 1.0,\n    parallelism-max: 8,\n  }\n}\n\n  # Customize responders parallelism here\nresponder {\n  urls: [\n    \"https://catalogs.download.strangebee.com/latest/json/responders.json\",\n  ]\n\n  fork-join-executor {\n    parallelism-min: 8,\n    parallelism-factor: 1.0,\n    parallelism-max: 8,\n  }\n}\n\n# ElasticSearch\nsearch {\n  # Set default value for the password\n  password = \"\"\n  # Override credentials (if these environment variables exist)\n  user = ${?CORTEX_ELASTICSEARCH_USERNAME}\n  password = ${?CORTEX_ELASTICSEARCH_PASSWORD}\n}\n"` | Custom application.conf configuration file content for Cortex configFile: "" |
+| cortex.configFile | string | `"# Cortex configuration file\n# See https://docs.strangebee.com/cortex/installation-and-configuration/#configuration-guides\nanalyzer {\n  urls: [\n    \"https://catalogs.download.strangebee.com/latest/json/analyzers.json\",\n  ]\n\n  # Customize analyzers parallelism here\n  fork-join-executor {\n    parallelism-min: 8,\n    parallelism-factor: 1.0,\n    parallelism-max: 8,\n  }\n}\n\n  # Customize responders parallelism here\nresponder {\n  urls: [\n    \"https://catalogs.download.strangebee.com/latest/json/responders.json\",\n  ]\n\n  fork-join-executor {\n    parallelism-min: 8,\n    parallelism-factor: 1.0,\n    parallelism-max: 8,\n  }\n}\n\n# ElasticSearch\nsearch {\n  # Set default value for the password\n  password = \"\"\n  # Override credentials (if these environment variables exist)\n  user = ${?CORTEX_ELASTICSEARCH_USERNAME}\n  password = ${?CORTEX_ELASTICSEARCH_PASSWORD}\n}\n"` | Custom application.conf configuration file content for Cortex |
 | cortex.extraCommand | list | `[]` | Extra command-line arguments for Cortex entrypoint |
 | cortex.extraEnv | list | `[]` | Extra environment variables for Cortex container |
 | cortex.httpSecret | string | `"ChangeThisSecretWithOneContainingAtLeast32Chars"` | HTTP secret for Cortex application (must be at least 32 characters) |
@@ -55,7 +55,7 @@ Kubernetes: `>= 1.23.0-0`
 | cortex.ingress.hosts | list | `[{"host":"cortex.example","paths":[{"path":"/","pathType":"ImplementationSpecific"}]}]` | Ingress hosts configuration |
 | cortex.ingress.tls | list | `[]` | Ingress TLS configuration |
 | cortex.initContainers.checkElasticsearch.enabled | bool | `true` | Enable init container to wait for ElasticSearch readiness |
-| cortex.initContainers.checkElasticsearch.useHttps | bool | `false` | Use HTTPS for ElasticSearch health check |
+| cortex.initContainers.checkElasticsearch.useHttps | bool | `false` | Use HTTPS for ElasticSearch readiness check |
 | cortex.initContainers.image.pullPolicy | string | `"IfNotPresent"` | Init container image pull policy |
 | cortex.initContainers.image.registry | string | `"docker.io"` | Docker registry for init container image |
 | cortex.initContainers.image.repository | string | `"curlimages/curl"` | Init container image repository |
