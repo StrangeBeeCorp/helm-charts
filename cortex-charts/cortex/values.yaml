@@ -150,6 +150,9 @@ cortex:
       password = ${?CORTEX_ELASTICSEARCH_PASSWORD}
     }
 
+    play.http.parser.maxDiskBuffer = 100MB
+    play.http.parser.maxMemoryBuffer = 100MB
+
   # -- Custom logback.xml logging configuration file content for Cortex
   logbackXml: ""
   #logbackXml: |
@@ -283,7 +286,7 @@ cortex:
 ####################################
 
 elasticsearch:
-  # -- Enable ElasticSearch dependency subchart deployment
+  # -- Enable [ElasticSearch](https://github.com/bitnami/charts/blob/elasticsearch/22.1.6/bitnami/elasticsearch/values.yaml) dependency subchart deployment
   enabled: true
 
   global:
@@ -295,9 +298,10 @@ elasticsearch:
     # -- ElasticSearch image registry (Cortex only supports ElasticSearch v7)
     registry: docker.io
     # -- ElasticSearch image repository
-    repository: bitnamilegacy/elasticsearch
-    # -- ElasticSearch image tag
-    tag: "7.17.26-debian-12-r0"
+    repository:
+      bitnamilegacy/elasticsearch
+      # -- ElasticSearch image tag
+    tag: "8.18.0-debian-12-r2"
 
   security:
     # -- TLS configuration for ElasticSearch
@@ -370,7 +374,7 @@ elasticsearch:
       # -- ElasticSearch metrics exporter image repository
       repository: bitnamilegacy/elasticsearch-exporter
       # -- ElasticSearch metrics exporter image tag
-      tag: 1.9.0-debian-12-r14
+      tag: 1.9.0-debian-12-r16
 
   volumePermissions:
     image:
@@ -379,7 +383,7 @@ elasticsearch:
       # -- Volume permissions init container image repository
       repository: bitnamilegacy/os-shell
       # -- Volume permissions init container image tag
-      tag: 12-debian-12-r49
+      tag: 12-debian-12-r51
 
   sysctlImage:
     # -- Sysctl init container image registry
@@ -387,4 +391,4 @@ elasticsearch:
     # -- Sysctl init container image repository
     repository: bitnamilegacy/os-shell
     # -- Sysctl init container image tag
-    tag: 12-debian-12-r49
+    tag: 12-debian-12-r51

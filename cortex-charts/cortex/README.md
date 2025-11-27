@@ -2,7 +2,7 @@
 
 Cortex official Helm Chart
 
-[![Version: 0.3.3](https://img.shields.io/badge/Version-0.3.3-informational?style=flat-square) ](https://github.com/StrangeBeeCorp/helm-charts/releases) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square)  [![AppVersion: 3.2.1-1](https://img.shields.io/badge/AppVersion-3.2.1--1-informational?style=flat-square) ](https://docs.strangebee.com/thehive/release-notes/release-notes-5.5/)
+[![Version: 0.3.3](https://img.shields.io/badge/Version-0.3.3-informational?style=flat-square) ](https://github.com/StrangeBeeCorp/helm-charts/releases) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square)  [![AppVersion: 4.0.0-1](https://img.shields.io/badge/AppVersion-4.0.0--1-informational?style=flat-square) ](https://github.com/TheHive-Project/Cortex/releases)
 
 ## Description
 
@@ -28,7 +28,7 @@ Kubernetes: `>= 1.23.0-0`
 
 | Repository | Name | Version |
 |------------|------|---------|
-| oci://registry-1.docker.io/bitnamicharts | elasticsearch | 22.1.0 |
+| oci://registry-1.docker.io/bitnamicharts | elasticsearch | 22.1.6 |
 
 ## Values
 
@@ -36,7 +36,7 @@ Kubernetes: `>= 1.23.0-0`
 |-----|------|---------|-------------|
 | cortex.affinity | object | `{}` | Affinity rules for pod assignment |
 | cortex.annotations | object | `{}` | Additional annotations to attach to Cortex resources |
-| cortex.configFile | string | `"# Cortex configuration file\n# See https://docs.strangebee.com/cortex/installation-and-configuration/#configuration-guides\nanalyzer {\n  urls: [\n    \"https://catalogs.download.strangebee.com/latest/json/analyzers.json\",\n  ]\n\n  # Customize analyzers parallelism here\n  fork-join-executor {\n    parallelism-min: 8,\n    parallelism-factor: 1.0,\n    parallelism-max: 8,\n  }\n}\n\n  # Customize responders parallelism here\nresponder {\n  urls: [\n    \"https://catalogs.download.strangebee.com/latest/json/responders.json\",\n  ]\n\n  fork-join-executor {\n    parallelism-min: 8,\n    parallelism-factor: 1.0,\n    parallelism-max: 8,\n  }\n}\n\n# ElasticSearch\nsearch {\n  # Set default value for the password\n  password = \"\"\n  # Override credentials (if these environment variables exist)\n  user = ${?CORTEX_ELASTICSEARCH_USERNAME}\n  password = ${?CORTEX_ELASTICSEARCH_PASSWORD}\n}\n"` | Custom application.conf configuration file content for Cortex |
+| cortex.configFile | string | `"# Cortex configuration file\n# See https://docs.strangebee.com/cortex/installation-and-configuration/#configuration-guides\nanalyzer {\n  urls: [\n    \"https://catalogs.download.strangebee.com/latest/json/analyzers.json\",\n  ]\n\n  # Customize analyzers parallelism here\n  fork-join-executor {\n    parallelism-min: 8,\n    parallelism-factor: 1.0,\n    parallelism-max: 8,\n  }\n}\n\n  # Customize responders parallelism here\nresponder {\n  urls: [\n    \"https://catalogs.download.strangebee.com/latest/json/responders.json\",\n  ]\n\n  fork-join-executor {\n    parallelism-min: 8,\n    parallelism-factor: 1.0,\n    parallelism-max: 8,\n  }\n}\n\n# ElasticSearch\nsearch {\n  # Set default value for the password\n  password = \"\"\n  # Override credentials (if these environment variables exist)\n  user = ${?CORTEX_ELASTICSEARCH_USERNAME}\n  password = ${?CORTEX_ELASTICSEARCH_PASSWORD}\n}\n\nplay.http.parser.maxDiskBuffer = 100MB\nplay.http.parser.maxMemoryBuffer = 100MB\n"` | Custom application.conf configuration file content for Cortex |
 | cortex.extraCommand | list | `[]` | Extra command-line arguments for Cortex entrypoint |
 | cortex.extraEnv | list | `[]` | Extra environment variables for Cortex container |
 | cortex.httpSecret | string | `"ChangeThisSecretWithOneContainingAtLeast32Chars"` | HTTP secret for Cortex application (must be at least 32 characters) |
@@ -54,7 +54,7 @@ Kubernetes: `>= 1.23.0-0`
 | cortex.ingress.enabled | bool | `false` | Enable ingress resource creation |
 | cortex.ingress.hosts | list | `[{"host":"cortex.example","paths":[{"path":"/","pathType":"ImplementationSpecific"}]}]` | Ingress hosts configuration |
 | cortex.ingress.tls | list | `[]` | Ingress TLS configuration |
-| cortex.initContainers.checkElasticsearch.enabled | bool | `true` | Enable init container to wait for ElasticSearch readiness |
+| cortex.initContainers.checkElasticsearch.enabled | bool | `true` | Add an init container waiting for ElasticSearch to answer when requested /_cluster/health route on port 9200 |
 | cortex.initContainers.checkElasticsearch.useHttps | bool | `false` | Use HTTPS for ElasticSearch readiness check |
 | cortex.initContainers.image.pullPolicy | string | `"IfNotPresent"` | Init container image pull policy |
 | cortex.initContainers.image.registry | string | `"docker.io"` | Docker registry for init container image |
@@ -107,11 +107,11 @@ Kubernetes: `>= 1.23.0-0`
 | cortex.volumes | list | `[]` | Additional volumes for Cortex deployment |
 | elasticsearch.coordinating.replicaCount | int | `0` | Number of coordinating-dedicated node replicas (disabled by default) |
 | elasticsearch.data.replicaCount | int | `0` | Number of data-dedicated node replicas (disabled by default) |
-| elasticsearch.enabled | bool | `true` | Enable ElasticSearch dependency subchart deployment |
-| elasticsearch.global.security.allowInsecureImages | bool | `true` | Allow insecure images to use bitnamilegacy repository |
+| elasticsearch.enabled | bool | `true` | Enable [ElasticSearch](https://github.com/bitnami/charts/blob/elasticsearch/22.1.6/bitnami/elasticsearch/values.yaml) dependency subchart deployment |
+| elasticsearch.global.security.allowInsecureImages | bool | `true` | Allow the use of insecure images from bitnamilegacy repository |
 | elasticsearch.image.registry | string | `"docker.io"` | ElasticSearch image registry (Cortex only supports ElasticSearch v7) |
 | elasticsearch.image.repository | string | `"bitnamilegacy/elasticsearch"` | ElasticSearch image repository |
-| elasticsearch.image.tag | string | `"7.17.26-debian-12-r0"` | ElasticSearch image tag |
+| elasticsearch.image.tag | string | `"8.18.0-debian-12-r2"` | ElasticSearch image tag |
 | elasticsearch.ingest.replicaCount | int | `0` | Number of ingest-dedicated node replicas (disabled by default) |
 | elasticsearch.master.extraEnvVars | list | `[{"name":"JVM_OPTS","value":"-Xms2g -Xmx2g -Xmn200m"}]` | Extra environment variables for ElasticSearch master nodes |
 | elasticsearch.master.heapSize | string | `"2g"` | Heap size for ElasticSearch master nodes |
@@ -126,17 +126,17 @@ Kubernetes: `>= 1.23.0-0`
 | elasticsearch.master.resources | object | `{"limits":{"cpu":"2000m","ephemeral-storage":"4Gi","memory":"3584Mi"},"requests":{"cpu":"1000m","ephemeral-storage":"4Gi","memory":"2048Mi"}}` | Resource requests and limits for ElasticSearch master nodes |
 | elasticsearch.metrics.image.registry | string | `"docker.io"` | ElasticSearch metrics exporter image registry |
 | elasticsearch.metrics.image.repository | string | `"bitnamilegacy/elasticsearch-exporter"` | ElasticSearch metrics exporter image repository |
-| elasticsearch.metrics.image.tag | string | `"1.9.0-debian-12-r14"` | ElasticSearch metrics exporter image tag |
+| elasticsearch.metrics.image.tag | string | `"1.9.0-debian-12-r16"` | ElasticSearch metrics exporter image tag |
 | elasticsearch.security.elasticPassword | string | `""` | ElasticSearch elastic user password |
 | elasticsearch.security.enabled | bool | `false` | Enable security features (requires TLS configuration) |
 | elasticsearch.security.existingSecret | string | `""` | Name of existing secret with ElasticSearch password (expects .data.elasticsearch-password key) |
 | elasticsearch.security.tls | object | `{}` | TLS configuration for ElasticSearch |
 | elasticsearch.sysctlImage.registry | string | `"docker.io"` | Sysctl init container image registry |
 | elasticsearch.sysctlImage.repository | string | `"bitnamilegacy/os-shell"` | Sysctl init container image repository |
-| elasticsearch.sysctlImage.tag | string | `"12-debian-12-r49"` | Sysctl init container image tag |
+| elasticsearch.sysctlImage.tag | string | `"12-debian-12-r51"` | Sysctl init container image tag |
 | elasticsearch.volumePermissions.image.registry | string | `"docker.io"` | Volume permissions init container image registry |
 | elasticsearch.volumePermissions.image.repository | string | `"bitnamilegacy/os-shell"` | Volume permissions init container image repository |
-| elasticsearch.volumePermissions.image.tag | string | `"12-debian-12-r49"` | Volume permissions init container image tag |
+| elasticsearch.volumePermissions.image.tag | string | `"12-debian-12-r51"` | Volume permissions init container image tag |
 | fullnameOverride | string | `""` | Override the full name of the chart |
 | imagePullSecrets | list | `[]` | Image pull secrets for private registries |
 | nameOverride | string | `""` | Override the name of the chart |
