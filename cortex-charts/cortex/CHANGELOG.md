@@ -4,6 +4,7 @@
 - Fix the env var providing the HTTP secret to Cortex [#112](https://github.com/StrangeBeeCorp/helm-charts/pull/112)
 - Configure Cortex to actually use provided ElasticSearch credentials [#113](https://github.com/StrangeBeeCorp/helm-charts/pull/113)
 - Implement authenticated API call to ElasticSearch for the init-container [#114](https://github.com/StrangeBeeCorp/helm-charts/pull/114)
+- (BREAKING CHANGE) Update Cortex to v4.0.0-1 and ElasticSearch to v8.18.0 along with other dependencies [#116](https://github.com/StrangeBeeCorp/helm-charts/pull/116)
 - Increase resources for Cortex HTTP parser [#120](https://github.com/StrangeBeeCorp/helm-charts/pull/120)
 
 

@@ -3,13 +3,13 @@ apiVersion: v2
 
 name: cortex
 version: 0.3.3
-appVersion: "3.2.1-1"
+appVersion: "4.0.0-1"
 kubeVersion: ">= 1.23.0-0"
 
 dependencies:
   - name: elasticsearch
     repository: oci://registry-1.docker.io/bitnamicharts
-    version: 22.1.0
+    version: 22.1.6
     condition: elasticsearch.enabled
 
 type: application
@@ -35,7 +35,7 @@ annotations:
   artifacthub.io/category: security
   artifacthub.io/images: |
     - name: cortex
-      image: thehiveproject/cortex:3.2.1-1
+      image: thehiveproject/cortex:4.0.0-1
       whitelisted: true
     - name: curl
       image: curlimages/curl:8.17.0
