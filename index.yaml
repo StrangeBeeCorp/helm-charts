@@ -5,6 +5,51 @@ entries:
       artifacthub.io/category: security
       artifacthub.io/images: |
         - name: cortex
+          image: thehiveproject/cortex:4.0.0-1
+          whitelisted: true
+        - name: curl
+          image: curlimages/curl:8.17.0
+          whitelisted: true
+      artifacthub.io/license: AGPL-3.0
+      artifacthub.io/links: |
+        - name: source
+          url: https://github.com/StrangeBeeCorp/helm-charts/tree/main/cortex-charts/cortex
+        - name: support
+          url: https://strangebee.com/contact-strangebee/
+    apiVersion: v2
+    appVersion: 4.0.0-1
+    created: "2025-11-27T16:40:37.011875431Z"
+    dependencies:
+    - condition: elasticsearch.enabled
+      name: elasticsearch
+      repository: oci://registry-1.docker.io/bitnamicharts
+      version: 22.1.6
+    description: Cortex official Helm Chart
+    digest: ef10dcc157f9136d719a0f5d1c4f2a286e875bbed619e119faef533bb8c55435
+    home: https://strangebee.com/cortex/
+    icon: https://strangebeecorp.github.io/helm-charts/assets/cortex-icon.svg
+    keywords:
+    - cortex
+    - thehive
+    - sirp
+    - incident-response
+    - case-management
+    - strangebee
+    kubeVersion: '>= 1.23.0-0'
+    maintainers:
+    - name: StrangeBee
+      url: https://strangebee.com/
+    name: cortex
+    sources:
+    - https://github.com/StrangeBeeCorp/helm-charts/tree/main/cortex-charts/cortex
+    type: application
+    urls:
+    - https://github.com/StrangeBeeCorp/helm-charts/releases/download/cortex-1.0.0/cortex-1.0.0.tgz
+    version: 1.0.0
+  - annotations:
+      artifacthub.io/category: security
+      artifacthub.io/images: |
+        - name: cortex
           image: thehiveproject/cortex:3.2.1-1
           whitelisted: true
         - name: busybox
@@ -1465,4 +1510,4 @@ entries:
     urls:
     - https://github.com/StrangeBeeCorp/helm-charts/releases/download/thehive-0.1.1/thehive-0.1.1.tgz
     version: 0.1.1
-generated: "2025-11-26T14:47:55.902726994Z"
+generated: "2025-11-27T16:40:37.011965268Z"
