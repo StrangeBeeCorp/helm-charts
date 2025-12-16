@@ -1,0 +1,72 @@
+** Please be patient while Cortex is being deployed **
+
+{{- if .Values.cortex.ingress.enabled }}
+
+Cortex can be accessed through the following DNS name(s) from within your cluster:
+
+  {{ include "cortex.fullname" . }}.{{ .Release.Namespace }}.svc.cluster.local:{{ .Values.cortex.service.port }}
+
+To access Cortex from outside the cluster:
+
+{{- range $host := .Values.cortex.ingress.hosts }}
+  {{- range .paths }}
+  http{{ if $.Values.cortex.ingress.tls }}s{{ end }}://{{ $host.host }}{{ .path }}
+  {{- end }}
+{{- end }}
+
+{{- else if contains "NodePort" .Values.cortex.service.type }}
+
+Cortex can be accessed via the following DNS name from within your cluster:
+
+  {{ include "cortex.fullname" . }}.{{ .Release.Namespace }}.svc.cluster.local:{{ .Values.cortex.service.port }}
+
+To access Cortex from outside the cluster, run:
+
+  export NODE_PORT=$(kubectl get --namespace {{ .Release.Namespace }} -o jsonpath="{.spec.ports[0].nodePort}" services {{ include "cortex.fullname" . }})
+  export NODE_IP=$(kubectl get nodes --namespace {{ .Release.Namespace }} -o jsonpath="{.items[0].status.addresses[0].address}")
+  echo "Cortex URL: http://$NODE_IP:$NODE_PORT"
+
+{{- else if contains "LoadBalancer" .Values.cortex.service.type }}
+
+Cortex can be accessed via the following DNS name from within your cluster:
+
+  {{ include "cortex.fullname" . }}.{{ .Release.Namespace }}.svc.cluster.local:{{ .Values.cortex.service.port }}
+
+To access Cortex from outside the cluster, run:
+
+  NOTE: It may take a few minutes for the LoadBalancer IP to be available.
+        Watch the status with: 'kubectl get --namespace {{ .Release.Namespace }} svc -w {{ include "cortex.fullname" . }}'
+
+  export SERVICE_IP=$(kubectl get svc --namespace {{ .Release.Namespace }} {{ include "cortex.fullname" . }} --template "{{"{{ range (index .status.loadBalancer.ingress 0) }}{{.}}{{ end }}"}}")
+  echo "Cortex URL: http://$SERVICE_IP:{{ .Values.cortex.service.port }}"
+
+{{- else if contains "ClusterIP" .Values.cortex.service.type }}
+
+Cortex can be accessed via the following DNS name from within your cluster:
+
+  {{ include "cortex.fullname" . }}.{{ .Release.Namespace }}.svc.cluster.local:{{ .Values.cortex.service.port }}
+
+To access Cortex from outside the cluster, execute the following commands:
+
+  export POD_NAME=$(kubectl get pods --namespace {{ .Release.Namespace }} -l "app.kubernetes.io/name={{ include "cortex.name" . }},app.kubernetes.io/instance={{ .Release.Name }}" -o jsonpath="{.items[0].metadata.name}")
+  echo "Visit http://127.0.0.1:9001 to access Cortex"
+  kubectl --namespace {{ .Release.Namespace }} port-forward $POD_NAME 9001:{{ .Values.cortex.service.port }}
+
+{{- end }}
+
+To check the status of your deployment:
+
+  kubectl get pods --namespace {{ .Release.Namespace }} -l "app.kubernetes.io/name={{ include "cortex.name" . }},app.kubernetes.io/instance={{ .Release.Name }}"
+
+To view the logs:
+
+  kubectl logs --namespace {{ .Release.Namespace }} -l "app.kubernetes.io/name={{ include "cortex.name" . }},app.kubernetes.io/instance={{ .Release.Name }}"
+
+To run tests and validate the deployment:
+
+  helm test {{ .Release.Name }} --namespace {{ .Release.Namespace }}
+
+    IMPORTANT: Make sure to change the default admin password after first login!
+    Default credentials: admin / admin
+
+For more information, visit: https://docs.strangebee.com/cortex/
