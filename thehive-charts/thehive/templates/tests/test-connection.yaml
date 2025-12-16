@@ -1,0 +1,70 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: "{{ include "thehive.fullname" . }}-test-connection"
+  labels:
+    {{- include "thehive.labels" . | nindent 4 }}
+    app.kubernetes.io/component: test
+  annotations:
+    "helm.sh/hook": test
+    "helm.sh/hook-weight": "-5"
+    "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
+spec:
+  restartPolicy: Never
+  containers:
+    - name: connection-test
+      image: curlimages/curl:8.17.0
+      command:
+        - /bin/sh
+        - -c
+        - |
+          set -e
+          echo "Testing TheHive service connectivity..."
+          
+          SERVICE_NAME="{{ include "thehive.fullname" . }}"
+          MAX_RETRIES=30
+          RETRY_DELAY=5
+          
+          # Function to retry curl with timeout
+          retry_curl() {
+            local url=$1
+            local description=$2
+            local retries=0
+            
+            echo "Testing ${description}..."
+            while [ $retries -lt $MAX_RETRIES ]; do
+              if curl -f -s -o /dev/null -w "HTTP Status: %{http_code}\n" --max-time 10 "${url}" 2>/dev/null; then
+                echo "${description} is accessible!"
+                return 0
+              fi
+              retries=$((retries + 1))
+              if [ $retries -lt $MAX_RETRIES ]; then
+                echo "Waiting for ${description} to be ready... (attempt ${retries}/${MAX_RETRIES})"
+                sleep ${RETRY_DELAY}
+              fi
+            done
+            
+            echo "ERROR: ${description} failed after ${MAX_RETRIES} attempts"
+            return 1
+          }
+          
+          # Test HTTP endpoint
+          retry_curl \
+            "http://${SERVICE_NAME}:{{ .Values.thehive.service.port }}/api/status" \
+            "HTTP endpoint on port {{ .Values.thehive.service.port }}"
+          
+          {{- if .Values.thehive.monitoring.enabled }}
+          # Test monitoring endpoint (non-fatal - requires Kamon configuration in application.conf)
+          echo "Testing monitoring endpoint on port {{ .Values.thehive.monitoring.port }}..."
+          if curl -f -s -o /dev/null -w "HTTP Status: %{http_code}\n" --max-time 10 \
+            "http://${SERVICE_NAME}:{{ .Values.thehive.monitoring.port }}" 2>/dev/null; then
+            echo "[SUCCESS] Monitoring endpoint is accessible and configured."
+          else
+            echo "[WARNING] Monitoring endpoint is not responding."
+            echo "          This is expected if Kamon monitoring is not configured in application.conf"
+            echo "          The monitoring port is exposed but requires additional configuration."
+            echo "          See: https://docs.strangebee.com/thehive/operations/monitoring/"
+          fi
+          {{- end }}
+
+          echo "[SUCCESS] All connection tests passed."
