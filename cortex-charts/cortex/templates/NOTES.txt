@@ -1,10 +1,10 @@
 ** Please be patient while Cortex is being deployed **
 
-{{- if .Values.cortex.ingress.enabled }}
-
 Cortex can be accessed through the following DNS name(s) from within your cluster:
 
   {{ include "cortex.fullname" . }}.{{ .Release.Namespace }}.svc.cluster.local:{{ .Values.cortex.service.port }}
+
+{{- if .Values.cortex.ingress.enabled }}
 
 To access Cortex from outside the cluster:
 

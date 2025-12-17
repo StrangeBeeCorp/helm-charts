@@ -2,6 +2,10 @@
 
 - Nothing yet
 
+## 1.0.1
+
+- Add tests to verify Cortex connectivity [#124](https://github.com/StrangeBeeCorp/helm-charts/pull/124)
+
 ## 1.0.0
 
 - Set all replicas to 1 by default [#110](https://github.com/StrangeBeeCorp/helm-charts/pull/110)
