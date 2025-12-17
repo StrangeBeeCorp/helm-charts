@@ -1,0 +1,64 @@
+** Please be patient while TheHive is being deployed **
+
+TheHive can be accessed through the following DNS name(s) from within your cluster:
+
+  {{ include "thehive.fullname" . }}.{{ .Release.Namespace }}.svc.cluster.local:{{ .Values.thehive.service.port }}
+
+{{- if .Values.thehive.ingress.enabled }}
+
+To access TheHive from outside the cluster:
+
+{{- range $host := .Values.thehive.ingress.hosts }}
+  {{- range .paths }}
+  http{{ if $.Values.thehive.ingress.tls }}s{{ end }}://{{ $host.host }}{{ .path }}
+  {{- end }}
+{{- end }}
+
+{{- else if contains "NodePort" .Values.thehive.service.type }}
+
+To access TheHive from outside the cluster, run:
+
+  export NODE_PORT=$(kubectl get --namespace {{ .Release.Namespace }} -o jsonpath="{.spec.ports[0].nodePort}" services {{ include "thehive.fullname" . }})
+  export NODE_IP=$(kubectl get nodes --namespace {{ .Release.Namespace }} -o jsonpath="{.items[0].status.addresses[0].address}")
+  echo "TheHive URL: http://$NODE_IP:$NODE_PORT"
+
+{{- else if contains "LoadBalancer" .Values.thehive.service.type }}
+
+To access TheHive from outside the cluster, run:
+
+  NOTE: It may take a few minutes for the LoadBalancer IP to be available.
+        Watch the status with: 'kubectl get --namespace {{ .Release.Namespace }} svc -w {{ include "thehive.fullname" . }}'
+
+  export SERVICE_IP=$(kubectl get svc --namespace {{ .Release.Namespace }} {{ include "thehive.fullname" . }} --template "{{"{{ range (index .status.loadBalancer.ingress 0) }}{{.}}{{ end }}"}}")
+  echo "TheHive URL: http://$SERVICE_IP:{{ .Values.thehive.service.port }}"
+
+{{- else if contains "ClusterIP" .Values.thehive.service.type }}
+
+To access TheHive from outside the cluster, execute the following commands:
+
+  export POD_NAME=$(kubectl get pods --namespace {{ .Release.Namespace }} -l "app.kubernetes.io/name={{ include "thehive.name" . }},app.kubernetes.io/instance={{ .Release.Name }}" -o jsonpath="{.items[0].metadata.name}")
+  echo "Visit http://127.0.0.1:9000 to access TheHive"
+  kubectl --namespace {{ .Release.Namespace }} port-forward $POD_NAME 9000:{{ .Values.thehive.service.port }}
+
+{{- end }}
+
+To check the status of your deployment:
+
+  kubectl get pods --namespace {{ .Release.Namespace }} -l "app.kubernetes.io/name={{ include "thehive.name" . }},app.kubernetes.io/instance={{ .Release.Name }}"
+
+To view the logs:
+
+  kubectl logs --namespace {{ .Release.Namespace }} -l "app.kubernetes.io/name={{ include "thehive.name" . }},app.kubernetes.io/instance={{ .Release.Name }}"
+
+{{- if .Values.thehive.monitoring.enabled }}
+
+Monitoring metrics are available at:
+
+  {{ include "thehive.fullname" . }}.{{ .Release.Namespace }}.svc.cluster.local:{{ .Values.thehive.monitoring.port }}
+
+{{- end }}
+
+    IMPORTANT: Make sure to change the default admin credentials after first login.
+    Default credentials: admin@thehive.local / secret
+
+For more information, visit: https://docs.strangebee.com/thehive/
