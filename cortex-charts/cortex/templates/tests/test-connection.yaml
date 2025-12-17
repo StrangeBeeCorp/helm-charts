@@ -23,7 +23,7 @@ spec:
           
           SERVICE_NAME="{{ include "cortex.fullname" . }}"
           MAX_RETRIES=30
-          RETRY_DELAY=5
+          RETRY_DELAY=7
           
           # Function to retry curl with timeout
           retry_curl() {
