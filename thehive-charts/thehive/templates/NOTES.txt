@@ -1,10 +1,10 @@
 ** Please be patient while TheHive is being deployed **
 
-{{- if .Values.thehive.ingress.enabled }}
-
 TheHive can be accessed through the following DNS name(s) from within your cluster:
 
   {{ include "thehive.fullname" . }}.{{ .Release.Namespace }}.svc.cluster.local:{{ .Values.thehive.service.port }}
+
+{{- if .Values.thehive.ingress.enabled }}
 
 To access TheHive from outside the cluster:
 
@@ -16,10 +16,6 @@ To access TheHive from outside the cluster:
 
 {{- else if contains "NodePort" .Values.thehive.service.type }}
 
-TheHive can be accessed via the following DNS name from within your cluster:
-
-  {{ include "thehive.fullname" . }}.{{ .Release.Namespace }}.svc.cluster.local:{{ .Values.thehive.service.port }}
-
 To access TheHive from outside the cluster, run:
 
   export NODE_PORT=$(kubectl get --namespace {{ .Release.Namespace }} -o jsonpath="{.spec.ports[0].nodePort}" services {{ include "thehive.fullname" . }})
@@ -27,10 +23,6 @@ To access TheHive from outside the cluster, run:
   echo "TheHive URL: http://$NODE_IP:$NODE_PORT"
 
 {{- else if contains "LoadBalancer" .Values.thehive.service.type }}
-
-TheHive can be accessed via the following DNS name from within your cluster:
-
-  {{ include "thehive.fullname" . }}.{{ .Release.Namespace }}.svc.cluster.local:{{ .Values.thehive.service.port }}
 
 To access TheHive from outside the cluster, run:
 
@@ -41,10 +33,6 @@ To access TheHive from outside the cluster, run:
   echo "TheHive URL: http://$SERVICE_IP:{{ .Values.thehive.service.port }}"
 
 {{- else if contains "ClusterIP" .Values.thehive.service.type }}
-
-TheHive can be accessed via the following DNS name from within your cluster:
-
-  {{ include "thehive.fullname" . }}.{{ .Release.Namespace }}.svc.cluster.local:{{ .Values.thehive.service.port }}
 
 To access TheHive from outside the cluster, execute the following commands:
 

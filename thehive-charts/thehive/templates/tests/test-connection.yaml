@@ -57,7 +57,7 @@ spec:
           # Test monitoring endpoint (non-fatal - requires Kamon configuration in application.conf)
           echo "Testing monitoring endpoint on port {{ .Values.thehive.monitoring.port }}..."
           if curl -f -s -o /dev/null -w "HTTP Status: %{http_code}\n" --max-time 10 \
-            "http://${SERVICE_NAME}:{{ .Values.thehive.monitoring.port }}" 2>/dev/null; then
+            "http://${SERVICE_NAME}:{{ .Values.thehive.monitoring.port }}/metrics" 2>/dev/null; then
             echo "[SUCCESS] Monitoring endpoint is accessible and configured."
           else
             echo "[WARNING] Monitoring endpoint is not responding."
