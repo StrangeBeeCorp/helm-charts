@@ -2,6 +2,10 @@
 
 - Nothing yet
 
+## 1.0.1
+
+- Add tests to verify TheHive connectivity and monitoring endpoint [#123](https://github.com/StrangeBeeCorp/helm-charts/pull/123)
+
 ## 1.0.0
 
 - Set all replicas to 1 by default [#110](https://github.com/StrangeBeeCorp/helm-charts/pull/110)
