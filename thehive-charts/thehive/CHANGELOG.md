@@ -2,6 +2,10 @@
 
 - Nothing yet
 
+## 1.0.2
+
+- Update TheHive to v5.5.14-2 [#125](https://github.com/StrangeBeeCorp/helm-charts/pull/125)
+
 ## 1.0.1
 
 - Add tests to verify TheHive connectivity and monitoring endpoint [#123](https://github.com/StrangeBeeCorp/helm-charts/pull/123)
