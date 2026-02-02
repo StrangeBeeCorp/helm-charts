@@ -2,6 +2,10 @@
 
 - Nothing yet
 
+## 1.0.3
+
+- Update TheHive to v5.6.0-1 [#126](https://github.com/StrangeBeeCorp/helm-charts/pull/126)
+
 ## 1.0.2
 
 - Update TheHive to v5.5.14-2 [#125](https://github.com/StrangeBeeCorp/helm-charts/pull/125)
