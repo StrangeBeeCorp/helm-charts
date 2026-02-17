@@ -1,0 +1,125 @@
+name: Test Cortex Helm Chart
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "cortex-charts/cortex/**"
+      - ".github/workflows/test-cortex.yml"
+  push:
+    branches:
+      - main
+    paths:
+      - "cortex-charts/cortex/**"
+      - ".github/workflows/test-cortex.yml"
+
+jobs:
+  lint:
+    name: Lint Cortex Chart
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install Helm
+        uses: azure/setup-helm@v4
+        with:
+          version: "latest"
+
+      - name: Run helm lint
+        run: |
+          cd cortex-charts/cortex
+          helm dependency update
+          helm lint . --strict
+
+  test:
+    name: Install and Test Cortex Chart
+    runs-on: ubuntu-24.04
+    needs: lint
+    strategy:
+      matrix:
+        k8s-version:
+          - v1.31.0
+          - v1.30.0
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install Helm
+        uses: azure/setup-helm@v4
+        with:
+          version: "latest"
+
+      - name: Create Kind cluster
+        uses: helm/kind-action@v1
+        with:
+          cluster_name: cortex-test
+          node_image: kindest/node:${{ matrix.k8s-version }}
+          wait: 300s
+
+      - name: Verify cluster
+        run: |
+          kubectl cluster-info
+          kubectl get nodes
+
+      - name: Update Helm dependencies
+        run: |
+          cd cortex-charts/cortex
+          helm dependency update
+
+      - name: Install Cortex chart
+        run: |
+          cd cortex-charts/cortex
+
+          # Generate a secure random secret for testing
+          SECRET=$(openssl rand -base64 32)
+
+          # Install with minimal but valid configuration
+          helm install cortex-test . \
+            --set cortex.httpSecret="$SECRET" \
+            --set elasticsearch.enabled=true \
+            --set elasticsearch.master.persistence.enabled=false \
+            --set cortex.persistentVolumeClaim.storageClass=standard \
+            --wait \
+            --timeout=10m \
+            --debug
+
+      - name: Check deployment status
+        run: |
+          kubectl get pods -A
+          kubectl get deployments
+          kubectl get services
+          kubectl describe deployment cortex-test
+
+      - name: Wait for Cortex to be ready
+        run: |
+          kubectl wait --for=condition=available --timeout=300s deployment/cortex-test
+
+      - name: Run Helm tests
+        run: |
+          helm test cortex-test --timeout=5m --logs
+
+      - name: Show logs on failure
+        if: failure()
+        run: |
+          echo "=== Cortex Deployment Events ==="
+          kubectl describe deployment cortex-test
+          echo ""
+          echo "=== Cortex Pod Logs ==="
+          kubectl logs -l app.kubernetes.io/name=cortex --tail=100
+          echo ""
+          echo "=== ElasticSearch Pod Logs ==="
+          kubectl logs -l app.kubernetes.io/name=elasticsearch --tail=100 || true
+          echo ""
+          echo "=== Test Pod Logs ==="
+          kubectl logs -l app.kubernetes.io/component=test --tail=100 || true
+
+      - name: Cleanup
+        if: always()
+        run: |
+          helm uninstall cortex-test || true
