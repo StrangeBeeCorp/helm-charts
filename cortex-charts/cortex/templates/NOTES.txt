@@ -66,7 +66,12 @@ To run tests and validate the deployment:
 
   helm test {{ .Release.Name }} --namespace {{ .Release.Namespace }}
 
-    IMPORTANT: Make sure to change the default admin password after first login!
-    Default credentials: admin / admin
+IMPORTANT: First Time Setup
+  On first access to Cortex, you will need to:
+    1. Click "Update Database" to initialize the database
+    2. Create your first superAdmin user account
+
+  There are no default credentials - you create the admin user during initial setup.
+  For detailed instructions, visit: https://docs.strangebee.com/cortex/user-guides/first-start/
 
 For more information, visit: https://docs.strangebee.com/cortex/
