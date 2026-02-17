@@ -80,3 +80,16 @@ app.kubernetes.io/component: "server"
   until curl {{ include "cortex.initContainerCheckEsCurlOptions" . }} {{ if .Values.cortex.initContainers.checkElasticsearch.useHttps }}https{{ else }}http{{ end }}://{{ index .Values.cortex.index.hostnames 0 }}:9200/_cluster/health; do echo 'Waiting for ElasticSearch'; sleep 5; done
 {{- end -}}
 {{- end -}}
+
+{{/* Validate Cortex HTTP secret */}}
+{{- define "cortex.validateHttpSecret" -}}
+{{- if not .Values.cortex.k8sSecretName -}}
+  {{- $defaultSecret := "ChangeThisSecretWithOneContainingAtLeast32Chars" -}}
+  {{- if eq .Values.cortex.httpSecret $defaultSecret -}}
+    {{- fail "ERROR: You must change the default httpSecret value. Please set cortex.httpSecret to a secure random string of at least 32 characters, or provide an existing secret via cortex.k8sSecretName." -}}
+  {{- end -}}
+  {{- if lt (len .Values.cortex.httpSecret) 32 -}}
+    {{- fail (printf "ERROR: cortex.httpSecret must be at least 32 characters long (current length: %d). Please provide a longer secret or use cortex.k8sSecretName to reference an existing secret." (len .Values.cortex.httpSecret)) -}}
+  {{- end -}}
+{{- end -}}
+{{- end -}}
