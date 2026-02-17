@@ -295,7 +295,7 @@ elasticsearch:
       allowInsecureImages: true
 
   image:
-    # -- ElasticSearch image registry (Cortex only supports ElasticSearch v7)
+    # -- ElasticSearch image registry (Cortex 4.x requires ElasticSearch 8.x - see https://docs.strangebee.com/cortex/installation-and-configuration/#software-requirements)
     registry: docker.io
     # -- ElasticSearch image repository
     repository:

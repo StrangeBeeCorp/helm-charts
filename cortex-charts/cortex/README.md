@@ -109,7 +109,7 @@ Kubernetes: `>= 1.23.0-0`
 | elasticsearch.data.replicaCount | int | `0` | Number of data-dedicated node replicas (disabled by default) |
 | elasticsearch.enabled | bool | `true` | Enable [ElasticSearch](https://github.com/bitnami/charts/blob/elasticsearch/22.1.6/bitnami/elasticsearch/values.yaml) dependency subchart deployment |
 | elasticsearch.global.security.allowInsecureImages | bool | `true` | Allow the use of insecure images from bitnamilegacy repository |
-| elasticsearch.image.registry | string | `"docker.io"` | ElasticSearch image registry (Cortex only supports ElasticSearch v7) |
+| elasticsearch.image.registry | string | `"docker.io"` | ElasticSearch image registry (Cortex 4.x requires ElasticSearch 8.x - see https://docs.strangebee.com/cortex/installation-and-configuration/#software-requirements) |
 | elasticsearch.image.repository | string | `"bitnamilegacy/elasticsearch"` | ElasticSearch image repository |
 | elasticsearch.image.tag | string | `"8.18.0-debian-12-r2"` | ElasticSearch image tag |
 | elasticsearch.ingest.replicaCount | int | `0` | Number of ingest-dedicated node replicas (disabled by default) |
