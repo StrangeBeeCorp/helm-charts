@@ -2,6 +2,10 @@
 
 - Nothing yet
 
+## 1.1.0
+
+- Fix podSecurityContext reference in Deployment template [#128](https://github.com/StrangeBeeCorp/helm-charts/pull/128)
+
 ## 1.0.1
 
 - Add tests to verify Cortex connectivity [#124](https://github.com/StrangeBeeCorp/helm-charts/pull/124)
