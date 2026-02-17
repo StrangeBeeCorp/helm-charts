@@ -93,3 +93,26 @@ app.kubernetes.io/component: "server"
   {{- end -}}
 {{- end -}}
 {{- end -}}
+
+{{/* Validate ElasticSearch password synchronization */}}
+{{- define "cortex.validateElasticsearchPassword" -}}
+{{- if and .Values.elasticsearch.enabled .Values.elasticsearch.security.enabled -}}
+  {{- if and (not .Values.cortex.index.k8sSecretName) (not .Values.elasticsearch.security.existingSecret) -}}
+    {{- $cortexPassword := .Values.cortex.index.password -}}
+    {{- $esPassword := .Values.elasticsearch.security.elasticPassword -}}
+    {{- if and $cortexPassword $esPassword -}}
+      {{- if ne $cortexPassword $esPassword -}}
+        {{- fail (printf "ERROR: Password mismatch detected!\n  cortex.index.password and elasticsearch.security.elasticPassword must match when using the embedded ElasticSearch with security enabled.\n  Current values:\n    - cortex.index.password: %s\n    - elasticsearch.security.elasticPassword: %s\n  Please set both to the same value or use cortex.index.k8sSecretName / elasticsearch.security.existingSecret to reference existing secrets." $cortexPassword $esPassword) -}}
+      {{- end -}}
+    {{- else if $esPassword -}}
+      {{- if not $cortexPassword -}}
+        {{- fail "ERROR: elasticsearch.security.elasticPassword is set but cortex.index.password is empty.\n  When using ElasticSearch with security enabled, you must also set cortex.index.password to the same value.\n  Alternatively, use cortex.index.k8sSecretName to reference an existing secret." -}}
+      {{- end -}}
+    {{- else if $cortexPassword -}}
+      {{- if not $esPassword -}}
+        {{- fail "ERROR: cortex.index.password is set but elasticsearch.security.elasticPassword is empty.\n  When using ElasticSearch with security enabled, you must also set elasticsearch.security.elasticPassword to the same value.\n  Alternatively, use elasticsearch.security.existingSecret to reference an existing secret." -}}
+      {{- end -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- end -}}
