@@ -1,4 +1,4 @@
-name: Test Cortex Helm Chart
+name: Test Cortex Helm Chart on Kind
 
 on:
   pull_request:
@@ -6,13 +6,13 @@ on:
       - main
     paths:
       - "cortex-charts/cortex/**"
-      - ".github/workflows/test-cortex.yml"
+      - ".github/workflows/test-cortex-on-kind.yml"
   push:
     branches:
       - main
     paths:
       - "cortex-charts/cortex/**"
-      - ".github/workflows/test-cortex.yml"
+      - ".github/workflows/test-cortex-on-kind.yml"
 
 jobs:
   lint:
@@ -42,8 +42,8 @@ jobs:
     strategy:
       matrix:
         k8s-version:
-          - v1.31.0
-          - v1.30.0
+          - v1.35.0
+          - v1.34.0
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -67,6 +67,32 @@ jobs:
           kubectl cluster-info
           kubectl get nodes
 
+      - name: Install NFS Server Provisioner for RWX support
+        run: |
+          helm repo add nfs-ganesha-server-and-external-provisioner \
+            https://kubernetes-sigs.github.io/nfs-ganesha-server-and-external-provisioner/
+
+          helm install nfs-server nfs-ganesha-server-and-external-provisioner/nfs-server-provisioner \
+            --set persistence.enabled=false \
+            --set persistence.storageClass=standard \
+            --set persistence.size=10Gi \
+            --wait \
+            --timeout=5m
+
+      - name: Create RWX StorageClass
+        run: |
+          kubectl apply -f - <<EOF
+          apiVersion: storage.k8s.io/v1
+          kind: StorageClass
+          metadata:
+            name: nfs-rwx
+          provisioner: cluster.local/nfs-server-nfs-server-provisioner
+          parameters:
+            archiveOnDelete: "false"
+          mountOptions:
+            - vers=4.1
+          EOF
+
       - name: Update Helm dependencies
         run: |
           cd cortex-charts/cortex
@@ -76,15 +102,13 @@ jobs:
         run: |
           cd cortex-charts/cortex
 
-          # Generate a secure random secret for testing
           SECRET=$(openssl rand -base64 32)
 
-          # Install with minimal but valid configuration
           helm install cortex-test . \
             --set cortex.httpSecret="$SECRET" \
             --set elasticsearch.enabled=true \
             --set elasticsearch.master.persistence.enabled=false \
-            --set cortex.persistentVolumeClaim.storageClass=standard \
+            --set cortex.persistentVolumeClaim.storageClass=nfs-rwx \
             --wait \
             --timeout=10m \
             --debug
