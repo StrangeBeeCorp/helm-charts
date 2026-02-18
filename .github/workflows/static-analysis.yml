@@ -98,3 +98,9 @@ jobs:
     needs: [detect-changes, lint-cortex]
     if: needs.detect-changes.outputs.cortex == 'true'
     uses: ./.github/workflows/test-cortex-on-kind.yml
+
+  test-thehive:
+    name: Trigger TheHive Tests
+    needs: [detect-changes, lint-thehive]
+    if: needs.detect-changes.outputs.thehive == 'true'
+    uses: ./.github/workflows/test-thehive-on-kind.yml

@@ -1,0 +1,110 @@
+name: Test TheHive Helm Chart on Kind
+
+on:
+  workflow_call:
+
+jobs:
+  test:
+    name: Install and Test TheHive Chart
+    runs-on: ubuntu-24.04
+    strategy:
+      matrix:
+        k8s-version:
+          - v1.35.0
+          - v1.34.0
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install Helm
+        uses: azure/setup-helm@v4
+        with:
+          version: "latest"
+
+      - name: Create Kind cluster
+        uses: helm/kind-action@v1
+        with:
+          cluster_name: thehive-test
+          node_image: kindest/node:${{ matrix.k8s-version }}
+          wait: 300s
+
+      - name: Verify cluster
+        run: |
+          kubectl cluster-info
+          kubectl get nodes
+
+      - name: Create TheHive namespace
+        run: |
+          kubectl create namespace thehive
+
+      - name: Update Helm dependencies
+        run: |
+          cd thehive-charts/thehive
+          helm dependency update
+
+      - name: Install TheHive chart
+        run: |
+          cd thehive-charts/thehive
+
+          # Generate a secure random secret
+          SECRET=$(openssl rand -base64 32)
+
+          # Install with minimal but valid configuration
+          helm install thehive . \
+            --namespace thehive \
+            --set thehive.httpSecret="$SECRET" \
+            --set cassandra.enabled=true \
+            --set cassandra.persistence.enabled=false \
+            --set elasticsearch.enabled=true \
+            --set elasticsearch.master.persistence.enabled=false \
+            --set minio.enabled=true \
+            --set minio.persistence.enabled=false \
+            --set minio.mode=standalone \
+            --timeout=15m \
+            --debug
+
+      - name: Wait for TheHive to be ready
+        run: |
+          kubectl wait --for=condition=available --timeout=15m \
+            --namespace thehive \
+            deployment -l app.kubernetes.io/name=thehive
+
+      - name: Check deployment status
+        run: |
+          kubectl get pods -n thehive
+          kubectl get deployments -n thehive
+          kubectl get services -n thehive
+          kubectl describe deployment -n thehive -l app.kubernetes.io/name=thehive
+
+      - name: Run Helm tests
+        run: |
+          helm test thehive --namespace thehive --timeout=5m
+
+      - name: Show logs on failure
+        if: failure()
+        run: |
+          echo "=== TheHive Deployment Events ==="
+          kubectl describe deployment -n thehive -l app.kubernetes.io/name=thehive
+          echo ""
+          echo "=== TheHive Pod Logs ==="
+          kubectl logs -n thehive -l app.kubernetes.io/name=thehive --tail=100
+          echo ""
+          echo "=== Cassandra Pod Logs ==="
+          kubectl logs -n thehive -l app.kubernetes.io/name=cassandra --tail=100 || true
+          echo ""
+          echo "=== ElasticSearch Pod Logs ==="
+          kubectl logs -n thehive -l app.kubernetes.io/name=elasticsearch --tail=100 || true
+          echo ""
+          echo "=== MinIO Pod Logs ==="
+          kubectl logs -n thehive -l app.kubernetes.io/name=minio --tail=100 || true
+          echo ""
+          echo "=== Test Pod Logs ==="
+          kubectl logs -n thehive -l app.kubernetes.io/component=test --tail=100 || true
+
+      - name: Cleanup
+        if: always()
+        run: |
+          helm uninstall thehive --namespace thehive || true
+          kubectl delete namespace thehive || true
