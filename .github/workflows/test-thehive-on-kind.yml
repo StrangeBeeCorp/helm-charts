@@ -70,6 +70,8 @@ jobs:
             --set thehive.httpSecret="$SECRET" \
             --set cassandra.enabled=true \
             --set cassandra.persistence.enabled=false \
+            --set cassandra.resources.requests=null \
+            --set cassandra.resources.limits=null \
             --set elasticsearch.enabled=true \
             --set elasticsearch.master.persistence.enabled=false \
             --set minio.enabled=true \
