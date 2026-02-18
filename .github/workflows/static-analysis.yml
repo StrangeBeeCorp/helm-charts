@@ -1,0 +1,100 @@
+name: Static Analysis
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "thehive-charts/thehive/**"
+      - "!thehive-charts/thehive/**/*.md"
+      - "!thehive-charts/thehive/**/README.md.gotmpl"
+      - "cortex-charts/cortex/**"
+      - "!cortex-charts/cortex/**/*.md"
+      - "!cortex-charts/cortex/**/README.md.gotmpl"
+      - ".github/workflows/static-analysis.yml"
+  push:
+    branches:
+      - main
+    paths:
+      - "thehive-charts/thehive/**"
+      - "!thehive-charts/thehive/**/*.md"
+      - "!thehive-charts/thehive/**/README.md.gotmpl"
+      - "cortex-charts/cortex/**"
+      - "!cortex-charts/cortex/**/*.md"
+      - "!cortex-charts/cortex/**/README.md.gotmpl"
+      - ".github/workflows/static-analysis.yml"
+
+jobs:
+  detect-changes:
+    name: Detect Changed Charts
+    runs-on: ubuntu-24.04
+    outputs:
+      cortex: ${{ steps.filter.outputs.cortex }}
+      thehive: ${{ steps.filter.outputs.thehive }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Check for changes
+        uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            cortex:
+              - 'cortex-charts/cortex/**'
+              - '!cortex-charts/cortex/**/*.md'
+              - '!cortex-charts/cortex/**/README.md.gotmpl'
+            thehive:
+              - 'thehive-charts/thehive/**'
+              - '!thehive-charts/thehive/**/*.md'
+              - '!thehive-charts/thehive/**/README.md.gotmpl'
+
+  lint-cortex:
+    name: Lint Cortex Chart
+    runs-on: ubuntu-24.04
+    needs: detect-changes
+    if: needs.detect-changes.outputs.cortex == 'true'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install Helm
+        uses: azure/setup-helm@v4
+        with:
+          version: "latest"
+
+      - name: Run helm lint
+        run: |
+          cd cortex-charts/cortex
+          helm dependency update
+          helm lint . --strict
+
+  lint-thehive:
+    name: Lint TheHive Chart
+    runs-on: ubuntu-24.04
+    needs: detect-changes
+    if: needs.detect-changes.outputs.thehive == 'true'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install Helm
+        uses: azure/setup-helm@v4
+        with:
+          version: "latest"
+
+      - name: Run helm lint
+        run: |
+          cd thehive-charts/thehive
+          helm dependency update
+          helm lint . --strict
+
+  test-cortex:
+    name: Trigger Cortex Tests
+    needs: [detect-changes, lint-cortex]
+    if: needs.detect-changes.outputs.cortex == 'true'
+    uses: ./.github/workflows/test-cortex-on-kind.yml
