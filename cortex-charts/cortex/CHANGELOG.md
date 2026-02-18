@@ -2,6 +2,14 @@
 
 - Nothing yet
 
+## 1.2.0
+
+- Fix values documentation Cortex 4 ES requirement [#130](https://github.com/StrangeBeeCorp/helm-charts/pull/130)
+- Add HTTP secret validation [#130](https://github.com/StrangeBeeCorp/helm-charts/pull/130)
+- Add Elasticsearch and index passwords validation [#130](https://github.com/StrangeBeeCorp/helm-charts/pull/130)
+- Add first time setup instructions to chart notes [#130](https://github.com/StrangeBeeCorp/helm-charts/pull/130)
+- Add test workflow - static analysis (linter) and tests on Kind (v1.34.0 and v1.35.0) [#130](https://github.com/StrangeBeeCorp/helm-charts/pull/130)
+
 ## 1.1.0
 
 - Fix podSecurityContext reference in Deployment template [#128](https://github.com/StrangeBeeCorp/helm-charts/pull/128)

@@ -1,0 +1,112 @@
+name: Test Cortex Helm Chart on Kind
+
+on:
+  workflow_call:
+
+jobs:
+  test:
+    name: Install and Test Cortex Chart
+    runs-on: ubuntu-24.04
+    strategy:
+      matrix:
+        k8s-version:
+          - v1.35.0
+          - v1.34.0
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install Helm
+        uses: azure/setup-helm@v4
+        with:
+          version: "latest"
+
+      - name: Create Kind cluster
+        uses: helm/kind-action@v1
+        with:
+          cluster_name: cortex-test
+          node_image: kindest/node:${{ matrix.k8s-version }}
+          wait: 300s
+
+      - name: Verify cluster
+        run: |
+          kubectl cluster-info
+          kubectl get nodes
+
+      - name: Install NFS Server Provisioner for RWX support
+        run: |
+          # Install NFS provisioner to support ReadWriteMany PVCs
+          # This creates a StorageClass named "nfs" automatically
+          helm repo add nfs-ganesha-server-and-external-provisioner \
+            https://kubernetes-sigs.github.io/nfs-ganesha-server-and-external-provisioner/
+
+          helm install nfs-server nfs-ganesha-server-and-external-provisioner/nfs-server-provisioner \
+            --set persistence.enabled=false \
+            --set persistence.storageClass=standard \
+            --set persistence.size=10Gi \
+            --wait \
+            --timeout=5m
+
+      - name: Create Cortex namespace
+        run: |
+          kubectl create namespace cortex
+
+      - name: Update Helm dependencies
+        run: |
+          cd cortex-charts/cortex
+          helm dependency update
+
+      - name: Install Cortex chart
+        run: |
+          cd cortex-charts/cortex
+
+          SECRET=$(openssl rand -base64 32)
+
+          helm install cortex . \
+            --namespace cortex \
+            --set cortex.httpSecret="$SECRET" \
+            --set elasticsearch.enabled=true \
+            --set elasticsearch.master.persistence.enabled=false \
+            --set cortex.persistentVolumeClaim.storageClass=nfs \
+            --timeout=10m \
+            --debug
+
+      - name: Wait for Cortex to be ready
+        run: |
+          kubectl wait --for=condition=available --timeout=10m \
+            --namespace cortex \
+            deployment -l app.kubernetes.io/name=cortex
+
+      - name: Check deployment status
+        run: |
+          kubectl get pods -n cortex
+          kubectl get deployments -n cortex
+          kubectl get services -n cortex
+          kubectl describe deployment -n cortex -l app.kubernetes.io/name=cortex
+
+      - name: Run Helm tests
+        run: |
+          helm test cortex --namespace cortex --timeout=5m --logs
+
+      - name: Show logs on failure
+        if: failure()
+        run: |
+          echo "=== Cortex Deployment Events ==="
+          kubectl describe deployment -n cortex -l app.kubernetes.io/name=cortex
+          echo ""
+          echo "=== Cortex Pod Logs ==="
+          kubectl logs -n cortex -l app.kubernetes.io/name=cortex --tail=100
+          echo ""
+          echo "=== ElasticSearch Pod Logs ==="
+          kubectl logs -n cortex -l app.kubernetes.io/name=elasticsearch --tail=100 || true
+          echo ""
+          echo "=== Test Pod Logs ==="
+          kubectl logs -n cortex -l app.kubernetes.io/component=test --tail=100 || true
+
+      - name: Cleanup
+        if: always()
+        run: |
+          helm uninstall cortex --namespace cortex || true
+          kubectl delete namespace cortex || true
