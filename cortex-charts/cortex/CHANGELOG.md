@@ -2,7 +2,7 @@
 
 - Nothing yet
 
-## 1.2.0
+## 1.1.1
 
 - Fix values documentation Cortex 4 ES requirement [#130](https://github.com/StrangeBeeCorp/helm-charts/pull/130)
 - Add HTTP secret validation [#130](https://github.com/StrangeBeeCorp/helm-charts/pull/130)
