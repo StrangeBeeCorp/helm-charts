@@ -69,6 +69,8 @@ jobs:
 
       - name: Install NFS Server Provisioner for RWX support
         run: |
+          # Install NFS provisioner to support ReadWriteMany PVCs
+          # This creates a StorageClass named "nfs" automatically
           helm repo add nfs-ganesha-server-and-external-provisioner \
             https://kubernetes-sigs.github.io/nfs-ganesha-server-and-external-provisioner/
 
@@ -79,19 +81,9 @@ jobs:
             --wait \
             --timeout=5m
 
-      - name: Create RWX StorageClass
+      - name: Create Cortex namespace
         run: |
-          kubectl apply -f - <<EOF
-          apiVersion: storage.k8s.io/v1
-          kind: StorageClass
-          metadata:
-            name: nfs-rwx
-          provisioner: cluster.local/nfs-server-nfs-server-provisioner
-          parameters:
-            archiveOnDelete: "false"
-          mountOptions:
-            - vers=4.1
-          EOF
+          kubectl create namespace cortex
 
       - name: Update Helm dependencies
         run: |
@@ -104,46 +96,49 @@ jobs:
 
           SECRET=$(openssl rand -base64 32)
 
-          helm install cortex-test . \
+          helm install cortex . \
+            --namespace cortex \
             --set cortex.httpSecret="$SECRET" \
             --set elasticsearch.enabled=true \
             --set elasticsearch.master.persistence.enabled=false \
-            --set cortex.persistentVolumeClaim.storageClass=nfs-rwx \
-            --wait \
+            --set cortex.persistentVolumeClaim.storageClass=nfs \
             --timeout=10m \
             --debug
 
-      - name: Check deployment status
-        run: |
-          kubectl get pods -A
-          kubectl get deployments
-          kubectl get services
-          kubectl describe deployment cortex-test
-
       - name: Wait for Cortex to be ready
         run: |
-          kubectl wait --for=condition=available --timeout=300s deployment/cortex-test
+          kubectl wait --for=condition=available --timeout=10m \
+            --namespace cortex \
+            deployment -l app.kubernetes.io/name=cortex
+
+      - name: Check deployment status
+        run: |
+          kubectl get pods -n cortex
+          kubectl get deployments -n cortex
+          kubectl get services -n cortex
+          kubectl describe deployment -n cortex -l app.kubernetes.io/name=cortex
 
       - name: Run Helm tests
         run: |
-          helm test cortex-test --timeout=5m --logs
+          helm test cortex --namespace cortex --timeout=5m --logs
 
       - name: Show logs on failure
         if: failure()
         run: |
           echo "=== Cortex Deployment Events ==="
-          kubectl describe deployment cortex-test
+          kubectl describe deployment -n cortex -l app.kubernetes.io/name=cortex
           echo ""
           echo "=== Cortex Pod Logs ==="
-          kubectl logs -l app.kubernetes.io/name=cortex --tail=100
+          kubectl logs -n cortex -l app.kubernetes.io/name=cortex --tail=100
           echo ""
           echo "=== ElasticSearch Pod Logs ==="
-          kubectl logs -l app.kubernetes.io/name=elasticsearch --tail=100 || true
+          kubectl logs -n cortex -l app.kubernetes.io/name=elasticsearch --tail=100 || true
           echo ""
           echo "=== Test Pod Logs ==="
-          kubectl logs -l app.kubernetes.io/component=test --tail=100 || true
+          kubectl logs -n cortex -l app.kubernetes.io/component=test --tail=100 || true
 
       - name: Cleanup
         if: always()
         run: |
-          helm uninstall cortex-test || true
+          helm uninstall cortex --namespace cortex || true
+          kubectl delete namespace cortex || true
