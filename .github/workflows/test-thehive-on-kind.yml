@@ -1,7 +1,22 @@
 name: Test TheHive Helm Chart on Kind
 
 on:
-  workflow_call:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "thehive-charts/thehive/**"
+      - "!thehive-charts/thehive/**/*.md"
+      - "!thehive-charts/thehive/**/README.md.gotmpl"
+      - ".github/workflows/test-thehive-on-kind.yml"
+  push:
+    branches:
+      - main
+    paths:
+      - "thehive-charts/thehive/**"
+      - "!thehive-charts/thehive/**/*.md"
+      - "!thehive-charts/thehive/**/README.md.gotmpl"
+      - ".github/workflows/test-thehive-on-kind.yml"
 
 jobs:
   test:
@@ -40,14 +55,12 @@ jobs:
           kubectl create namespace thehive
 
       - name: Update Helm dependencies
-        run: |
-          cd thehive-charts/thehive
-          helm dependency update
+        working-directory: thehive-charts/thehive
+        run: helm dependency update
 
       - name: Install TheHive chart
+        working-directory: thehive-charts/thehive
         run: |
-          cd thehive-charts/thehive
-
           # Generate a secure random secret
           SECRET=$(openssl rand -base64 32)
 

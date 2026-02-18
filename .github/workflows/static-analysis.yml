@@ -66,8 +66,8 @@ jobs:
           version: "latest"
 
       - name: Run helm lint
+        working-directory: cortex-charts/cortex
         run: |
-          cd cortex-charts/cortex
           helm dependency update
           helm lint . --strict
 
@@ -88,19 +88,7 @@ jobs:
           version: "latest"
 
       - name: Run helm lint
+        working-directory: thehive-charts/thehive
         run: |
-          cd thehive-charts/thehive
           helm dependency update
           helm lint . --strict
-
-  test-cortex:
-    name: Trigger Cortex Tests
-    needs: [detect-changes, lint-cortex]
-    if: needs.detect-changes.outputs.cortex == 'true'
-    uses: ./.github/workflows/test-cortex-on-kind.yml
-
-  test-thehive:
-    name: Trigger TheHive Tests
-    needs: [detect-changes, lint-thehive]
-    if: needs.detect-changes.outputs.thehive == 'true'
-    uses: ./.github/workflows/test-thehive-on-kind.yml
