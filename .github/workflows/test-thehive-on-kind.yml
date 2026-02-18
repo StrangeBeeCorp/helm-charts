@@ -1,4 +1,4 @@
-name: Test TheHive Helm Chart on Kind
+name: TheHive on Kind
 
 on:
   pull_request:
@@ -76,7 +76,16 @@ jobs:
             --set minio.persistence.enabled=false \
             --set minio.mode=standalone \
             --timeout=15m \
+            --wait \
             --debug
+
+      - name: Check initial pod status
+        run: |
+          echo "=== All Pods ==="
+          kubectl get pods -n thehive
+          echo ""
+          echo "=== Pod Details ==="
+          kubectl describe pods -n thehive
 
       - name: Wait for dependencies to be ready
         run: |
@@ -116,23 +125,38 @@ jobs:
       - name: Show logs on failure
         if: failure()
         run: |
+          echo "=== All Pods Status ==="
+          kubectl get pods -n thehive -o wide
+          echo ""
+          echo "=== Namespace Events ==="
+          kubectl get events -n thehive --sort-by='.lastTimestamp'
+          echo ""
+          echo "=== Cassandra Pod Details ==="
+          kubectl describe pod -n thehive -l app.kubernetes.io/name=cassandra
+          echo ""
+          echo "=== Cassandra Pod Logs ==="
+          kubectl logs -n thehive -l app.kubernetes.io/name=cassandra --tail=200
+          echo ""
+          echo "=== ElasticSearch Pod Details ==="
+          kubectl describe pod -n thehive -l app.kubernetes.io/name=elasticsearch
+          echo ""
+          echo "=== ElasticSearch Pod Logs ==="
+          kubectl logs -n thehive -l app.kubernetes.io/name=elasticsearch --tail=200
+          echo ""
+          echo "=== MinIO Pod Details ==="
+          kubectl describe pod -n thehive -l app.kubernetes.io/name=minio
+          echo ""
+          echo "=== MinIO Pod Logs ==="
+          kubectl logs -n thehive -l app.kubernetes.io/name=minio --tail=200
+          echo ""
           echo "=== TheHive Deployment Events ==="
           kubectl describe deployment -n thehive -l app.kubernetes.io/name=thehive
           echo ""
           echo "=== TheHive Pod Logs ==="
-          kubectl logs -n thehive -l app.kubernetes.io/name=thehive --tail=100
-          echo ""
-          echo "=== Cassandra Pod Logs ==="
-          kubectl logs -n thehive -l app.kubernetes.io/name=cassandra --tail=100 || true
-          echo ""
-          echo "=== ElasticSearch Pod Logs ==="
-          kubectl logs -n thehive -l app.kubernetes.io/name=elasticsearch --tail=100 || true
-          echo ""
-          echo "=== MinIO Pod Logs ==="
-          kubectl logs -n thehive -l app.kubernetes.io/name=minio --tail=100 || true
+          kubectl logs -n thehive -l app.kubernetes.io/name=thehive --tail=200
           echo ""
           echo "=== Test Pod Logs ==="
-          kubectl logs -n thehive -l app.kubernetes.io/component=test --tail=100 || true
+          kubectl logs -n thehive -l app.kubernetes.io/component=test --tail=100
 
       - name: Cleanup
         if: always()
