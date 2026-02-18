@@ -65,9 +65,27 @@ jobs:
             --timeout=15m \
             --debug
 
+      - name: Wait for dependencies to be ready
+        run: |
+          echo "Waiting for Cassandra..."
+          kubectl wait --for=condition=ready --timeout=10m \
+            --namespace thehive \
+            pod -l app.kubernetes.io/name=cassandra
+
+          echo "Waiting for ElasticSearch..."
+          kubectl wait --for=condition=ready --timeout=10m \
+            --namespace thehive \
+            pod -l app.kubernetes.io/name=elasticsearch
+
+          echo "Waiting for MinIO..."
+          kubectl wait --for=condition=ready --timeout=10m \
+            --namespace thehive \
+            pod -l app.kubernetes.io/name=minio
+
       - name: Wait for TheHive to be ready
         run: |
-          kubectl wait --for=condition=available --timeout=15m \
+          echo "Waiting for TheHive..."
+          kubectl wait --for=condition=available --timeout=10m \
             --namespace thehive \
             deployment -l app.kubernetes.io/name=thehive
 
