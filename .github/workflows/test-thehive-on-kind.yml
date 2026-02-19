@@ -78,10 +78,10 @@ jobs:
             --set minio.enabled=true \
             --set minio.persistence.enabled=false \
             --set minio.mode=standalone \
-            --set minio.resources.limits.cpu=100m \
-            --set minio.resources.limits.memory=128Mi \
-            --set minio.resources.requests.cpu=50m \
-            --set minio.resources.requests.memory=64Mi \
+            --set minio.resources.limits.cpu=200m \
+            --set minio.resources.limits.memory=512Mi \
+            --set minio.resources.requests.cpu=100m \
+            --set minio.resources.requests.memory=256Mi \
             --timeout=15m \
             --wait \
             --debug
