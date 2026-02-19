@@ -1,4 +1,4 @@
-name: Test Cortex Helm Chart on Kind
+name: Cortex on Kind
 
 on:
   pull_request:
