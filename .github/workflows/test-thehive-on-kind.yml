@@ -71,17 +71,17 @@ jobs:
             --set-json 'thehive.resources={}' \
             --set cassandra.enabled=true \
             --set cassandra.persistence.enabled=false \
-            --set-json 'cassandra.resources.limits={}' \
-            --set-json 'cassandra.resources.requests={}' \
+            --set cassandra.resourcesPreset=none \
             --set elasticsearch.enabled=true \
             --set elasticsearch.master.persistence.enabled=false \
-            --set-json 'elasticsearch.master.resources.limits={}' \
-            --set-json 'elasticsearch.master.resources.requests={}' \
+            --set elasticsearch.master.resourcesPreset=none \
             --set minio.enabled=true \
             --set minio.persistence.enabled=false \
             --set minio.mode=standalone \
-            --set-json 'minio.resources.limits={}' \
-            --set-json 'minio.resources.requests={}' \
+            --set minio.resources.limits.cpu=100m \
+            --set minio.resources.limits.memory=128Mi \
+            --set minio.resources.requests.cpu=50m \
+            --set minio.resources.requests.memory=64Mi \
             --timeout=15m \
             --wait \
             --debug
