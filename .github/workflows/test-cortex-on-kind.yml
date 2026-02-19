@@ -1,7 +1,22 @@
-name: Test Cortex Helm Chart on Kind
+name: Cortex on Kind
 
 on:
-  workflow_call:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "cortex-charts/cortex/**"
+      - "!cortex-charts/cortex/**/*.md"
+      - "!cortex-charts/cortex/**/README.md.gotmpl"
+      - ".github/workflows/test-cortex-on-kind.yml"
+  push:
+    branches:
+      - main
+    paths:
+      - "cortex-charts/cortex/**"
+      - "!cortex-charts/cortex/**/*.md"
+      - "!cortex-charts/cortex/**/README.md.gotmpl"
+      - ".github/workflows/test-cortex-on-kind.yml"
 
 jobs:
   test:
@@ -54,14 +69,12 @@ jobs:
           kubectl create namespace cortex
 
       - name: Update Helm dependencies
-        run: |
-          cd cortex-charts/cortex
-          helm dependency update
+        working-directory: cortex-charts/cortex
+        run: helm dependency update
 
       - name: Install Cortex chart
+        working-directory: cortex-charts/cortex
         run: |
-          cd cortex-charts/cortex
-
           SECRET=$(openssl rand -base64 32)
 
           helm install cortex . \
