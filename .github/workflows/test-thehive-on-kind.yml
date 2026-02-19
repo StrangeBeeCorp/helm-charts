@@ -75,13 +75,7 @@ jobs:
             --set elasticsearch.enabled=true \
             --set elasticsearch.master.persistence.enabled=false \
             --set elasticsearch.master.resourcesPreset=none \
-            --set minio.enabled=true \
-            --set minio.persistence.enabled=false \
-            --set minio.mode=standalone \
-            --set minio.resources.limits.cpu=200m \
-            --set minio.resources.limits.memory=512Mi \
-            --set minio.resources.requests.cpu=100m \
-            --set minio.resources.requests.memory=256Mi \
+            --set minio.enabled=false \
             --timeout=15m \
             --wait \
             --debug
@@ -105,11 +99,6 @@ jobs:
           kubectl wait --for=condition=ready --timeout=10m \
             --namespace thehive \
             pod -l app.kubernetes.io/name=elasticsearch
-
-          echo "Waiting for MinIO..."
-          kubectl wait --for=condition=ready --timeout=10m \
-            --namespace thehive \
-            pod -l app.kubernetes.io/name=minio
 
       - name: Wait for TheHive to be ready
         run: |
@@ -149,12 +138,6 @@ jobs:
           echo ""
           echo "=== ElasticSearch Pod Logs ==="
           kubectl logs -n thehive -l app.kubernetes.io/name=elasticsearch --tail=200
-          echo ""
-          echo "=== MinIO Pod Details ==="
-          kubectl describe pod -n thehive -l app.kubernetes.io/name=minio
-          echo ""
-          echo "=== MinIO Pod Logs ==="
-          kubectl logs -n thehive -l app.kubernetes.io/name=minio --tail=200
           echo ""
           echo "=== TheHive Deployment Events ==="
           kubectl describe deployment -n thehive -l app.kubernetes.io/name=thehive
