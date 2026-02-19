@@ -68,17 +68,20 @@ jobs:
           helm install thehive . \
             --namespace thehive \
             --set thehive.httpSecret="$SECRET" \
-            --set-json 'thehive.resources=null' \
+            --set-json 'thehive.resources={}' \
             --set cassandra.enabled=true \
             --set cassandra.persistence.enabled=false \
-            --set-json 'cassandra.resources=null' \
+            --set-json 'cassandra.resources.limits={}' \
+            --set-json 'cassandra.resources.requests={}' \
             --set elasticsearch.enabled=true \
             --set elasticsearch.master.persistence.enabled=false \
-            --set-json 'elasticsearch.master.resources=null' \
+            --set-json 'elasticsearch.master.resources.limits={}' \
+            --set-json 'elasticsearch.master.resources.requests={}' \
             --set minio.enabled=true \
             --set minio.persistence.enabled=false \
             --set minio.mode=standalone \
-            --set-json 'minio.resources=null' \
+            --set-json 'minio.resources.limits={}' \
+            --set-json 'minio.resources.requests={}' \
             --timeout=15m \
             --wait \
             --debug
