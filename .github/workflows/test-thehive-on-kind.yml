@@ -1,4 +1,4 @@
-name: TheHive on Kind
+name: TheHive on Kind - Local Storage
 
 on:
   pull_request:
@@ -68,17 +68,24 @@ jobs:
           helm install thehive . \
             --namespace thehive \
             --set thehive.httpSecret="$SECRET" \
-            --set-json 'thehive.resources={}' \
             --set cassandra.enabled=true \
-            --set cassandra.persistence.enabled=false \
             --set cassandra.resourcesPreset=none \
             --set elasticsearch.enabled=true \
-            --set elasticsearch.master.persistence.enabled=false \
             --set elasticsearch.master.resourcesPreset=none \
             --set minio.enabled=false \
             --timeout=15m \
-            --wait \
-            --debug
+            --wait
+
+      - name: Verify PVC and PV creation
+        run: |
+          echo "=== PersistentVolumeClaims ==="
+          kubectl get pvc -n thehive
+          echo ""
+          echo "=== PersistentVolumes ==="
+          kubectl get pv
+          echo ""
+          echo "=== PVC Details ==="
+          kubectl describe pvc -n thehive
 
       - name: Check initial pod status
         run: |
@@ -90,19 +97,16 @@ jobs:
 
       - name: Wait for dependencies to be ready
         run: |
-          echo "Waiting for Cassandra..."
           kubectl wait --for=condition=ready --timeout=10m \
             --namespace thehive \
             pod -l app.kubernetes.io/name=cassandra
 
-          echo "Waiting for ElasticSearch..."
           kubectl wait --for=condition=ready --timeout=10m \
             --namespace thehive \
             pod -l app.kubernetes.io/name=elasticsearch
 
       - name: Wait for TheHive to be ready
         run: |
-          echo "Waiting for TheHive..."
           kubectl wait --for=condition=available --timeout=10m \
             --namespace thehive \
             deployment -l app.kubernetes.io/name=thehive
@@ -116,7 +120,7 @@ jobs:
 
       - name: Run Helm tests
         run: |
-          helm test thehive --namespace thehive --timeout=5m
+          helm test thehive --namespace thehive --timeout=5m --logs
 
       - name: Show logs on failure
         if: failure()
