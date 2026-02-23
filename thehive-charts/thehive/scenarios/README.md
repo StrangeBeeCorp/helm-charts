@@ -7,6 +7,8 @@ This directory contains tested deployment scenarios for TheHive Helm chart.
 | Scenario | Description | Use Case |
 |----------|-------------|----------|
 | [k8ssandra-operator](./k8ssandra-operator/) | K8ssandra Operator for Cassandra | Modern, operator-based Cassandra deployment |
+| [eck-operator](./eck-operator/) | Elastic Cloud on Kubernetes (ECK) | Operator-based Elasticsearch deployment |
+| [combined-operators](./combined-operators/) | K8ssandra + ECK Operators | Full operator-based deployment (Cassandra + Elasticsearch) |
 
 ## Usage Pattern
 

@@ -1,0 +1,19 @@
+################################################################################
+# TheHive with ECK Operator
+################################################################################
+# See README.md for deployment instructions
+
+thehive:
+  index:
+    username: "elastic"
+    k8sSecretName: "elasticsearch-credentials"
+    k8sSecretKey: "password"
+    hostnames:
+      - "elasticsearch-es-http.elastic-system.svc.cluster.local"
+  initContainers:
+    checkElasticsearch:
+      useHttps: false
+
+# Disable Bitnami Elasticsearch subchart (using ECK operator instead)
+elasticsearch:
+  enabled: false
