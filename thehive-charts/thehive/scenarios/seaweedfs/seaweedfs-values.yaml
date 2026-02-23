@@ -1,0 +1,69 @@
+################################################################################
+# SeaweedFS Helm Chart Values
+# For use with official SeaweedFS Helm chart
+################################################################################
+
+global:
+  replicationPlacement: "000"  # Single replica for testing
+
+master:
+  enabled: true
+  replicas: 1
+  defaultReplication: "000"
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 500m
+      memory: 256Mi
+
+volume:
+  enabled: true
+  replicas: 1
+  resources:
+    requests:
+      cpu: 200m
+      memory: 512Mi
+    limits:
+      cpu: 1000m
+      memory: 1Gi
+  storage: 10Gi
+  storageClass: ""  # Use default storage class
+
+filer:
+  enabled: true
+  replicas: 1
+  defaultReplicaPlacement: "000"
+  resources:
+    requests:
+      cpu: 200m
+      memory: 512Mi
+    limits:
+      cpu: 500m
+      memory: 1Gi
+
+s3:
+  enabled: true
+  replicas: 1
+  enableAuth: true
+  port: 8333
+  resources:
+    requests:
+      cpu: 200m
+      memory: 256Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
+
+  # Create the thehive bucket automatically
+  createBuckets:
+    - name: thehive
+      anonymousRead: false
+
+  # S3 credentials will be configured via existingConfigSecret
+  # See seaweedfs-s3-secret.yaml
+  existingConfigSecret: seaweedfs-s3-config
+
+  auditLogConfig:
+    enabled: false
