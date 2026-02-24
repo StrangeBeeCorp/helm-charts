@@ -20,3 +20,11 @@ thehive:
 # Disable MinIO subchart (using external SeaweedFS instead)
 minio:
   enabled: false
+
+# Minimal resources for Kind cluster compatibility
+cassandra:
+  resourcesPreset: none
+
+elasticsearch:
+  master:
+    resourcesPreset: none

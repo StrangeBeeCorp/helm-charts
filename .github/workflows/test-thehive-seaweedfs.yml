@@ -118,11 +118,6 @@ jobs:
           helm install thehive . \
             --namespace thehive \
             --set thehive.httpSecret="$SECRET" \
-            --set cassandra.enabled=true \
-            --set cassandra.resourcesPreset=none \
-            --set elasticsearch.enabled=true \
-            --set elasticsearch.master.resourcesPreset=none \
-            --set minio.enabled=false \
             -f scenarios/seaweedfs/values.yaml \
             --timeout=15m \
             --wait
