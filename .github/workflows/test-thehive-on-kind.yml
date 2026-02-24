@@ -1,0 +1,159 @@
+name: TheHive on Kind - Local Storage
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "thehive-charts/thehive/**"
+      - "!thehive-charts/thehive/**/*.md"
+      - "!thehive-charts/thehive/**/README.md.gotmpl"
+      - ".github/workflows/test-thehive-on-kind.yml"
+  push:
+    branches:
+      - main
+    paths:
+      - "thehive-charts/thehive/**"
+      - "!thehive-charts/thehive/**/*.md"
+      - "!thehive-charts/thehive/**/README.md.gotmpl"
+      - ".github/workflows/test-thehive-on-kind.yml"
+
+jobs:
+  test:
+    name: Install and Test TheHive Chart
+    runs-on: ubuntu-24.04
+    strategy:
+      matrix:
+        k8s-version:
+          - v1.35.0
+          - v1.34.0
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install Helm
+        uses: azure/setup-helm@v4
+        with:
+          version: "latest"
+
+      - name: Create Kind cluster
+        uses: helm/kind-action@v1
+        with:
+          cluster_name: thehive-test
+          node_image: kindest/node:${{ matrix.k8s-version }}
+          wait: 300s
+
+      - name: Verify cluster
+        run: |
+          kubectl cluster-info
+          kubectl get nodes
+
+      - name: Create TheHive namespace
+        run: |
+          kubectl create namespace thehive
+
+      - name: Update Helm dependencies
+        working-directory: thehive-charts/thehive
+        run: helm dependency update
+
+      - name: Install TheHive chart
+        working-directory: thehive-charts/thehive
+        run: |
+          # Generate a secure random secret
+          SECRET=$(openssl rand -base64 32)
+
+          # Install with minimal but valid configuration
+          helm install thehive . \
+            --namespace thehive \
+            --set thehive.httpSecret="$SECRET" \
+            --set cassandra.enabled=true \
+            --set cassandra.resourcesPreset=none \
+            --set elasticsearch.enabled=true \
+            --set elasticsearch.master.resourcesPreset=none \
+            --set minio.enabled=false \
+            --timeout=15m \
+            --wait
+
+      - name: Verify PVC and PV creation
+        run: |
+          echo "=== PersistentVolumeClaims ==="
+          kubectl get pvc -n thehive
+          echo ""
+          echo "=== PersistentVolumes ==="
+          kubectl get pv
+          echo ""
+          echo "=== PVC Details ==="
+          kubectl describe pvc -n thehive
+
+      - name: Check initial pod status
+        run: |
+          echo "=== All Pods ==="
+          kubectl get pods -n thehive
+          echo ""
+          echo "=== Pod Details ==="
+          kubectl describe pods -n thehive
+
+      - name: Wait for dependencies to be ready
+        run: |
+          kubectl wait --for=condition=ready --timeout=10m \
+            --namespace thehive \
+            pod -l app.kubernetes.io/name=cassandra
+
+          kubectl wait --for=condition=ready --timeout=10m \
+            --namespace thehive \
+            pod -l app.kubernetes.io/name=elasticsearch
+
+      - name: Wait for TheHive to be ready
+        run: |
+          kubectl wait --for=condition=available --timeout=10m \
+            --namespace thehive \
+            deployment -l app.kubernetes.io/name=thehive
+
+      - name: Check deployment status
+        run: |
+          kubectl get pods -n thehive
+          kubectl get deployments -n thehive
+          kubectl get services -n thehive
+          kubectl describe deployment -n thehive -l app.kubernetes.io/name=thehive
+
+      - name: Run Helm tests
+        run: |
+          helm test thehive --namespace thehive --timeout=5m --logs
+
+      - name: Show logs on failure
+        if: failure()
+        run: |
+          echo "=== All Pods Status ==="
+          kubectl get pods -n thehive -o wide
+          echo ""
+          echo "=== Namespace Events ==="
+          kubectl get events -n thehive --sort-by='.lastTimestamp'
+          echo ""
+          echo "=== Cassandra Pod Details ==="
+          kubectl describe pod -n thehive -l app.kubernetes.io/name=cassandra
+          echo ""
+          echo "=== Cassandra Pod Logs ==="
+          kubectl logs -n thehive -l app.kubernetes.io/name=cassandra --tail=200
+          echo ""
+          echo "=== ElasticSearch Pod Details ==="
+          kubectl describe pod -n thehive -l app.kubernetes.io/name=elasticsearch
+          echo ""
+          echo "=== ElasticSearch Pod Logs ==="
+          kubectl logs -n thehive -l app.kubernetes.io/name=elasticsearch --tail=200
+          echo ""
+          echo "=== TheHive Deployment Events ==="
+          kubectl describe deployment -n thehive -l app.kubernetes.io/name=thehive
+          echo ""
+          echo "=== TheHive Pod Logs ==="
+          kubectl logs -n thehive -l app.kubernetes.io/name=thehive --tail=200
+          echo ""
+          echo "=== Test Pod Logs ==="
+          kubectl logs -n thehive -l app.kubernetes.io/component=test --tail=100
+
+      - name: Cleanup
+        if: always()
+        run: |
+          helm uninstall thehive --namespace thehive || true
+          kubectl delete namespace thehive || true
