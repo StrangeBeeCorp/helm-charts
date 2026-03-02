@@ -62,7 +62,7 @@ app.kubernetes.io/component: "server"
 {{/* TheHive init-container command to check ElasticSearch availability */}}
 {{- define "thehive.initContainerCheckEsCurlOptions" -}}
 {{- if or (.Values.thehive.index.password) (.Values.thehive.index.k8sSecretName) -}}
-  -fkLsS -u '{{ .Values.thehive.index.username | default "elastic" }}:${CORTEX_ELASTICSEARCH_PASSWORD}' --out-null --no-keepalive
+  -fkLsS -u "{{ .Values.thehive.index.username | default "elastic" }}:${CORTEX_ELASTICSEARCH_PASSWORD}" --out-null --no-keepalive
 {{- else -}}
   -fkLsS --out-null --no-keepalive
 {{- end -}}
