@@ -1,0 +1,30 @@
+################################################################################
+# TheHive with SeaweedFS Object Storage
+################################################################################
+# See README.md for deployment instructions
+
+thehive:
+  storage:
+    accessKey: "seaweedfs-admin"
+
+    # S3 Secret Key - Using Kubernetes Secret (recommended)
+    # The secret is created by thehive-s3-credentials.yaml
+    k8sSecretName: "thehive-s3-credentials"
+    k8sSecretKey: "secretKey"
+
+    endpoint: "http://seaweedfs-s3.seaweedfs.svc.cluster.local:8333"
+    bucket: "thehive"
+    region: "us-east-1"
+    usePathAccessStyle: true
+
+# Disable MinIO subchart (using external SeaweedFS instead)
+minio:
+  enabled: false
+
+# Minimal resources for Kind cluster compatibility
+cassandra:
+  resourcesPreset: none
+
+elasticsearch:
+  master:
+    resourcesPreset: none

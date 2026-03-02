@@ -1,0 +1,216 @@
+name: TheHive with Seaweed - Kind
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "thehive-charts/thehive/**"
+      - "!thehive-charts/thehive/**/*.md"
+      - "!thehive-charts/thehive/**/README.md.gotmpl"
+      - "thehive-charts/thehive/scenarios/seaweedfs/**"
+      - ".github/workflows/test-thehive-seaweedfs.yml"
+  push:
+    branches:
+      - main
+    paths:
+      - "thehive-charts/thehive/**"
+      - "!thehive-charts/thehive/**/*.md"
+      - "!thehive-charts/thehive/**/README.md.gotmpl"
+      - "thehive-charts/thehive/scenarios/seaweedfs/**"
+      - ".github/workflows/test-thehive-seaweedfs.yml"
+
+jobs:
+  test:
+    name: Install and Test TheHive Chart with SeaweedFS
+    runs-on: ubuntu-24.04
+    strategy:
+      matrix:
+        k8s-version:
+          - v1.35.0
+          - v1.34.0
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install Helm
+        uses: azure/setup-helm@v4
+        with:
+          version: "latest"
+
+      - name: Create Kind cluster
+        uses: helm/kind-action@v1
+        with:
+          cluster_name: thehive-test
+          node_image: kindest/node:${{ matrix.k8s-version }}
+          wait: 300s
+
+      - name: Verify cluster
+        run: |
+          kubectl cluster-info
+          kubectl get nodes
+
+      - name: Install jq
+        run: sudo apt-get update && sudo apt-get install -y jq
+
+      - name: Add Helm repositories
+        run: |
+          helm repo add seaweedfs https://seaweedfs.github.io/seaweedfs/helm
+          helm repo update
+
+      - name: Deploy SeaweedFS
+        run: |
+          kubectl create namespace seaweedfs
+          kubectl apply -f thehive-charts/thehive/scenarios/seaweedfs/seaweedfs-s3-secret.yaml
+
+          helm install seaweedfs seaweedfs/seaweedfs \
+            -f thehive-charts/thehive/scenarios/seaweedfs/seaweedfs-values.yaml \
+            -n seaweedfs \
+            --wait --timeout 5m
+
+      - name: Verify SeaweedFS deployment
+        run: |
+          echo "=== SeaweedFS Pods ==="
+          kubectl get pods -n seaweedfs
+          echo ""
+          echo "=== SeaweedFS Services ==="
+          kubectl get svc -n seaweedfs
+
+      - name: Create TheHive namespace
+        run: |
+          kubectl create namespace thehive
+
+      - name: Extract S3 credentials and create TheHive secret
+        run: |
+          echo "Extracting S3 credentials from SeaweedFS..."
+          S3_ACCESS_KEY=$(kubectl get secret seaweedfs-s3-config \
+            -n seaweedfs \
+            -o jsonpath='{.data.seaweedfs_s3_config}' | base64 -d | \
+            jq -r '.identities[0].credentials[0].accessKey')
+
+          S3_SECRET_KEY=$(kubectl get secret seaweedfs-s3-config \
+            -n seaweedfs \
+            -o jsonpath='{.data.seaweedfs_s3_config}' | base64 -d | \
+            jq -r '.identities[0].credentials[0].secretKey')
+
+          echo "Creating TheHive S3 credentials secret..."
+          kubectl create secret generic thehive-s3-credentials \
+            -n thehive \
+            --from-literal=accessKey="${S3_ACCESS_KEY}" \
+            --from-literal=secretKey="${S3_SECRET_KEY}"
+
+          echo "Secret created successfully"
+          kubectl get secret thehive-s3-credentials -n thehive
+
+      - name: Update Helm dependencies
+        working-directory: thehive-charts/thehive
+        run: helm dependency update
+
+      - name: Install TheHive chart
+        working-directory: thehive-charts/thehive
+        run: |
+          # Generate a secure random secret
+          SECRET=$(openssl rand -base64 32)
+
+          # Install with SeaweedFS configuration
+          helm install thehive . \
+            --namespace thehive \
+            --set thehive.httpSecret="$SECRET" \
+            -f scenarios/seaweedfs/values.yaml \
+            --timeout=15m \
+            --wait
+
+      - name: Check initial pod status
+        run: |
+          echo "=== All Pods ==="
+          kubectl get pods -n thehive
+          kubectl get pods -n seaweedfs
+          echo ""
+          echo "=== Pod Details ===" kubectl describe pods -n thehive
+
+      - name: Wait for dependencies to be ready
+        run: |
+          kubectl wait --for=condition=ready --timeout=10m \
+            --namespace thehive \
+            pod -l app.kubernetes.io/name=cassandra
+
+          kubectl wait --for=condition=ready --timeout=10m \
+            --namespace thehive \
+            pod -l app.kubernetes.io/name=elasticsearch
+
+      - name: Wait for TheHive to be ready
+        run: |
+          kubectl wait --for=condition=available --timeout=10m \
+            --namespace thehive \
+            deployment -l app.kubernetes.io/name=thehive
+
+      - name: Check deployment status
+        run: |
+          kubectl get pods -n thehive
+          kubectl get deployments -n thehive
+          kubectl get services -n thehive
+          kubectl describe deployment -n thehive -l app.kubernetes.io/name=thehive
+
+      - name: Run storage tests
+        run: |
+          cd thehive-charts/thehive/tools
+          chmod +x test-storage.sh
+          echo "Running storage integration tests..."
+          ./test-storage.sh
+
+      - name: Run Helm tests
+        run: |
+          helm test thehive --namespace thehive --timeout=5m --logs
+
+      - name: Show logs on failure
+        if: failure()
+        run: |
+          echo "=== All Pods Status ==="
+          kubectl get pods -n seaweedfs -o wide
+          kubectl get pods -n thehive -o wide
+          echo ""
+          echo "=== Namespace Events ===" kubectl get events -n seaweedfs --sort-by='.lastTimestamp'
+          kubectl get events -n thehive --sort-by='.lastTimestamp'
+          echo ""
+          echo "=== SeaweedFS Master Logs ==="
+          kubectl logs -n seaweedfs -l app.kubernetes.io/component=master --tail=200 || true
+          echo ""
+          echo "=== SeaweedFS Volume Logs ==="
+          kubectl logs -n seaweedfs -l app.kubernetes.io/component=volume --tail=200 || true
+          echo ""
+          echo "=== SeaweedFS Filer Logs ==="
+          kubectl logs -n seaweedfs -l app.kubernetes.io/component=filer --tail=200 || true
+          echo ""
+          echo "=== SeaweedFS S3 Logs ==="
+          kubectl logs -n seaweedfs -l app.kubernetes.io/component=s3 --tail=200 || true
+          echo ""
+          echo "=== Cassandra Pod Details ==="
+          kubectl describe pod -n thehive -l app.kubernetes.io/name=cassandra
+          echo ""
+          echo "=== Cassandra Pod Logs ==="
+          kubectl logs -n thehive -l app.kubernetes.io/name=cassandra --tail=200
+          echo ""
+          echo "=== ElasticSearch Pod Details ==="
+          kubectl describe pod -n thehive -l app.kubernetes.io/name=elasticsearch
+          echo ""
+          echo "=== ElasticSearch Pod Logs ==="
+          kubectl logs -n thehive -l app.kubernetes.io/name=elasticsearch --tail=200
+          echo ""
+          echo "=== TheHive Deployment Events ==="
+          kubectl describe deployment -n thehive -l app.kubernetes.io/name=thehive
+          echo ""
+          echo "=== TheHive Pod Logs ==="
+          kubectl logs -n thehive -l app.kubernetes.io/name=thehive --tail=200
+          echo ""
+          echo "=== Test Pod Logs ==="
+          kubectl logs -n thehive -l app.kubernetes.io/component=test --tail=100 || true
+
+      - name: Cleanup
+        if: always()
+        run: |
+          helm uninstall seaweedfs --namespace seaweedfs || true
+          helm uninstall thehive --namespace thehive || true
+          kubectl delete namespace seaweedfs || true
+          kubectl delete namespace thehive || true
