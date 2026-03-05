@@ -1,7 +1,5 @@
 #!/usr/bin/env bash
 
-set -e
-
 # Configuration
 NAMESPACE="${NAMESPACE:-thehive}"
 THEHIVE_URL="${THEHIVE_URL:-http://127.0.0.1:9000}"
@@ -701,6 +699,12 @@ main() {
 
   # Verify all created resources
   verify_resources
+  local rc=$?
+
+  if [ $rc -ne 0 ]; then
+    error "=== Smoke test failed with ${rc} verification errors ==="
+    exit $rc
+  fi
 
   echo ""
   success "=== Smoke test completed successfully! ==="
