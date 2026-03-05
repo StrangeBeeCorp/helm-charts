@@ -121,6 +121,9 @@ jobs:
       - name: Run Helm tests
         run: helm test thehive --namespace thehive --timeout=5m --logs
 
+      - name: Run smoke tests
+        run: bash thehive-charts/thehive/tools/test/smoke.sh
+
       - name: Show logs on failure
         if: failure()
         run: |
