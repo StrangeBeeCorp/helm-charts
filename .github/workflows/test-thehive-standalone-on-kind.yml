@@ -68,7 +68,14 @@ jobs:
 
       - name: Create K8s endpoints for external backends
         run: |
-          export HOST_IP=$(docker network inspect kind -f '{{(index .IPAM.Config 0).Gateway}}')
+          # Get the IPv4 gateway from the kind Docker network (IPv6 may appear first)
+          export HOST_IP=$(docker network inspect kind --format '{{json .IPAM.Config}}' \
+            | jq -r '.[] | select(.Gateway | test("^[0-9]+\\.")) | .Gateway')
+          if [ -z "$HOST_IP" ]; then
+            echo "ERROR: Could not determine host IPv4 gateway for kind network"
+            docker network inspect kind --format '{{json .IPAM.Config}}'
+            exit 1
+          fi
           echo "Host IP from Kind perspective: $HOST_IP"
           envsubst < thehive-charts/thehive/ci/k8s-endpoints-template.yaml | kubectl apply -n thehive -f -
           echo ""
