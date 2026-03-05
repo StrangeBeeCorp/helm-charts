@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
 
-# Configuration
 NAMESPACE="${NAMESPACE:-thehive}"
 THEHIVE_URL="${THEHIVE_URL:-http://127.0.0.1:9000}"
 ADMIN_USER="${ADMIN_USER:-admin@thehive.local}"
@@ -9,91 +8,62 @@ ORG_USER="${ORG_USER:-thehive@thehive.local}"
 ORG_PASSWORD="${ORG_PASSWORD:-thehive1234}"
 ORG_NAME="${ORG_NAME:-demo}"
 
-# Logging functions
-info() {
-  echo "[INFO] $1"
-}
+info()    { echo "[INFO] $1"; }
+success() { echo "[SUCCESS] $1"; }
+warning() { echo "[WARN] $1"; }
+error()   { echo "[ERROR] $1"; }
 
-success() {
-  echo "[OK] $1"
-}
-
-warning() {
-  echo "[WARN] $1"
-}
-
-error() {
-  echo "[ERROR] $1"
-}
-
-# Check if command exists
-command_exists() {
-  command -v "$1" >/dev/null 2>&1
-}
-
-# Check prerequisites
 check_prerequisites() {
   info "Checking prerequisites..."
 
-  if ! command_exists kubectl; then
-    error "kubectl not found. Please install kubectl."
-    exit 1
-  fi
-
-  if ! command_exists curl; then
-    error "curl not found. Please install curl."
-    exit 1
-  fi
-
-  if ! command_exists jq; then
-    error "jq not found. Please install jq."
-    exit 1
-  fi
+  for cmd in kubectl curl jq; do
+    if ! command -v "$cmd" >/dev/null 2>&1; then
+      error "$cmd not found. Please install $cmd."
+      exit 1
+    fi
+  done
 
   success "All prerequisites met"
 }
 
-# Setup port-forward
 setup_port_forward() {
+  if curl -s -o /dev/null -w '%{http_code}' "${THEHIVE_URL}/api/status" 2>/dev/null | grep -q "200"; then
+    info "TheHive already reachable at ${THEHIVE_URL}, skipping port-forward"
+    return 0
+  fi
+
   info "Setting up port-forward to TheHive service..."
 
-  # Check if pod exists
-  POD_NAME=$(kubectl get pods -n ${NAMESPACE} -l app.kubernetes.io/name=thehive -o jsonpath='{.items[0].metadata.name}' 2>/dev/null)
+  POD_NAME=$(kubectl get pods -n "${NAMESPACE}" -l app.kubernetes.io/name=thehive -o jsonpath='{.items[0].metadata.name}' 2>/dev/null)
 
   if [ -z "$POD_NAME" ]; then
     error "No TheHive pod found in namespace ${NAMESPACE}"
     exit 1
   fi
 
-  # Start port-forward in background
-  kubectl port-forward -n ${NAMESPACE} svc/thehive 9000:9000 >/dev/null 2>&1 &
+  kubectl port-forward -n "${NAMESPACE}" svc/thehive 9000:9000 >/dev/null 2>&1 &
   PORT_FORWARD_PID=$!
-
-  # Wait for port-forward to be ready
   sleep 3
 
   info "Port-forward started (PID: ${PORT_FORWARD_PID})"
 }
 
-# Cleanup function
 cleanup() {
-  if [ ! -z "$PORT_FORWARD_PID" ]; then
+  if [ -n "$PORT_FORWARD_PID" ]; then
     info "Stopping port-forward..."
-    kill $PORT_FORWARD_PID 2>/dev/null || true
+    kill "$PORT_FORWARD_PID" 2>/dev/null || true
   fi
 }
 
-# Set trap to cleanup on exit
 trap cleanup EXIT INT TERM
 
-# Check if TheHive is ready
 check_service() {
   info "Checking if TheHive is ready..."
 
   local max_retries=30
   local count=0
 
-  while [ $count -lt $max_retries ]; do
+  while [ "$count" -lt "$max_retries" ]; do
     status_code=$(curl -s -o /dev/null -w '%{http_code}' "${THEHIVE_URL}/api/v1/user/current" -u "${ADMIN_USER}:${ADMIN_PASSWORD}" 2>/dev/null || echo "000")
 
     if [ "${status_code}" = "200" ]; then
@@ -110,7 +80,6 @@ check_service() {
   exit 1
 }
 
-# Generic API call with retry
 api_call() {
   local expected_status=$1
   local method=$2
@@ -128,18 +97,17 @@ api_call() {
 
   curl_cmd="${curl_cmd} -u \"${user}\" -d '${data}'"
 
-  local status_code=$(eval ${curl_cmd} 2>/dev/null || echo "000")
+  local status_code
+  status_code=$(eval ${curl_cmd} 2>/dev/null || echo "000")
 
   if [ "${status_code}" = "${expected_status}" ]; then
     cat /tmp/response.json 2>/dev/null
     return 0
   else
-    # Don't exit on error, just return non-zero and let caller handle it
     return 1
   fi
 }
 
-# Create organization
 create_org() {
   info "Creating organization '${ORG_NAME}'..."
 
@@ -153,7 +121,6 @@ create_org() {
   fi
 }
 
-# Create org admin user
 create_orgadmin() {
   info "Creating org admin user '${ORG_USER}'..."
 
@@ -165,7 +132,7 @@ create_orgadmin() {
     "password": "'${ORG_PASSWORD}'"
   }' 2>/dev/null | jq -r '._id' 2>/dev/null || echo "")
 
-  if [ ! -z "$USER_ID" ] && [ "$USER_ID" != "null" ] && [ "$USER_ID" != "" ]; then
+  if [ -n "$USER_ID" ] && [ "$USER_ID" != "null" ]; then
     if api_call 200 PUT "/api/v1/user/${USER_ID}/organisations" "${ADMIN_USER}:${ADMIN_PASSWORD}" '{
       "organisations": [
         {
@@ -185,7 +152,6 @@ create_orgadmin() {
   fi
 }
 
-# Create custom fields
 create_customfields() {
   info "Creating custom fields..."
 
@@ -255,7 +221,6 @@ create_customfields() {
   fi
 }
 
-# Create case template
 create_case_template() {
   info "Creating case template 'MISPEvent'..."
 
@@ -301,7 +266,6 @@ create_case_template() {
   fi
 }
 
-# Create alert with observables
 create_alerts() {
   info "Creating test alert..."
 
@@ -324,7 +288,7 @@ create_alerts() {
     "type": "misp"
   }' "X-Organisation: ${ORG_NAME}" | jq -r '._id')
 
-  if [ ! -z "$ALERT_ID" ] && [ "$ALERT_ID" != "null" ]; then
+  if [ -n "$ALERT_ID" ] && [ "$ALERT_ID" != "null" ]; then
     success "Alert created (ID: ${ALERT_ID})"
 
     info "Adding observables to alert..."
@@ -365,7 +329,6 @@ create_alerts() {
   fi
 }
 
-# Create test case
 create_case() {
   info "Creating test case..."
 
@@ -383,7 +346,7 @@ create_case() {
     "tlp": 0
   }' "X-Organisation: ${ORG_NAME}" | jq -r '._id')
 
-  if [ ! -z "$CASE_ID" ] && [ "$CASE_ID" != "null" ]; then
+  if [ -n "$CASE_ID" ] && [ "$CASE_ID" != "null" ]; then
     success "Case created (ID: ${CASE_ID})"
 
     info "Adding observables to case..."
@@ -408,7 +371,6 @@ create_case() {
   fi
 }
 
-# Add comments to alert
 add_alert_comments() {
   if [ -z "$ALERT_ID" ]; then
     return 0
@@ -427,7 +389,6 @@ add_alert_comments() {
   success "Added comments to alert"
 }
 
-# Add comments to case
 add_case_comments() {
   if [ -z "$CASE_ID" ]; then
     return 0
@@ -446,7 +407,6 @@ add_case_comments() {
   success "Added comments to case"
 }
 
-# Create tasks in case
 create_case_tasks() {
   if [ -z "$CASE_ID" ]; then
     return 0
@@ -468,27 +428,24 @@ create_case_tasks() {
     "flag": false
   }' "X-Organisation: ${ORG_NAME}" | jq -r '._id' 2>/dev/null)
 
-  TASK_ID_3=$(api_call 201 POST "/api/v1/case/${CASE_ID}/task" "${ORG_USER}:${ORG_PASSWORD}" '{
+  api_call 201 POST "/api/v1/case/${CASE_ID}/task" "${ORG_USER}:${ORG_PASSWORD}" '{
     "title": "Document findings",
     "description": "Compile analysis results and document remediation steps",
     "status": "Waiting",
     "flag": true
-  }' "X-Organisation: ${ORG_NAME}" | jq -r '._id' 2>/dev/null)
+  }' "X-Organisation: ${ORG_NAME}" > /dev/null 2>&1
 
-  if [ ! -z "$TASK_ID_1" ] && [ "$TASK_ID_1" != "null" ]; then
+  if [ -n "$TASK_ID_1" ] && [ "$TASK_ID_1" != "null" ]; then
     success "Created 3 tasks in case"
   fi
 }
 
-# Add logs to tasks
 add_task_logs() {
   if [ -z "$TASK_ID_1" ] || [ "$TASK_ID_1" = "null" ]; then
     return 0
   fi
 
   info "Adding logs to tasks..."
-
-  CURRENT_TIME=$(date +%s000)
 
   api_call 201 POST "/api/v1/task/${TASK_ID_1}/log" "${ORG_USER}:${ORG_PASSWORD}" '{
     "message": "Started IP address analysis. Checking 8.8.8.8 reputation."
@@ -498,7 +455,7 @@ add_task_logs() {
     "message": "IP 8.8.8.8 is Google Public DNS - likely false positive."
   }' "X-Organisation: ${ORG_NAME}" > /dev/null 2>&1
 
-  if [ ! -z "$TASK_ID_2" ] && [ "$TASK_ID_2" != "null" ]; then
+  if [ -n "$TASK_ID_2" ] && [ "$TASK_ID_2" != "null" ]; then
     api_call 201 POST "/api/v1/task/${TASK_ID_2}/log" "${ORG_USER}:${ORG_PASSWORD}" '{
       "message": "Submitted hash to VirusTotal for analysis."
     }' "X-Organisation: ${ORG_NAME}" > /dev/null 2>&1
@@ -507,7 +464,6 @@ add_task_logs() {
   success "Added logs to tasks"
 }
 
-# Update case status
 update_case_status() {
   if [ -z "$CASE_ID" ]; then
     return 0
@@ -515,52 +471,21 @@ update_case_status() {
 
   info "Updating case status to InProgress..."
 
-  api_call 204 PATCH "/api/v1/case/${CASE_ID}" "${ORG_USER}:${ORG_PASSWORD}" '{
+  if api_call 204 PATCH "/api/v1/case/${CASE_ID}" "${ORG_USER}:${ORG_PASSWORD}" '{
     "status": "InProgress"
-  }' "X-Organisation: ${ORG_NAME}" > /dev/null 2>&1
-
-  if [ $? -eq 0 ]; then
+  }' "X-Organisation: ${ORG_NAME}" > /dev/null 2>&1; then
     success "Case status updated to InProgress"
   else
     warning "Failed to update case status"
   fi
 }
 
-# Add procedures (TTPs) to case
-add_case_procedures() {
-  if [ -z "$CASE_ID" ]; then
-    return 0
-  fi
-
-  info "Adding MITRE ATT&CK procedures to case..."
-
-  # Add T1190 - Exploit Public-Facing Application
-  api_call 201 POST "/api/v1/case/${CASE_ID}/procedure" "${ORG_USER}:${ORG_PASSWORD}" '{
-    "patternId": "T1190",
-    "occurDate": '$(date +%s000)',
-    "tactic": "initial-access",
-    "description": "Microsoft Exchange Server vulnerabilities exploitation"
-  }' "X-Organisation: ${ORG_NAME}" > /dev/null 2>&1
-
-  # Add T1059 - Command and Scripting Interpreter
-  api_call 201 POST "/api/v1/case/${CASE_ID}/procedure" "${ORG_USER}:${ORG_PASSWORD}" '{
-    "patternId": "T1059",
-    "occurDate": '$(date +%s000)',
-    "tactic": "execution",
-    "description": "Potential web shell execution via compromised Exchange server"
-  }' "X-Organisation: ${ORG_NAME}" > /dev/null 2>&1
-
-  success "Added MITRE ATT&CK procedures to case"
-}
-
-# Verify created resources
 verify_resources() {
   info "Verifying created resources..."
   echo ""
 
   local failed=0
 
-  # Verify organization
   if curl -s -u "${ADMIN_USER}:${ADMIN_PASSWORD}" "${THEHIVE_URL}/api/organisation/${ORG_NAME}" 2>/dev/null | jq -e '.name == "'${ORG_NAME}'"' > /dev/null 2>&1; then
     success "✓ Organization '${ORG_NAME}' exists"
   else
@@ -568,7 +493,6 @@ verify_resources() {
     failed=$((failed + 1))
   fi
 
-  # Verify user
   if curl -s -u "${ADMIN_USER}:${ADMIN_PASSWORD}" "${THEHIVE_URL}/api/v1/user/${ORG_USER}" 2>/dev/null | jq -e '.login == "'${ORG_USER}'"' > /dev/null 2>&1; then
     success "✓ User '${ORG_USER}' exists"
   else
@@ -576,15 +500,15 @@ verify_resources() {
     failed=$((failed + 1))
   fi
 
-  # Verify custom fields (count)
-  local cf_count=$(curl -s -u "${ADMIN_USER}:${ADMIN_PASSWORD}" "${THEHIVE_URL}/api/customField" 2>/dev/null | jq '. | length' 2>/dev/null)
-  if [ ! -z "$cf_count" ] && [ "$cf_count" -ge 5 ]; then
+  local cf_count
+  cf_count=$(curl -s -u "${ADMIN_USER}:${ADMIN_PASSWORD}" "${THEHIVE_URL}/api/customField" 2>/dev/null | jq '. | length' 2>/dev/null)
+  if [ -n "$cf_count" ] && [ "$cf_count" -ge 5 ]; then
     success "✓ Custom fields exist (found ${cf_count})"
   else
-    warning "⚠ Custom fields count: ${cf_count} (expected at least 5)"
+    error "✗ Custom fields count: ${cf_count} (expected at least 5)"
+    failed=$((failed + 1))
   fi
 
-  # Verify case template
   if curl -s -u "${ORG_USER}:${ORG_PASSWORD}" -H "X-Organisation: ${ORG_NAME}" "${THEHIVE_URL}/api/v1/caseTemplate/MISPEvent" 2>/dev/null | jq -e '.name == "MISPEvent"' > /dev/null 2>&1; then
     success "✓ Case template 'MISPEvent' exists"
   else
@@ -592,14 +516,16 @@ verify_resources() {
     failed=$((failed + 1))
   fi
 
-  # Verify alert
-  if [ ! -z "$ALERT_ID" ] && [ "$ALERT_ID" != "null" ]; then
-    local alert_data=$(curl -s -u "${ORG_USER}:${ORG_PASSWORD}" -H "X-Organisation: ${ORG_NAME}" "${THEHIVE_URL}/api/v1/alert/${ALERT_ID}" 2>/dev/null)
+  if [ -n "$ALERT_ID" ] && [ "$ALERT_ID" != "null" ]; then
+    local alert_data
+    alert_data=$(curl -s -u "${ORG_USER}:${ORG_PASSWORD}" -H "X-Organisation: ${ORG_NAME}" "${THEHIVE_URL}/api/v1/alert/${ALERT_ID}" 2>/dev/null)
     if echo "$alert_data" | jq -e '._id' > /dev/null 2>&1; then
-      local alert_obs=$(curl -s -u "${ORG_USER}:${ORG_PASSWORD}" -H "X-Organisation: ${ORG_NAME}" -H "Content-Type: application/json" \
+      local alert_obs
+      alert_obs=$(curl -s -u "${ORG_USER}:${ORG_PASSWORD}" -H "X-Organisation: ${ORG_NAME}" -H "Content-Type: application/json" \
         "${THEHIVE_URL}/api/v1/query?name=observables" \
         -d '{"query":[{"_name":"getAlert","idOrName":"'${ALERT_ID}'"},{"_name":"observables"}]}' 2>/dev/null | jq '. | length' 2>/dev/null)
-      local alert_comments=$(curl -s -u "${ORG_USER}:${ORG_PASSWORD}" -H "X-Organisation: ${ORG_NAME}" -H "Content-Type: application/json" \
+      local alert_comments
+      alert_comments=$(curl -s -u "${ORG_USER}:${ORG_PASSWORD}" -H "X-Organisation: ${ORG_NAME}" -H "Content-Type: application/json" \
         "${THEHIVE_URL}/api/v1/query?name=comments" \
         -d '{"query":[{"_name":"getAlert","idOrName":"'${ALERT_ID}'"},{"_name":"comments"}]}' 2>/dev/null | jq '. | length' 2>/dev/null)
       success "✓ Alert ${ALERT_ID} exists (observables: ${alert_obs}, comments: ${alert_comments})"
@@ -609,40 +535,33 @@ verify_resources() {
     fi
   fi
 
-  # Verify case
-  if [ ! -z "$CASE_ID" ] && [ "$CASE_ID" != "null" ]; then
-    local case_data=$(curl -s -u "${ORG_USER}:${ORG_PASSWORD}" -H "X-Organisation: ${ORG_NAME}" "${THEHIVE_URL}/api/v1/case/${CASE_ID}" 2>/dev/null)
+  if [ -n "$CASE_ID" ] && [ "$CASE_ID" != "null" ]; then
+    local case_data
+    case_data=$(curl -s -u "${ORG_USER}:${ORG_PASSWORD}" -H "X-Organisation: ${ORG_NAME}" "${THEHIVE_URL}/api/v1/case/${CASE_ID}" 2>/dev/null)
     if echo "$case_data" | jq -e '._id' > /dev/null 2>&1; then
-      local case_status=$(echo "$case_data" | jq -r '.status' 2>/dev/null)
-      local case_obs=$(curl -s -u "${ORG_USER}:${ORG_PASSWORD}" -H "X-Organisation: ${ORG_NAME}" -H "Content-Type: application/json" \
+      local case_status
+      case_status=$(echo "$case_data" | jq -r '.status' 2>/dev/null)
+      local case_obs
+      case_obs=$(curl -s -u "${ORG_USER}:${ORG_PASSWORD}" -H "X-Organisation: ${ORG_NAME}" -H "Content-Type: application/json" \
         "${THEHIVE_URL}/api/v1/query?name=observables" \
         -d '{"query":[{"_name":"getCase","idOrName":"'${CASE_ID}'"},{"_name":"observables"}]}' 2>/dev/null | jq '. | length' 2>/dev/null)
       success "✓ Case ${CASE_ID} exists (status: ${case_status}, observables: ${case_obs})"
 
-      # Verify comments in case
-      local case_comments=$(curl -s -u "${ORG_USER}:${ORG_PASSWORD}" -H "X-Organisation: ${ORG_NAME}" -H "Content-Type: application/json" \
+      local case_comments
+      case_comments=$(curl -s -u "${ORG_USER}:${ORG_PASSWORD}" -H "X-Organisation: ${ORG_NAME}" -H "Content-Type: application/json" \
         "${THEHIVE_URL}/api/v1/query?name=comments" \
         -d '{"query":[{"_name":"getCase","idOrName":"'${CASE_ID}'"},{"_name":"comments"}]}' 2>/dev/null | jq '. | length' 2>/dev/null)
       success "✓ Case has ${case_comments} comments"
 
-      # Verify tasks in case
-      local tasks_count=$(curl -s -u "${ORG_USER}:${ORG_PASSWORD}" -H "X-Organisation: ${ORG_NAME}" "${THEHIVE_URL}/api/v1/query?name=tasks" \
+      local tasks_count
+      tasks_count=$(curl -s -u "${ORG_USER}:${ORG_PASSWORD}" -H "X-Organisation: ${ORG_NAME}" "${THEHIVE_URL}/api/v1/query?name=tasks" \
         -H "Content-Type: application/json" \
         -d '{"query":[{"_name":"getCase","idOrName":"'${CASE_ID}'"},{"_name":"tasks"}]}' 2>/dev/null | jq '. | length' 2>/dev/null)
-      if [ ! -z "$tasks_count" ] && [ "$tasks_count" -ge 3 ]; then
+      if [ -n "$tasks_count" ] && [ "$tasks_count" -ge 3 ]; then
         success "✓ Case has ${tasks_count} tasks"
       else
-        warning "⚠ Expected at least 3 tasks, found: ${tasks_count}"
-      fi
-
-      # Verify procedures in case
-      local procedures_count=$(curl -s -u "${ORG_USER}:${ORG_PASSWORD}" -H "X-Organisation: ${ORG_NAME}" "${THEHIVE_URL}/api/v1/query?name=procedures" \
-        -H "Content-Type: application/json" \
-        -d '{"query":[{"_name":"getCase","idOrName":"'${CASE_ID}'"},{"_name":"procedures"}]}' 2>/dev/null | jq '. | length' 2>/dev/null)
-      if [ ! -z "$procedures_count" ] && [ "$procedures_count" -ge 2 ]; then
-        success "✓ Case has ${procedures_count} MITRE ATT&CK procedures"
-      else
-        warning "⚠ Expected at least 2 procedures, found: ${procedures_count}"
+        error "✗ Expected at least 3 tasks, found: ${tasks_count}"
+        failed=$((failed + 1))
       fi
     else
       error "✗ Case ${CASE_ID} not found"
@@ -654,17 +573,16 @@ verify_resources() {
   if [ $failed -eq 0 ]; then
     success "All verifications passed!"
   else
-    warning "Verification completed with ${failed} failures"
+    error "Verification completed with ${failed} failures"
   fi
   echo ""
 
   return $failed
 }
 
-# Main execution
 main() {
   echo ""
-  info "=== TheHive Helm Chart - Test Data Initialization ==="
+  info "=== TheHive Helm Chart - Smoke Test ==="
   echo ""
 
   check_prerequisites
@@ -675,29 +593,24 @@ main() {
   info "Starting data initialization..."
   echo ""
 
-  # Create base entities
   create_org
   create_orgadmin
   create_customfields
   create_case_template
 
-  # Create and populate alert
   create_alerts
   add_alert_comments
 
-  # Create and populate case
   create_case
   add_case_comments
   create_case_tasks
   add_task_logs
   update_case_status
-  add_case_procedures
 
   echo ""
-  success "=== Test data initialization completed! ==="
+  success "=== Data initialization completed ==="
   echo ""
 
-  # Verify all created resources
   verify_resources
   local rc=$?
 
@@ -707,7 +620,7 @@ main() {
   fi
 
   echo ""
-  success "=== Smoke test completed successfully! ==="
+  success "=== Smoke test completed successfully ==="
   echo ""
   info "You can now login to TheHive with:"
   info "  - Admin user: ${ADMIN_USER} / ${ADMIN_PASSWORD}"
@@ -717,14 +630,13 @@ main() {
   info "  - Organization: ${ORG_NAME}"
   info "  - Custom fields: 5"
   info "  - Case template: MISPEvent"
-  if [ ! -z "$ALERT_ID" ] && [ "$ALERT_ID" != "null" ]; then
+  if [ -n "$ALERT_ID" ] && [ "$ALERT_ID" != "null" ]; then
     info "  - Alert: ${ALERT_ID} (with 4 observables and 2 comments)"
   fi
-  if [ ! -z "$CASE_ID" ] && [ "$CASE_ID" != "null" ]; then
-    info "  - Case: ${CASE_ID} (with 2 observables, 3 tasks, logs, comments, and TTPs)"
+  if [ -n "$CASE_ID" ] && [ "$CASE_ID" != "null" ]; then
+    info "  - Case: ${CASE_ID} (with 2 observables, 3 tasks, logs, and comments)"
   fi
   echo ""
 }
 
-# Run main function
 main
