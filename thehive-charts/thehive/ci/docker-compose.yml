@@ -43,3 +43,15 @@ services:
       interval: 10s
       timeout: 5s
       retries: 30
+
+  # Create the "thehive" bucket after MinIO is healthy
+  minio-init:
+    image: quay.io/minio/mc:latest
+    depends_on:
+      minio:
+        condition: service_healthy
+    entrypoint: >
+      sh -c "
+        mc alias set myminio http://minio:9000 minio miniominio &&
+        mc mb --ignore-existing myminio/thehive
+      "
