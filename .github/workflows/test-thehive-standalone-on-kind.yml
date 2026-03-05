@@ -77,7 +77,7 @@ jobs:
             exit 1
           fi
           echo "Host IP from Kind perspective: $HOST_IP"
-          envsubst < thehive-charts/thehive/ci/k8s-endpoints-template.yaml | kubectl apply -n thehive -f -
+          envsubst < thehive-charts/thehive/scenarios/standalone/k8s-endpoints-template.yaml | kubectl apply -n thehive -f -
           echo ""
           echo "=== Services ==="
           kubectl get services -n thehive
@@ -96,13 +96,8 @@ jobs:
 
           helm install thehive . \
             --namespace thehive \
+            --values scenarios/standalone/values.yaml \
             --set thehive.httpSecret="$SECRET" \
-            --set cassandra.enabled=false \
-            --set elasticsearch.enabled=false \
-            --set minio.enabled=false \
-            --set thehive.database.hostnames[0]=cassandra-external \
-            --set thehive.index.hostnames[0]=elasticsearch-external \
-            --set thehive.storage.endpoint="" \
             --timeout=15m \
             --wait
 

@@ -1,0 +1,18 @@
+thehive:
+  database:
+    hostnames:
+      - cassandra-external
+  index:
+    hostnames:
+      - elasticsearch-external
+  storage:
+    endpoint: ""
+
+cassandra:
+  enabled: false
+
+elasticsearch:
+  enabled: false
+
+minio:
+  enabled: false
