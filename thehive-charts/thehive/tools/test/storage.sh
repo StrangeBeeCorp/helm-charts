@@ -1,7 +1,5 @@
 #!/usr/bin/env bash
 
-set -e
-
 NAMESPACE="${NAMESPACE:-thehive}"
 THEHIVE_URL="${THEHIVE_URL:-http://127.0.0.1:9000}"
 ADMIN_USER="${ADMIN_USER:-admin@thehive.local}"
@@ -195,6 +193,7 @@ upload_file_via_log() {
 
   if [ -z "$LOG_ID" ] || [ "$LOG_ID" = "null" ]; then
     error "Failed to upload ${file}"
+    error "Response: $(echo "$LOG_RESPONSE" | jq -c '.' 2>/dev/null || echo "$LOG_RESPONSE")"
     return 1
   fi
 
@@ -202,6 +201,7 @@ upload_file_via_log() {
 
   if [ -z "$ATTACHMENT_ID" ] || [ "$ATTACHMENT_ID" = "null" ]; then
     error "No attachment ID in response for ${file}"
+    error "Response: $(echo "$LOG_RESPONSE" | jq -c '.' 2>/dev/null || echo "$LOG_RESPONSE")"
     return 1
   fi
 
@@ -258,6 +258,7 @@ upload_file_observable() {
 
   if [ -z "$OBS_ID" ] || [ "$OBS_ID" = "null" ]; then
     error "Failed to upload ${file} as observable"
+    error "Response: $(echo "$OBS_RESPONSE" | jq -c '.' 2>/dev/null || echo "$OBS_RESPONSE")"
     return 1
   fi
 
@@ -265,6 +266,7 @@ upload_file_observable() {
 
   if [ -z "$OBS_ATTACHMENT_ID" ] || [ "$OBS_ATTACHMENT_ID" = "null" ]; then
     error "No attachment ID in observable response"
+    error "Response: $(echo "$OBS_RESPONSE" | jq -c '.' 2>/dev/null || echo "$OBS_RESPONSE")"
     return 1
   fi
 
