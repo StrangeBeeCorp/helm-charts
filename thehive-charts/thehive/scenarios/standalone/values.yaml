@@ -6,7 +6,9 @@ thehive:
     hostnames:
       - elasticsearch-external
   storage:
-    endpoint: ""
+    endpoint: "http://minio-external:9002"
+    accessKey: "minio"
+    secretKey: "miniominio"
 
 cassandra:
   enabled: false
