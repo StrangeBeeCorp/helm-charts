@@ -119,6 +119,9 @@ jobs:
       - name: Run smoke tests
         run: bash thehive-charts/thehive/tools/test/smoke.sh
 
+      - name: Run storage tests
+        run: bash thehive-charts/thehive/tools/test/storage.sh
+
       - name: Show logs on failure
         if: failure()
         run: |
