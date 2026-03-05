@@ -70,7 +70,7 @@ jobs:
         run: |
           # Get the IPv4 gateway from the kind Docker network (IPv6 may appear first)
           export HOST_IP=$(docker network inspect kind --format '{{json .IPAM.Config}}' \
-            | jq -r '.[] | select(.Gateway | test("^[0-9]+\\.")) | .Gateway')
+            | jq -r '.[] | select(.Gateway // empty | test("^[0-9]+\\.")) | .Gateway')
           if [ -z "$HOST_IP" ]; then
             echo "ERROR: Could not determine host IPv4 gateway for kind network"
             docker network inspect kind --format '{{json .IPAM.Config}}'
