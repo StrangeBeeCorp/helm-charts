@@ -148,6 +148,6 @@ jobs:
         run: |
           helm uninstall thehive --namespace thehive || true
           kubectl delete -n thehive service cassandra-external elasticsearch-external minio-external || true
-          kubectl delete -n thehive endpoints cassandra-external elasticsearch-external minio-external || true
+          kubectl delete -n thehive endpointslice cassandra-external-1 elasticsearch-external-1 minio-external-1 || true
           kubectl delete namespace thehive || true
           docker compose -f thehive-charts/thehive/ci/docker-compose.yml down || true
