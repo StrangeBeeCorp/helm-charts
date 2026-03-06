@@ -88,8 +88,8 @@ jobs:
           echo "=== Services ==="
           kubectl get services -n thehive
           echo ""
-          echo "=== Endpoints ==="
-          kubectl get endpoints -n thehive
+          echo "=== EndpointSlices ==="
+          kubectl get endpointslices -n thehive
 
       - name: Update Helm dependencies
         working-directory: thehive-charts/thehive
@@ -140,8 +140,8 @@ jobs:
           echo "=== Namespace Events ==="
           kubectl get events -n thehive --sort-by='.lastTimestamp'
           echo ""
-          echo "=== K8s Endpoints ==="
-          kubectl describe endpoints -n thehive
+          echo "=== EndpointSlices ==="
+          kubectl describe endpointslices -n thehive
           echo ""
           echo "=== TheHive Deployment Events ==="
           kubectl describe deployment -n thehive -l app.kubernetes.io/name=thehive
