@@ -1,0 +1,159 @@
+name: Cortex on Kind - Standalone Mode
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "cortex-charts/cortex/**"
+      - "!cortex-charts/cortex/**/*.md"
+      - "!cortex-charts/cortex/**/README.md.gotmpl"
+      - ".github/workflows/test-cortex-standalone-on-kind.yml"
+  push:
+    branches:
+      - main
+    paths:
+      - "cortex-charts/cortex/**"
+      - "!cortex-charts/cortex/**/*.md"
+      - "!cortex-charts/cortex/**/README.md.gotmpl"
+      - ".github/workflows/test-cortex-standalone-on-kind.yml"
+
+jobs:
+  test:
+    name: Install and Test Cortex Chart (Standalone)
+    runs-on: ubuntu-24.04
+    strategy:
+      matrix:
+        k8s-version:
+          - v1.35.0
+          - v1.34.0
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install Helm
+        uses: azure/setup-helm@v4
+        with:
+          version: "latest"
+
+      - name: Start Docker Compose backends
+        working-directory: cortex-charts/cortex/ci
+        run: docker compose up -d --wait --wait-timeout 300
+
+      - name: Verify backends are healthy
+        working-directory: cortex-charts/cortex/ci
+        run: |
+          echo "=== Elasticsearch ==="
+          docker compose exec elasticsearch curl -fsSL http://localhost:9200/_cluster/health
+
+      - name: Create Kind cluster
+        uses: helm/kind-action@v1
+        with:
+          cluster_name: cortex-standalone-test
+          node_image: kindest/node:${{ matrix.k8s-version }}
+          wait: 300s
+
+      - name: Verify cluster
+        run: |
+          kubectl cluster-info
+          kubectl get nodes
+
+      - name: Install NFS Server Provisioner for RWX support
+        run: |
+          helm repo add nfs-ganesha-server-and-external-provisioner \
+            https://kubernetes-sigs.github.io/nfs-ganesha-server-and-external-provisioner/
+
+          helm install nfs-server nfs-ganesha-server-and-external-provisioner/nfs-server-provisioner \
+            --set persistence.enabled=false \
+            --set persistence.storageClass=standard \
+            --set persistence.size=10Gi \
+            --wait \
+            --timeout=5m
+
+      - name: Create Cortex namespace
+        run: kubectl create namespace cortex
+
+      - name: Create K8s endpoints for external backends
+        run: |
+          export HOST_IP=$(docker network inspect kind --format '{{json .IPAM.Config}}' \
+            | jq -r '.[] | select(.Gateway // empty | test("^[0-9]+\\.")) | .Gateway')
+          if [ -z "$HOST_IP" ]; then
+            echo "ERROR: Could not determine host IPv4 gateway for kind network"
+            docker network inspect kind --format '{{json .IPAM.Config}}'
+            exit 1
+          fi
+          echo "Host IP from Kind perspective: $HOST_IP"
+          envsubst < cortex-charts/cortex/scenarios/standalone/k8s-endpoints-template.yaml | kubectl apply -n cortex -f -
+          echo ""
+          echo "=== Services ==="
+          kubectl get services -n cortex
+          echo ""
+          echo "=== EndpointSlices ==="
+          kubectl get endpointslices -n cortex
+
+      - name: Update Helm dependencies
+        working-directory: cortex-charts/cortex
+        run: helm dependency update
+
+      - name: Install Cortex chart (standalone mode)
+        working-directory: cortex-charts/cortex
+        run: |
+          SECRET=$(openssl rand -base64 32)
+
+          helm install cortex . \
+            --namespace cortex \
+            --values scenarios/standalone/values.yaml \
+            --set cortex.httpSecret="$SECRET" \
+            --set cortex.persistentVolumeClaim.storageClass=nfs \
+            --timeout=10m \
+            --wait
+
+      - name: Wait for Cortex to be ready
+        run: |
+          kubectl wait --for=condition=available --timeout=10m \
+            --namespace cortex \
+            deployment -l app.kubernetes.io/name=cortex
+
+      - name: Check deployment status
+        run: |
+          kubectl get pods -n cortex
+          kubectl get deployments -n cortex
+          kubectl get services -n cortex
+
+      - name: Run Helm tests
+        run: helm test cortex --namespace cortex --timeout=5m --logs
+
+      - name: Show logs on failure
+        if: failure()
+        run: |
+          echo "=== Docker Compose Logs ==="
+          docker compose -f cortex-charts/cortex/ci/docker-compose.yml logs --tail=100
+          echo ""
+          echo "=== All Pods Status ==="
+          kubectl get pods -n cortex -o wide
+          echo ""
+          echo "=== Namespace Events ==="
+          kubectl get events -n cortex --sort-by='.lastTimestamp'
+          echo ""
+          echo "=== K8s EndpointSlices ==="
+          kubectl describe endpointslices -n cortex
+          echo ""
+          echo "=== Cortex Deployment Events ==="
+          kubectl describe deployment -n cortex -l app.kubernetes.io/name=cortex
+          echo ""
+          echo "=== Cortex Pod Logs ==="
+          kubectl logs -n cortex -l app.kubernetes.io/name=cortex --tail=200
+          echo ""
+          echo "=== Test Pod Logs ==="
+          kubectl logs -n cortex -l app.kubernetes.io/component=test --tail=100
+
+      - name: Cleanup
+        if: always()
+        run: |
+          helm uninstall cortex --namespace cortex || true
+          kubectl delete -n cortex service elasticsearch-external || true
+          kubectl delete -n cortex endpointslice elasticsearch-external-1 || true
+          kubectl delete namespace cortex || true
+          docker compose -f cortex-charts/cortex/ci/docker-compose.yml down || true
