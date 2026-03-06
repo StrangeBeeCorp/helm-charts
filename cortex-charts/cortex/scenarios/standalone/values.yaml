@@ -1,0 +1,7 @@
+cortex:
+  index:
+    hostnames:
+      - elasticsearch-external
+
+elasticsearch:
+  enabled: false
