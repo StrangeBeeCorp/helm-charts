@@ -1,0 +1,62 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: cassandra-external
+spec:
+  ports:
+    - port: 9042
+---
+apiVersion: discovery.k8s.io/v1
+kind: EndpointSlice
+metadata:
+  name: cassandra-external-1
+  labels:
+    kubernetes.io/service-name: cassandra-external
+addressType: IPv4
+endpoints:
+  - addresses:
+      - "${HOST_IP}"
+ports:
+  - port: 9042
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: elasticsearch-external
+spec:
+  ports:
+    - port: 9200
+---
+apiVersion: discovery.k8s.io/v1
+kind: EndpointSlice
+metadata:
+  name: elasticsearch-external-1
+  labels:
+    kubernetes.io/service-name: elasticsearch-external
+addressType: IPv4
+endpoints:
+  - addresses:
+      - "${HOST_IP}"
+ports:
+  - port: 9200
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: minio-external
+spec:
+  ports:
+    - port: 9002
+---
+apiVersion: discovery.k8s.io/v1
+kind: EndpointSlice
+metadata:
+  name: minio-external-1
+  labels:
+    kubernetes.io/service-name: minio-external
+addressType: IPv4
+endpoints:
+  - addresses:
+      - "${HOST_IP}"
+ports:
+  - port: 9002

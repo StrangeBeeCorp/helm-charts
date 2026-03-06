@@ -1,0 +1,45 @@
+services:
+  cassandra:
+    image: cassandra:4.1.10
+    ports:
+      - "9042:9042"
+    environment:
+      CASSANDRA_CLUSTER_NAME: "TheHive"
+      CASSANDRA_DC: "dc1"
+      CASSANDRA_RACK: "rack1"
+      MAX_HEAP_SIZE: "512M"
+      HEAP_NEWSIZE: "100M"
+    healthcheck:
+      test: ["CMD-SHELL", "cqlsh -e 'describe cluster'"]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+
+  elasticsearch:
+    image: docker.io/elasticsearch:9.3.1
+    ports:
+      - "9200:9200"
+    environment:
+      discovery.type: single-node
+      xpack.security.enabled: "false"
+      ES_JAVA_OPTS: "-Xms512m -Xmx512m"
+      cluster.name: "thehive"
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsSL http://localhost:9200/_cluster/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+
+  minio:
+    image: quay.io/minio/minio:RELEASE.2025-09-07T16-13-09Z
+    ports:
+      - "9002:9000"
+    environment:
+      MINIO_ROOT_USER: "minio"
+      MINIO_ROOT_PASSWORD: "miniominio"
+    command: server /data
+    healthcheck:
+      test: ["CMD-SHELL", "mc ready local"]
+      interval: 10s
+      timeout: 5s
+      retries: 30

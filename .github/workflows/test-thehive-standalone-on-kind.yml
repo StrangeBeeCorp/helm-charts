@@ -1,0 +1,162 @@
+name: TheHive on Kind - Standalone Mode
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "thehive-charts/thehive/**"
+      - "!thehive-charts/thehive/**/*.md"
+      - "!thehive-charts/thehive/**/README.md.gotmpl"
+      - ".github/workflows/test-thehive-standalone-on-kind.yml"
+  push:
+    branches:
+      - main
+    paths:
+      - "thehive-charts/thehive/**"
+      - "!thehive-charts/thehive/**/*.md"
+      - "!thehive-charts/thehive/**/README.md.gotmpl"
+      - ".github/workflows/test-thehive-standalone-on-kind.yml"
+
+jobs:
+  test:
+    name: Install and Test TheHive Chart (Standalone)
+    runs-on: ubuntu-24.04
+    strategy:
+      matrix:
+        k8s-version:
+          - v1.35.0
+          - v1.34.0
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install Helm
+        uses: azure/setup-helm@v4
+        with:
+          version: "latest"
+
+      - name: Start Docker Compose backends
+        working-directory: thehive-charts/thehive/ci
+        run: docker compose up -d --wait --wait-timeout 300
+
+      - name: Verify backends are healthy
+        working-directory: thehive-charts/thehive/ci
+        run: |
+          echo "=== Cassandra ==="
+          docker compose exec cassandra cqlsh -e 'describe cluster'
+          echo ""
+          echo "=== Elasticsearch ==="
+          docker compose exec elasticsearch curl -fsSL http://localhost:9200/_cluster/health
+
+      - name: Create MinIO bucket
+        working-directory: thehive-charts/thehive/ci
+        run: |
+          docker compose exec minio mc alias set local http://localhost:9000 minio miniominio
+          docker compose exec minio mc mb --ignore-existing local/thehive
+
+      - name: Create Kind cluster
+        uses: helm/kind-action@v1
+        with:
+          cluster_name: thehive-standalone-test
+          node_image: kindest/node:${{ matrix.k8s-version }}
+          wait: 300s
+
+      - name: Verify cluster
+        run: |
+          kubectl cluster-info
+          kubectl get nodes
+
+      - name: Create TheHive namespace
+        run: kubectl create namespace thehive
+
+      - name: Create K8s endpoints for external backends
+        run: |
+          # Get the IPv4 gateway from the kind Docker network (IPv6 may appear first)
+          export HOST_IP=$(docker network inspect kind --format '{{json .IPAM.Config}}' \
+            | jq -r '.[] | select(.Gateway // empty | test("^[0-9]+\\.")) | .Gateway')
+          if [ -z "$HOST_IP" ]; then
+            echo "ERROR: Could not determine host IPv4 gateway for kind network"
+            docker network inspect kind --format '{{json .IPAM.Config}}'
+            exit 1
+          fi
+          echo "Host IP from Kind perspective: $HOST_IP"
+          envsubst < thehive-charts/thehive/scenarios/standalone/k8s-endpoints-template.yaml | kubectl apply -n thehive -f -
+          echo ""
+          echo "=== Services ==="
+          kubectl get services -n thehive
+          echo ""
+          echo "=== EndpointSlices ==="
+          kubectl get endpointslices -n thehive
+
+      - name: Update Helm dependencies
+        working-directory: thehive-charts/thehive
+        run: helm dependency update
+
+      - name: Install TheHive chart (standalone mode)
+        working-directory: thehive-charts/thehive
+        run: |
+          SECRET=$(openssl rand -base64 32)
+
+          helm install thehive . \
+            --namespace thehive \
+            --values scenarios/standalone/values.yaml \
+            --set thehive.httpSecret="$SECRET" \
+            --timeout=15m \
+            --wait
+
+      - name: Wait for TheHive to be ready
+        run: |
+          kubectl wait --for=condition=available --timeout=10m \
+            --namespace thehive \
+            deployment -l app.kubernetes.io/name=thehive
+
+      - name: Check deployment status
+        run: |
+          kubectl get pods -n thehive
+          kubectl get deployments -n thehive
+          kubectl get services -n thehive
+
+      - name: Run Helm tests
+        run: helm test thehive --namespace thehive --timeout=5m --logs
+
+      - name: Run smoke tests
+        run: bash thehive-charts/thehive/tools/test/smoke.sh
+
+      - name: Run storage tests
+        run: bash thehive-charts/thehive/tools/test/storage.sh
+
+      - name: Show logs on failure
+        if: failure()
+        run: |
+          echo "=== Docker Compose Logs ==="
+          docker compose -f thehive-charts/thehive/ci/docker-compose.yml logs --tail=100
+          echo ""
+          echo "=== All Pods Status ==="
+          kubectl get pods -n thehive -o wide
+          echo ""
+          echo "=== Namespace Events ==="
+          kubectl get events -n thehive --sort-by='.lastTimestamp'
+          echo ""
+          echo "=== EndpointSlices ==="
+          kubectl describe endpointslices -n thehive
+          echo ""
+          echo "=== TheHive Deployment Events ==="
+          kubectl describe deployment -n thehive -l app.kubernetes.io/name=thehive
+          echo ""
+          echo "=== TheHive Pod Logs ==="
+          kubectl logs -n thehive -l app.kubernetes.io/name=thehive --tail=200
+          echo ""
+          echo "=== Test Pod Logs ==="
+          kubectl logs -n thehive -l app.kubernetes.io/component=test --tail=100
+
+      - name: Cleanup
+        if: always()
+        run: |
+          helm uninstall thehive --namespace thehive || true
+          kubectl delete -n thehive service cassandra-external elasticsearch-external minio-external || true
+          kubectl delete -n thehive endpointslice cassandra-external-1 elasticsearch-external-1 minio-external-1 || true
+          kubectl delete namespace thehive || true
+          docker compose -f thehive-charts/thehive/ci/docker-compose.yml down || true
