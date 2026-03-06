@@ -51,6 +51,12 @@ jobs:
           echo "=== Elasticsearch ==="
           docker compose exec elasticsearch curl -fsSL http://localhost:9200/_cluster/health
 
+      - name: Create MinIO bucket
+        working-directory: thehive-charts/thehive/ci
+        run: |
+          docker compose exec minio mc alias set local http://localhost:9000 minio miniominio
+          docker compose exec minio mc mb --ignore-existing local/thehive
+
       - name: Create Kind cluster
         uses: helm/kind-action@v1
         with:
