@@ -1,0 +1,14 @@
+cortex:
+  index:
+    uri: "http://opensearch-external:9200"
+    username: "admin"
+    password: "C0rt3xOpenS3arch#2025"
+
+  configFile: |
+    search {
+      user = "admin"
+      password = "C0rt3xOpenS3arch#2025"
+    }
+
+elasticsearch:
+  enabled: false

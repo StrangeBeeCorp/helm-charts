@@ -10,7 +10,9 @@ metadata:
     {{- include "cortex.labels" . | nindent 4 }}
 data:
   CORTEX_ELASTICSEARCH_USERNAME: {{ .Values.cortex.index.username | quote }}
-  {{- if and (.Values.elasticsearch.enabled) (eq (len .Values.cortex.index.hostnames) 0) }}
+  {{- if .Values.cortex.index.uri }}
+  es_uri: {{ .Values.cortex.index.uri | quote }}
+  {{- else if and (.Values.elasticsearch.enabled) (eq (len .Values.cortex.index.hostnames) 0) }}
   es_hostname: {{ printf "%s-elasticsearch" .Release.Name | trunc 63 | quote }}
   {{- else }}
   es_hostname: {{ join "," .Values.cortex.index.hostnames | quote }}
