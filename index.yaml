@@ -17,6 +17,51 @@ entries:
         - name: support
           url: https://strangebee.com/contact-strangebee/
     apiVersion: v2
+    appVersion: 4.0.1-1
+    created: "2026-04-09T15:15:19.141393391Z"
+    dependencies:
+    - condition: elasticsearch.enabled
+      name: elasticsearch
+      repository: oci://registry-1.docker.io/bitnamicharts
+      version: 22.1.6
+    description: Cortex official Helm Chart
+    digest: e79a5875b8f02f750d880181f1e801e895138be2342389d5c1f62984c8e14ab4
+    home: https://strangebee.com/cortex/
+    icon: https://strangebeecorp.github.io/helm-charts/assets/cortex-icon.svg
+    keywords:
+    - cortex
+    - thehive
+    - sirp
+    - incident-response
+    - case-management
+    - strangebee
+    kubeVersion: '>= 1.23.0-0'
+    maintainers:
+    - name: StrangeBee
+      url: https://strangebee.com/
+    name: cortex
+    sources:
+    - https://github.com/StrangeBeeCorp/helm-charts/tree/main/cortex-charts/cortex
+    type: application
+    urls:
+    - https://github.com/StrangeBeeCorp/helm-charts/releases/download/cortex-1.1.2/cortex-1.1.2.tgz
+    version: 1.1.2
+  - annotations:
+      artifacthub.io/category: security
+      artifacthub.io/images: |
+        - name: cortex
+          image: thehiveproject/cortex:4.0.0-1
+          whitelisted: true
+        - name: curl
+          image: curlimages/curl:8.17.0
+          whitelisted: true
+      artifacthub.io/license: AGPL-3.0
+      artifacthub.io/links: |
+        - name: source
+          url: https://github.com/StrangeBeeCorp/helm-charts/tree/main/cortex-charts/cortex
+        - name: support
+          url: https://strangebee.com/contact-strangebee/
+    apiVersion: v2
     appVersion: 4.0.0-1
     created: "2026-02-18T09:51:22.03961522Z"
     dependencies:
@@ -1704,4 +1749,4 @@ entries:
     urls:
     - https://github.com/StrangeBeeCorp/helm-charts/releases/download/thehive-0.1.1/thehive-0.1.1.tgz
     version: 0.1.1
-generated: "2026-02-18T09:51:22.03971068Z"
+generated: "2026-04-09T15:15:19.141516471Z"
