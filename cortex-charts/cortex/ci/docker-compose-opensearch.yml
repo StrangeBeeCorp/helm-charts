@@ -1,6 +1,6 @@
 services:
   opensearch:
-    image: docker.io/opensearchproject/opensearch:2.19.1
+    image: docker.io/opensearchproject/opensearch:3.0.0
     ports:
       - "9200:9200"
     environment:

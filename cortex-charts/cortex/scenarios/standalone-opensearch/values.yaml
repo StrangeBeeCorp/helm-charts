@@ -1,8 +1,21 @@
 cortex:
   index:
-    uri: "http://opensearch-external:9200"
+    # Use uri to pass the full OpenSearch URI directly (takes precedence over hostnames)
+    # uri: "http://opensearch-external:9200"
+
+    # Or use hostnames to let the entrypoint resolve the address
+    hostnames:
+      - opensearch-external
+
+    # Credentials for OpenSearch authentication
+    # These are injected as CORTEX_ELASTICSEARCH_USERNAME / CORTEX_ELASTICSEARCH_PASSWORD env vars
+    # and picked up by the default application.conf via HOCON substitution
     username: "admin"
     password: "C0rt3xOpenS3arch#2025"
+
+    # Alternatively, reference an existing Kubernetes secret:
+    # k8sSecretName: "opensearch-credentials"
+    # k8sSecretKey: "password"
 
 elasticsearch:
   enabled: false
