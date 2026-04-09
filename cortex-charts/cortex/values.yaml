@@ -72,6 +72,8 @@ cortex:
     # -- List of ElasticSearch hostnames (auto-configured if ElasticSearch subchart is enabled and this is empty)
     hostnames: []
       #- "myelasticsearch.example.com"
+    # -- Full ElasticSearch/OpenSearch URI (e.g. http://host:9200). When set, takes precedence over hostnames.
+    uri: ""
 
   # -- Directory in Cortex container used to communicate with running jobs (write inputs and read outputs)
   jobDirectory: "/tmp/cortex-jobs"

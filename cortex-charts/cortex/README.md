@@ -2,7 +2,7 @@
 
 Cortex official Helm Chart
 
-[![Version: 1.1.1](https://img.shields.io/badge/Version-1.1.1-informational?style=flat-square) ](https://github.com/StrangeBeeCorp/helm-charts/releases) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square)  [![AppVersion: 4.0.0-1](https://img.shields.io/badge/AppVersion-4.0.0--1-informational?style=flat-square) ](https://github.com/TheHive-Project/Cortex/releases)
+[![Version: 1.1.2](https://img.shields.io/badge/Version-1.1.2-informational?style=flat-square) ](https://github.com/StrangeBeeCorp/helm-charts/releases) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square)  [![AppVersion: 4.0.1-1](https://img.shields.io/badge/AppVersion-4.0.1--1-informational?style=flat-square) ](https://github.com/TheHive-Project/Cortex/releases)
 
 ## Description
 
@@ -48,6 +48,7 @@ Kubernetes: `>= 1.23.0-0`
 | cortex.index.k8sSecretKey | string | `"elasticsearch-password"` | Key in the secret containing ElasticSearch password |
 | cortex.index.k8sSecretName | string | `""` | Name of existing Kubernetes secret containing ElasticSearch password |
 | cortex.index.password | string | `""` | ElasticSearch password for index connection (should match ElasticSearch subchart credentials if enabled) |
+| cortex.index.uri | string | `""` | Full ElasticSearch/OpenSearch URI (e.g. http://host:9200). When set, takes precedence over hostnames. |
 | cortex.index.username | string | `"elastic"` | ElasticSearch username for index connection |
 | cortex.ingress.annotations | object | `{}` | Ingress annotations |
 | cortex.ingress.className | string | `""` | Ingress class name |

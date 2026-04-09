@@ -66,18 +66,26 @@ app.kubernetes.io/component: "server"
 {{/* Cortex init-container command to check ElasticSearch availability */}}
 {{- define "cortex.initContainerCheckEsCurlOptions" -}}
 {{- if or (.Values.cortex.index.password) (.Values.cortex.index.k8sSecretName) -}}
-  -fkLsS -u '{{ .Values.cortex.index.username | default "elastic" }}:${CORTEX_ELASTICSEARCH_PASSWORD}' --out-null --no-keepalive
+  -kLsS -u "{{ .Values.cortex.index.username | default "elastic" }}:${CORTEX_ELASTICSEARCH_PASSWORD}" --output /dev/null -w '%{http_code}' --no-keepalive
 {{- else -}}
-  -fkLsS --out-null --no-keepalive
+  -kLsS --output /dev/null -w '%{http_code}' --no-keepalive
 {{- end -}}
 {{- end -}}
 
 {{/* Cortex init-container command to check ElasticSearch availability */}}
 {{- define "cortex.initContainerCheckEsCommand" -}}
-{{- if and (.Values.elasticsearch.enabled) (eq (len .Values.cortex.index.hostnames) 0) -}}
-  until curl {{ include "cortex.initContainerCheckEsCurlOptions" . }} {{ if .Values.cortex.initContainers.checkElasticsearch.useHttps }}https{{ else }}http{{ end }}://{{ printf "%s-elasticsearch" .Release.Name | trunc 63 }}:9200/_cluster/health; do echo 'Waiting for ElasticSearch'; sleep 5; done
+{{- if .Values.cortex.index.uri -}}
+  {{- $url := (trimSuffix "/" .Values.cortex.index.uri) -}}
+  while true; do STATUS=$(curl {{ include "cortex.initContainerCheckEsCurlOptions" . }} {{ $url }}/_cluster/health 2>/dev/null); if [ "$STATUS" = "200" ]; then echo 'ElasticSearch is ready'; break; elif [ "$STATUS" = "000" ]; then echo "Waiting for ElasticSearch at {{ $url }} (connection refused)"; elif [ "$STATUS" = "401" ]; then echo "ERROR: Authentication failed (HTTP 401). Check cortex.index.username and cortex.index.password"; elif [ "$STATUS" = "403" ]; then echo "ERROR: Access denied (HTTP 403). Check user permissions"; else echo "Waiting for ElasticSearch at {{ $url }} (HTTP $STATUS)"; fi; sleep 5; done
 {{- else -}}
-  until curl {{ include "cortex.initContainerCheckEsCurlOptions" . }} {{ if .Values.cortex.initContainers.checkElasticsearch.useHttps }}https{{ else }}http{{ end }}://{{ index .Values.cortex.index.hostnames 0 }}:9200/_cluster/health; do echo 'Waiting for ElasticSearch'; sleep 5; done
+  {{- $scheme := ternary "https" "http" .Values.cortex.initContainers.checkElasticsearch.useHttps -}}
+  {{- $host := "" -}}
+  {{- if and .Values.elasticsearch.enabled (eq (len .Values.cortex.index.hostnames) 0) -}}
+    {{- $host = printf "%s-elasticsearch" .Release.Name | trunc 63 -}}
+  {{- else -}}
+    {{- $host = index .Values.cortex.index.hostnames 0 -}}
+  {{- end -}}
+  while true; do STATUS=$(curl {{ include "cortex.initContainerCheckEsCurlOptions" . }} {{ $scheme }}://{{ $host }}:9200/_cluster/health 2>/dev/null); if [ "$STATUS" = "200" ]; then echo 'ElasticSearch is ready'; break; elif [ "$STATUS" = "000" ]; then echo "Waiting for ElasticSearch at {{ $scheme }}://{{ $host }}:9200 (connection refused)"; elif [ "$STATUS" = "401" ]; then echo "ERROR: Authentication failed (HTTP 401). Check cortex.index.username and cortex.index.password"; elif [ "$STATUS" = "403" ]; then echo "ERROR: Access denied (HTTP 403). Check user permissions"; else echo "Waiting for ElasticSearch at {{ $scheme }}://{{ $host }}:9200 (HTTP $STATUS)"; fi; sleep 5; done
 {{- end -}}
 {{- end -}}
 
