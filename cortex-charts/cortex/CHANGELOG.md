@@ -2,6 +2,13 @@
 
 - Nothing yet
 
+## 1.1.2
+
+- Fix init container auth env var expansion and improve error messages (401, 403, connection refused)
+- Add `cortex.index.uri` to pass a full ElasticSearch/OpenSearch URI directly
+- Bump appVersion to 4.0.1-1 (fixes env var passthrough to Cortex process)
+- Add OpenSearch standalone scenario and CI tests (OpenSearch 3.0.0 with security enabled)
+
 ## 1.1.1
 
 - Fix values documentation Cortex 4 ES requirement [#130](https://github.com/StrangeBeeCorp/helm-charts/pull/130)
