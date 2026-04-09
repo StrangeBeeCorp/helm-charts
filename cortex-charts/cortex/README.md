@@ -2,7 +2,7 @@
 
 Cortex official Helm Chart
 
-[![Version: 1.1.1](https://img.shields.io/badge/Version-1.1.1-informational?style=flat-square) ](https://github.com/StrangeBeeCorp/helm-charts/releases) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square)  [![AppVersion: 4.0.1-1](https://img.shields.io/badge/AppVersion-4.0.1--1-informational?style=flat-square) ](https://github.com/TheHive-Project/Cortex/releases)
+[![Version: 1.1.2](https://img.shields.io/badge/Version-1.1.2-informational?style=flat-square) ](https://github.com/StrangeBeeCorp/helm-charts/releases) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square)  [![AppVersion: 4.0.1-1](https://img.shields.io/badge/AppVersion-4.0.1--1-informational?style=flat-square) ](https://github.com/TheHive-Project/Cortex/releases)
 
 ## Description
 
