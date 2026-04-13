@@ -8,10 +8,10 @@ ORG_USER="${ORG_USER:-thehive@thehive.local}"
 ORG_PASSWORD="${ORG_PASSWORD:-thehive1234}"
 ORG_NAME="${ORG_NAME:-demo}"
 
-info()    { echo "[INFO] $1"; }
-success() { echo "[SUCCESS] $1"; }
-warning() { echo "[WARN] $1"; }
-error()   { echo "[ERROR] $1"; }
+info()    { echo "[INFO] $1" >&2; }
+success() { echo "[SUCCESS] $1" >&2; }
+warning() { echo "[WARN] $1" >&2; }
+error()   { echo "[ERROR] $1" >&2; }
 
 check_prerequisites() {
   info "Checking prerequisites..."
