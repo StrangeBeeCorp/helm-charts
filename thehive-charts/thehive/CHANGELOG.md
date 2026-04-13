@@ -4,7 +4,7 @@
 
 ## 1.0.4
 
-- Update TheHive to v5.7.0-1
+- Update TheHive to v5.7.0-1 [#137](https://github.com/StrangeBeeCorp/helm-charts/pull/137)
 
 ## 1.0.3
 
