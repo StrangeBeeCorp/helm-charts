@@ -104,6 +104,12 @@ api_call() {
     cat /tmp/response.json 2>/dev/null
     return 0
   else
+    echo "[ERROR] API call failed: ${method} ${endpoint} -> HTTP ${status_code} (expected ${expected_status})" >&2
+    local body
+    body=$(cat /tmp/response.json 2>/dev/null)
+    if [ -n "$body" ]; then
+      echo "[ERROR] Response body: ${body}" >&2
+    fi
     return 1
   fi
 }
@@ -326,6 +332,10 @@ create_alerts() {
     }' "X-Organisation: ${ORG_NAME}" > /dev/null
 
     success "Added observables to alert"
+  else
+    error "Failed to create test alert (empty or null _id returned)"
+    error "Check that '${ORG_USER}' has 'manageAlert/create' permission in '${ORG_NAME}' and that the instance license allows it"
+    exit 1
   fi
 }
 
@@ -368,6 +378,10 @@ create_case() {
     }' "X-Organisation: ${ORG_NAME}" > /dev/null
 
     success "Added observables to case"
+  else
+    error "Failed to create test case (empty or null _id returned)"
+    error "Check that '${ORG_USER}' has 'manageCase/create' permission in '${ORG_NAME}' and that the instance license allows it"
+    exit 1
   fi
 }
 
@@ -409,7 +423,8 @@ add_case_comments() {
 
 create_case_tasks() {
   if [ -z "$CASE_ID" ]; then
-    return 0
+    error "Cannot create tasks: CASE_ID is empty"
+    exit 1
   fi
 
   info "Creating tasks in case..."
@@ -437,6 +452,10 @@ create_case_tasks() {
 
   if [ -n "$TASK_ID_1" ] && [ "$TASK_ID_1" != "null" ]; then
     success "Created 3 tasks in case"
+  else
+    error "Failed to create tasks in case (empty or null _id returned)"
+    error "Check that '${ORG_USER}' has 'manageTask' permission in '${ORG_NAME}'"
+    exit 1
   fi
 }
 
