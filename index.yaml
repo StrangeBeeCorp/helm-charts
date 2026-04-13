@@ -456,6 +456,58 @@ entries:
       artifacthub.io/category: security
       artifacthub.io/images: |
         - name: thehive
+          image: strangebee/thehive:5.7.0-1
+          whitelisted: true
+        - name: curl
+          image: curlimages/curl:8.17.0
+          whitelisted: true
+      artifacthub.io/license: AGPL-3.0
+      artifacthub.io/links: |
+        - name: source
+          url: https://github.com/StrangeBeeCorp/helm-charts/tree/main/thehive-charts/thehive
+        - name: support
+          url: https://strangebee.com/contact-strangebee/
+    apiVersion: v2
+    appVersion: 5.7.0-1
+    created: "2026-04-13T12:08:27.494196088Z"
+    dependencies:
+    - condition: cassandra.enabled
+      name: cassandra
+      repository: oci://registry-1.docker.io/bitnamicharts
+      version: 12.3.11
+    - condition: elasticsearch.enabled
+      name: elasticsearch
+      repository: oci://registry-1.docker.io/bitnamicharts
+      version: 22.1.6
+    - condition: minio.enabled
+      name: minio
+      repository: https://charts.min.io
+      version: 5.4.0
+    description: The official Helm Chart of TheHive for Kubernetes
+    digest: f87eb424477583eeff05790d42ffeed2151d0b1ffd6ae3d315a2869cccc9a7ff
+    home: https://strangebee.com/thehive/
+    icon: https://strangebeecorp.github.io/helm-charts/assets/thehive-icon.svg
+    keywords:
+    - thehive
+    - sirp
+    - incident-response
+    - case-management
+    - strangebee
+    kubeVersion: '>= 1.23.0-0'
+    maintainers:
+    - name: StrangeBee
+      url: https://strangebee.com/
+    name: thehive
+    sources:
+    - https://github.com/StrangeBeeCorp/helm-charts/tree/main/thehive-charts/thehive
+    type: application
+    urls:
+    - https://github.com/StrangeBeeCorp/helm-charts/releases/download/thehive-1.0.4/thehive-1.0.4.tgz
+    version: 1.0.4
+  - annotations:
+      artifacthub.io/category: security
+      artifacthub.io/images: |
+        - name: thehive
           image: strangebee/thehive:5.6.0-1
           whitelisted: true
         - name: curl
@@ -1749,4 +1801,4 @@ entries:
     urls:
     - https://github.com/StrangeBeeCorp/helm-charts/releases/download/thehive-0.1.1/thehive-0.1.1.tgz
     version: 0.1.1
-generated: "2026-04-09T15:15:19.141516471Z"
+generated: "2026-04-13T12:08:27.49445485Z"
