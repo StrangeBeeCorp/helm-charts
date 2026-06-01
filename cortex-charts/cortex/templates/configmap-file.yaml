@@ -19,6 +19,15 @@ data:
     {{- end }}
     {{- $appConf = printf "%s}\n" $appConf }}
   {{- end }}
+  {{- $sc := .Values.cortex.k8sJobs.securityContext }}
+  {{- if or $sc.runAsUser $sc.runAsGroup $sc.fsGroup (hasKey $sc "runAsNonRoot") }}
+    {{- $appConf = printf "%s\njob.kubernetes.securityContext {\n" $appConf }}
+    {{- with $sc.runAsUser }}{{- $appConf = printf "%s  runAsUser = %v\n" $appConf . }}{{- end }}
+    {{- with $sc.runAsGroup }}{{- $appConf = printf "%s  runAsGroup = %v\n" $appConf . }}{{- end }}
+    {{- with $sc.fsGroup }}{{- $appConf = printf "%s  fsGroup = %v\n" $appConf . }}{{- end }}
+    {{- if hasKey $sc "runAsNonRoot" }}{{- $appConf = printf "%s  runAsNonRoot = %v\n" $appConf $sc.runAsNonRoot }}{{- end }}
+    {{- $appConf = printf "%s}\n" $appConf }}
+  {{- end }}
   application.conf: {{- $appConf | toYaml | indent 1 }}
   {{- end }}
   {{- if .Values.cortex.logbackXml }}

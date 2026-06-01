@@ -65,6 +65,7 @@ Kubernetes: `>= 1.23.0-0`
 | cortex.jobDirectory | string | `"/tmp/cortex-jobs"` | Directory in Cortex container used to communicate with running jobs (write inputs and read outputs) |
 | cortex.jvmOpts | string | `"-Xms2g -Xmx2g -Xmn300m"` | JVM options for Cortex application |
 | cortex.k8sJobs.labels | object | `{}` | Map of Kubernetes labels applied to every neuron Job/Pod (in addition to Cortex's built-in `cortex-job-id`, `cortex-neuron-job`, `cortex-worker-id`). Useful for ArgoCD ownership, cost allocation, and policy selectors. Example: `{"app.kubernetes.io/instance": "cortex", "app.kubernetes.io/part-of": "cortex"}` |
+| cortex.k8sJobs.securityContext | object | `{}` | Pod-level securityContext applied to every neuron Job pod. Each sub-field is optional. Make sure your analyzer/responder image accepts the user/group you set. |
 | cortex.k8sSecretKey | string | `"http-secret"` | Key in the secret containing Cortex HTTP secret |
 | cortex.k8sSecretName | string | `""` | Name of existing Kubernetes secret containing Cortex HTTP secret |
 | cortex.labels | object | `{}` | Additional labels to attach to Cortex resources |
