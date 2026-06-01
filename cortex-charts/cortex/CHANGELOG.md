@@ -2,6 +2,10 @@
 
 - Nothing yet
 
+## 1.2.0
+
+- Add `cortex.dockerImageRegistryPrefix` to prepend a registry prefix to every neuron Docker image at runtime (useful for pull-through caches and air-gapped clusters)
+
 ## 1.1.2
 
 - Fix init container auth env var expansion and improve error messages (401, 403, connection refused)

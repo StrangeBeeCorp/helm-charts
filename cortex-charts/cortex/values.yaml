@@ -78,6 +78,9 @@ cortex:
   # -- Directory in Cortex container used to communicate with running jobs (write inputs and read outputs)
   jobDirectory: "/tmp/cortex-jobs"
 
+  # -- Registry prefix prepended to every neuron (analyzer/responder) Docker image at runtime. Useful for pull-through caches (Harbor, ECR proxy, Artifactory) and air-gapped clusters. Example: `"harbor.example.com/docker.io/"`
+  dockerImageRegistryPrefix: ""
+
   # -- HTTP secret for Cortex application (must be at least 32 characters)
   httpSecret: "ChangeThisSecretWithOneContainingAtLeast32Chars"
   # -- Name of existing Kubernetes secret containing Cortex HTTP secret

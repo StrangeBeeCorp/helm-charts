@@ -19,3 +19,6 @@ data:
   {{- end }}
   job_directory: {{ .Values.cortex.jobDirectory | quote }}
   kubernetes_job_pvc: {{ include "cortex.persistentVolumeClaimName" . | quote }}
+  {{- if .Values.cortex.dockerImageRegistryPrefix }}
+  docker_image_registry_prefix: {{ .Values.cortex.dockerImageRegistryPrefix | quote }}
+  {{- end }}
