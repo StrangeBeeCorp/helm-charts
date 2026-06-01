@@ -81,6 +81,10 @@ cortex:
   # -- Registry prefix prepended to every neuron (analyzer/responder) Docker image at runtime. Useful for pull-through caches (Harbor, ECR proxy, Artifactory) and air-gapped clusters. Example: `"harbor.example.com/docker.io/"`
   dockerImageRegistryPrefix: ""
 
+  k8sJobs:
+    # -- Map of Kubernetes labels applied to every neuron Job/Pod (in addition to Cortex's built-in `cortex-job-id`, `cortex-neuron-job`, `cortex-worker-id`). Useful for ArgoCD ownership, cost allocation, and policy selectors. Example: `{"app.kubernetes.io/instance": "cortex", "app.kubernetes.io/part-of": "cortex"}`
+    labels: {}
+
   # -- HTTP secret for Cortex application (must be at least 32 characters)
   httpSecret: "ChangeThisSecretWithOneContainingAtLeast32Chars"
   # -- Name of existing Kubernetes secret containing Cortex HTTP secret
