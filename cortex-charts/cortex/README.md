@@ -2,7 +2,7 @@
 
 Cortex official Helm Chart
 
-[![Version: 1.1.2](https://img.shields.io/badge/Version-1.1.2-informational?style=flat-square) ](https://github.com/StrangeBeeCorp/helm-charts/releases) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square)  [![AppVersion: 4.0.1-1](https://img.shields.io/badge/AppVersion-4.0.1--1-informational?style=flat-square) ](https://github.com/TheHive-Project/Cortex/releases)
+[![Version: 1.2.0](https://img.shields.io/badge/Version-1.2.0-informational?style=flat-square) ](https://github.com/StrangeBeeCorp/helm-charts/releases) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square)  [![AppVersion: 4.1.0-1](https://img.shields.io/badge/AppVersion-4.1.0--1-informational?style=flat-square) ](https://github.com/TheHive-Project/Cortex/releases)
 
 ## Description
 
@@ -37,6 +37,7 @@ Kubernetes: `>= 1.23.0-0`
 | cortex.affinity | object | `{}` | Affinity rules for pod assignment |
 | cortex.annotations | object | `{}` | Additional annotations to attach to Cortex resources |
 | cortex.configFile | string | `"# Cortex configuration file\n# See https://docs.strangebee.com/cortex/installation-and-configuration/#configuration-guides\nanalyzer {\n  urls: [\n    \"https://catalogs.download.strangebee.com/latest/json/analyzers.json\",\n  ]\n\n  # Customize analyzers parallelism here\n  fork-join-executor {\n    parallelism-min: 8,\n    parallelism-factor: 1.0,\n    parallelism-max: 8,\n  }\n}\n\n  # Customize responders parallelism here\nresponder {\n  urls: [\n    \"https://catalogs.download.strangebee.com/latest/json/responders.json\",\n  ]\n\n  fork-join-executor {\n    parallelism-min: 8,\n    parallelism-factor: 1.0,\n    parallelism-max: 8,\n  }\n}\n\n# ElasticSearch\nsearch {\n  # Set default value for the password\n  password = \"\"\n  # Override credentials (if these environment variables exist)\n  user = ${?CORTEX_ELASTICSEARCH_USERNAME}\n  password = ${?CORTEX_ELASTICSEARCH_PASSWORD}\n}\n\nplay.http.parser.maxDiskBuffer = 100MB\nplay.http.parser.maxMemoryBuffer = 100MB\n"` | Custom application.conf configuration file content for Cortex |
+| cortex.dockerImageRegistryPrefix | string | `""` | Registry prefix prepended to every neuron (analyzer/responder) Docker image at runtime. Useful for pull-through caches (Harbor, ECR proxy, Artifactory) and air-gapped clusters. Example: `"harbor.example.com/docker.io/"` |
 | cortex.extraCommand | list | `[]` | Extra command-line arguments for Cortex entrypoint |
 | cortex.extraEnv | list | `[]` | Extra environment variables for Cortex container |
 | cortex.httpSecret | string | `"ChangeThisSecretWithOneContainingAtLeast32Chars"` | HTTP secret for Cortex application (must be at least 32 characters) |
