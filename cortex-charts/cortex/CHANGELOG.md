@@ -6,6 +6,7 @@
 
 - Add `cortex.dockerImageRegistryPrefix` to prepend a registry prefix to every neuron Docker image at runtime (useful for pull-through caches and air-gapped clusters)
 - Add `cortex.k8sJobs.labels` to attach custom Kubernetes labels to every neuron Job/Pod (useful for ArgoCD ownership, cost allocation, and policy selectors)
+- Add `cortex.k8sJobs.securityContext` to set pod-level securityContext (`runAsUser`, `runAsGroup`, `fsGroup`, `runAsNonRoot`) on every neuron Job pod
 - Bump appVersion to 4.1.0-1 (backend feature ships in Cortex 4.1.0+)
 
 ## 1.1.2
