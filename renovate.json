@@ -1,0 +1,70 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "description": [
+    "StrangeBee Helm charts - Renovate config for the hosted Mend app.",
+    "Scope (for now): ONLY the product image tags strangebee/thehive and thehiveproject/cortex, mirrored in appVersion and the artifacthub.io/images annotation of each Chart.yaml. All other managers (subcharts, GitHub Actions) are disabled via enabledManagers.",
+    "Each image update also patch-bumps the chart's own version (bumpVersions). Product tags are X.Y.Z-N, so custom regex versioning is used to order the -N revision.",
+    "NOTE: Renovate does NOT regenerate helm-docs here (postUpgradeTasks are unavailable on the hosted Mend app), so an image bump leaves the README version/appVersion badges stale and will fail the generate-helm-docs check until docs are regenerated on the PR branch.",
+    "Chart-only bumps, non-patch chart versions, subcharts, and CHANGELOG.md entries are handled manually - Renovate does not cover them."
+  ],
+  "extends": [
+    "config:recommended",
+    ":semanticCommits"
+  ],
+  "enabledManagers": ["custom.regex"],
+  "customManagers": [
+    {
+      "customType": "regex",
+      "managerFilePatterns": ["thehive-charts/thehive/Chart.yaml"],
+      "matchStringsStrategy": "any",
+      "matchStrings": [
+        "appVersion:\\s*\"(?<currentValue>[^\"]+)\"",
+        "image:\\s*strangebee/thehive:(?<currentValue>\\S+)"
+      ],
+      "depNameTemplate": "strangebee/thehive",
+      "datasourceTemplate": "docker",
+      "versioningTemplate": "regex:^(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)-(?<revision>\\d+)$"
+    },
+    {
+      "customType": "regex",
+      "managerFilePatterns": ["cortex-charts/cortex/Chart.yaml"],
+      "matchStringsStrategy": "any",
+      "matchStrings": [
+        "appVersion:\\s*\"(?<currentValue>[^\"]+)\"",
+        "image:\\s*thehiveproject/cortex:(?<currentValue>\\S+)"
+      ],
+      "depNameTemplate": "thehiveproject/cortex",
+      "datasourceTemplate": "docker",
+      "versioningTemplate": "regex:^(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)-(?<revision>\\d+)$"
+    }
+  ],
+  "bumpVersions": [
+    {
+      "name": "Bump chart version on image updates",
+      "filePatterns": ["{{packageFileDir}}/Chart.yaml"],
+      "matchStrings": ["\\nversion:\\s(?<version>[^\\s]+)"],
+      "bumpType": "patch"
+    }
+  ],
+  "packageRules": [
+    {
+      "description": "TheHive: scope commits and branches to the chart",
+      "matchFileNames": ["thehive-charts/thehive/**"],
+      "semanticCommitScope": "thehive",
+      "additionalBranchPrefix": "thehive-"
+    },
+    {
+      "description": "Cortex: scope commits and branches to the chart",
+      "matchFileNames": ["cortex-charts/cortex/**"],
+      "semanticCommitScope": "cortex",
+      "additionalBranchPrefix": "cortex-"
+    },
+    {
+      "description": "Product image major bumps need explicit dashboard approval",
+      "matchDatasources": ["docker"],
+      "matchPackageNames": ["strangebee/thehive", "thehiveproject/cortex"],
+      "matchUpdateTypes": ["major"],
+      "dependencyDashboardApproval": true
+    }
+  ]
+}

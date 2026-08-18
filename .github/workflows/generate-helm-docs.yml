@@ -5,16 +5,20 @@ on:
     paths:
       - "thehive-charts/thehive/values.yaml"
       - "thehive-charts/thehive/README.md.gotmpl"
+      - "thehive-charts/thehive/Chart.yaml"
       - "cortex-charts/cortex/values.yaml"
       - "cortex-charts/cortex/README.md.gotmpl"
+      - "cortex-charts/cortex/Chart.yaml"
   push:
     branches:
       - main
     paths:
       - "thehive-charts/thehive/values.yaml"
       - "thehive-charts/thehive/README.md.gotmpl"
+      - "thehive-charts/thehive/Chart.yaml"
       - "cortex-charts/cortex/values.yaml"
       - "cortex-charts/cortex/README.md.gotmpl"
+      - "cortex-charts/cortex/Chart.yaml"
 
 jobs:
   generate-docs:
