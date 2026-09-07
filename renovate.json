@@ -4,7 +4,7 @@
     "StrangeBee Helm charts - Renovate config for the hosted Mend app.",
     "Scope (for now): ONLY the product image tags strangebee/thehive and thehiveproject/cortex, mirrored in appVersion and the artifacthub.io/images annotation of each Chart.yaml. All other managers (subcharts, GitHub Actions) are disabled via enabledManagers.",
     "Each image update also patch-bumps the chart's own version (bumpVersions). Product tags are X.Y.Z-N, so custom regex versioning is used to order the -N revision.",
-    "NOTE: Renovate does NOT regenerate helm-docs here (postUpgradeTasks are unavailable on the hosted Mend app), so an image bump leaves the README version/appVersion badges stale and will fail the generate-helm-docs check until docs are regenerated on the PR branch.",
+    "NOTE: Renovate does NOT regenerate helm-docs here (postUpgradeTasks are unavailable on the hosted Mend app), so an image bump arrives with stale README version/appVersion badges. The generate-helm-docs workflow does not fail Renovate PRs for that; it regenerates and commits the docs on merge to main. Pull main before tagging a release so the packaged chart ships an up-to-date README.",
     "Chart-only bumps, non-patch chart versions, subcharts, and CHANGELOG.md entries are handled manually - Renovate does not cover them."
   ],
   "extends": [
