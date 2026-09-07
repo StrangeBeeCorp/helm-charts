@@ -50,7 +50,7 @@ jobs:
       - name: Check for documentation changes
         id: check_changes
         run: |
-          git diff --exit-code || echo "changes=true" >> $GITHUB_OUTPUT
+          git diff --exit-code || echo "changes=true" >> "$GITHUB_OUTPUT"
 
       - name: Commit and push documentation changes
         if: steps.check_changes.outputs.changes == 'true' && github.event_name == 'push'
@@ -61,8 +61,22 @@ jobs:
           git commit -m "docs: auto-generate helm chart documentation [skip ci]"
           git push
 
+      # Renovate can't run helm-docs, so its PRs carry stale README badges.
+      # Don't fail them: the push-to-main job regenerates docs after merge.
+      - name: Note pending docs regeneration (Renovate PRs)
+        if: >-
+          steps.check_changes.outputs.changes == 'true' &&
+          github.event_name == 'pull_request' &&
+          startsWith(github.head_ref, 'renovate/') &&
+          github.event.pull_request.head.repo.full_name == github.repository
+        run: |
+          echo "::notice::Docs are out of sync because Renovate cannot run helm-docs. They will be regenerated automatically on merge to main."
+
       - name: Fail if documentation is out of sync (PR only)
-        if: steps.check_changes.outputs.changes == 'true' && github.event_name == 'pull_request'
+        if: >-
+          steps.check_changes.outputs.changes == 'true' &&
+          github.event_name == 'pull_request' &&
+          !(startsWith(github.head_ref, 'renovate/') && github.event.pull_request.head.repo.full_name == github.repository)
         run: |
           echo "::error::Documentation is out of sync. Please run 'helm-docs' locally and commit the changes."
           exit 1
