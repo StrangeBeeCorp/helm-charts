@@ -2,6 +2,11 @@
 
 - Nothing yet
 
+## 1.0.7
+
+- Update TheHive to v5.8.0-1 [#148](https://github.com/StrangeBeeCorp/helm-charts/pull/148)
+- TheHive 5.8 adds support for AWS IRSA / EKS Pod Identity for S3 object storage authentication
+
 ## 1.0.6
 
 - Update TheHive to v5.7.6-1 [#145](https://github.com/StrangeBeeCorp/helm-charts/pull/145)
