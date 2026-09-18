@@ -145,6 +145,11 @@ Kubernetes: `>= 1.23.0-0`
 | thehive.database.wait | bool | `false` | Wait 30 seconds before starting TheHive (can be used to give time for Cassandra to start) |
 | thehive.extraCommand | list | `[]` | Extra command-line arguments for TheHive entrypoint |
 | thehive.extraEnv | list | `[]` | Extra environment variables for TheHive container |
+| thehive.flow.enabled | bool | `false` | Enable the TheHive Flow integration. NOTE: the TheHive image does not auto-load the Flow connector module, so when enabling you must also add the module line via `thehive.configFile` (see the configFile example below) |
+| thehive.flow.k8sSecretKey | string | `"flow-signing-key"` | Key in the existing secret that holds the signing key |
+| thehive.flow.k8sSecretName | string | `""` | Name of an existing Kubernetes secret holding the TheHive Flow signing key (BYO secret) |
+| thehive.flow.signingKey | string | `""` | TheHive Flow JWT signing key (32-byte random key). Stored in the chart-generated secret unless `flow.k8sSecretName` is set |
+| thehive.flow.url | string | `""` | TheHive Flow base URL, required when enabled (e.g. `http://myflow.example.com:9000`) |
 | thehive.httpSecret | string | `"ChangeThisSecretWithOneContainingAtLeast32Chars"` | HTTP secret for TheHive application (must be at least 32 characters) |
 | thehive.image.pullPolicy | string | `"IfNotPresent"` | Image pull policy |
 | thehive.image.registry | string | `"docker.io"` | Docker registry for TheHive image |
@@ -182,11 +187,6 @@ Kubernetes: `>= 1.23.0-0`
 | thehive.monitoring.enabled | bool | `true` | Enable monitoring port exposure (edit application.conf to configure Kamon) |
 | thehive.monitoring.port | int | `9095` | Monitoring metrics port |
 | thehive.nodeSelector | object | `{}` | Node selector for pod assignment |
-| thehive.orchestrator.enabled | bool | `false` | Enable the TheHive Flow (orchestrator) integration. NOTE: the TheHive image does not auto-load the connector module, so when enabling you must also add the module line via `thehive.configFile` (see the configFile example below) |
-| thehive.orchestrator.k8sSecretKey | string | `"orchestrator-signing-key"` | Key in the existing secret that holds the signing key |
-| thehive.orchestrator.k8sSecretName | string | `""` | Name of an existing Kubernetes secret holding the TheHive Flow signing key (BYO secret) |
-| thehive.orchestrator.signingKey | string | `""` | TheHive Flow JWT signing key (32-byte random key). Stored in the chart-generated secret unless `orchestrator.k8sSecretName` is set |
-| thehive.orchestrator.url | string | `""` | TheHive Flow base URL, required when enabled (e.g. `http://myflow.example.com:9000`) |
 | thehive.podAnnotations | object | `{}` | Additional annotations to attach to TheHive pods |
 | thehive.podLabels | object | `{}` | Additional labels to attach to TheHive pods |
 | thehive.podSecurityContext | object | `{}` | Pod-wide security context |

@@ -168,25 +168,25 @@ thehive:
     # -- Key in the secret containing Cortex API keys
     k8sSecretKey: "api-keys"
 
-  # TheHive Flow (orchestrator) integration
-  orchestrator:
-    # -- Enable the TheHive Flow (orchestrator) integration. NOTE: the TheHive image does not auto-load the connector module, so when enabling you must also add the module line via `thehive.configFile` (see the configFile example below)
+  # TheHive Flow integration
+  flow:
+    # -- Enable the TheHive Flow integration. NOTE: the TheHive image does not auto-load the Flow connector module, so when enabling you must also add the module line via `thehive.configFile` (see the configFile example below)
     enabled: false
     # -- TheHive Flow base URL, required when enabled (e.g. `http://myflow.example.com:9000`)
     url: ""
-    # -- TheHive Flow JWT signing key (32-byte random key). Stored in the chart-generated secret unless `orchestrator.k8sSecretName` is set
+    # -- TheHive Flow JWT signing key (32-byte random key). Stored in the chart-generated secret unless `flow.k8sSecretName` is set
     signingKey: ""
     # -- Name of an existing Kubernetes secret holding the TheHive Flow signing key (BYO secret)
     k8sSecretName: ""
     # -- Key in the existing secret that holds the signing key
-    k8sSecretKey: "orchestrator-signing-key"
+    k8sSecretKey: "flow-signing-key"
 
   # -- Custom application.conf configuration file content for TheHive
   configFile: ""
   #configFile: |
   #  # TheHive configuration file
   #  # See https://docs.strangebee.com/thehive/overview/ under the "Configuration" section
-  #  # Required to load the TheHive Flow connector when thehive.orchestrator.enabled=true:
+  #  # Required to load the TheHive Flow connector when thehive.flow.enabled=true:
   #  scalligraph.modules += "org.thp.thehive.connector.orchestrator.OrchestratorModule"
 
   # -- Custom logback.xml logging configuration file content for TheHive
