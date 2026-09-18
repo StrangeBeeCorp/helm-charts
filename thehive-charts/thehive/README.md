@@ -146,7 +146,7 @@ Kubernetes: `>= 1.23.0-0`
 | thehive.extraCommand | list | `[]` | Extra command-line arguments for TheHive entrypoint |
 | thehive.extraEnv | list | `[]` | Extra environment variables for TheHive container |
 | thehive.flow.enabled | bool | `false` | Enable the TheHive Flow integration. NOTE: the TheHive image does not auto-load the Flow connector module, so when enabling you must also add the module line via `thehive.configFile` (see the configFile example below) |
-| thehive.flow.k8sSecretKey | string | `"flow-signing-key"` | Key in the existing secret that holds the signing key |
+| thehive.flow.k8sSecretKey | string | `"thehive-flow-signing-key"` | Key in the existing secret that holds the signing key |
 | thehive.flow.k8sSecretName | string | `""` | Name of an existing Kubernetes secret holding the TheHive Flow signing key (BYO secret) |
 | thehive.flow.signingKey | string | `""` | TheHive Flow JWT signing key (32-byte random key). Stored in the chart-generated secret unless `flow.k8sSecretName` is set |
 | thehive.flow.url | string | `""` | TheHive Flow base URL, required when enabled (e.g. `http://myflow.example.com:9000`) |

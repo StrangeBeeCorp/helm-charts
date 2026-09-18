@@ -179,7 +179,7 @@ thehive:
     # -- Name of an existing Kubernetes secret holding the TheHive Flow signing key (BYO secret)
     k8sSecretName: ""
     # -- Key in the existing secret that holds the signing key
-    k8sSecretKey: "flow-signing-key"
+    k8sSecretKey: "thehive-flow-signing-key"
 
   # -- Custom application.conf configuration file content for TheHive
   configFile: ""
