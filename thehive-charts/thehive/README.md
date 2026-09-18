@@ -182,6 +182,11 @@ Kubernetes: `>= 1.23.0-0`
 | thehive.monitoring.enabled | bool | `true` | Enable monitoring port exposure (edit application.conf to configure Kamon) |
 | thehive.monitoring.port | int | `9095` | Monitoring metrics port |
 | thehive.nodeSelector | object | `{}` | Node selector for pod assignment |
+| thehive.orchestrator.enabled | bool | `false` | Enable the TheHive Flow (orchestrator) integration. NOTE: the TheHive image does not auto-load the connector module, so when enabling you must also add the module line via `thehive.configFile` (see the configFile example below) |
+| thehive.orchestrator.k8sSecretKey | string | `"orchestrator-signing-key"` | Key in the existing secret that holds the signing key |
+| thehive.orchestrator.k8sSecretName | string | `""` | Name of an existing Kubernetes secret holding the TheHive Flow signing key (BYO secret) |
+| thehive.orchestrator.signingKey | string | `""` | TheHive Flow JWT signing key (32-byte random key). Stored in the chart-generated secret unless `orchestrator.k8sSecretName` is set |
+| thehive.orchestrator.url | string | `""` | TheHive Flow base URL, required when enabled (e.g. `http://myflow.example.com:9000`) |
 | thehive.podAnnotations | object | `{}` | Additional annotations to attach to TheHive pods |
 | thehive.podLabels | object | `{}` | Additional labels to attach to TheHive pods |
 | thehive.podSecurityContext | object | `{}` | Pod-wide security context |

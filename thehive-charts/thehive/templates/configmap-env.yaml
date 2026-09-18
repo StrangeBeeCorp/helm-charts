@@ -51,3 +51,7 @@ data:
   {{- else }}
   TH_NO_CONFIG_CORTEX: "1"
   {{- end }}
+  {{- if .Values.thehive.orchestrator.enabled }}
+  TH_FEATURE_ORCHESTRATOR: "true"
+  TH_ORCHESTRATOR_URL: {{ .Values.thehive.orchestrator.url | quote }}
+  {{- end }}

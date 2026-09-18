@@ -130,10 +130,17 @@ spec:
                   name: {{ .Values.thehive.cortex.k8sSecretName }}
                   key: {{ .Values.thehive.cortex.k8sSecretKey }}
             {{- end }}
+            {{- if and (.Values.thehive.orchestrator.enabled) (.Values.thehive.orchestrator.k8sSecretName) }}
+            - name: TH_ORCHESTRATOR_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.thehive.orchestrator.k8sSecretName }}
+                  key: {{ .Values.thehive.orchestrator.k8sSecretKey }}
+            {{- end }}
           envFrom:
             - configMapRef:
                 name: {{ include "thehive.fullname" . }}-env
-            {{- if or (not .Values.thehive.database.k8sSecretName) (not .Values.thehive.index.k8sSecretName) (not .Values.thehive.storage.k8sSecretName) (not .Values.thehive.k8sSecretName) }}
+            {{- if or (not .Values.thehive.database.k8sSecretName) (not .Values.thehive.index.k8sSecretName) (not .Values.thehive.storage.k8sSecretName) (not .Values.thehive.k8sSecretName) (and (.Values.thehive.orchestrator.enabled) (not .Values.thehive.orchestrator.k8sSecretName)) }}
             - secretRef:
                 name: {{ include "thehive.fullname" . }}-secrets
             {{- end }}
