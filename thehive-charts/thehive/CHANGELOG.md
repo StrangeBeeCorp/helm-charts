@@ -1,6 +1,6 @@
 ## Next release
 
-- Nothing yet
+- Add TheHive Flow integration values to configure and enable the connection to a TheHive Flow instance [#150](https://github.com/StrangeBeeCorp/helm-charts/issues/150)
 
 ## 1.0.7
 
