@@ -1,0 +1,136 @@
+{{/*
+TheHive Flow schema migration Job — runs `beeflow migrate up` against Postgres
+as a pre-install/pre-upgrade hook, so the schema is current before the
+Deployment rolls; pods then only verify it (see auto_migrate in the shared
+"thehive-flow.config" template). Weight -1 orders it after the -5 migration
+ConfigMap hook it mounts. `migrate up` only needs Postgres.
+*/}}
+{{- if .Values.migrations.enabled -}}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ include "thehive-flow.fullname" . }}-migrations
+  labels:
+    {{- include "thehive-flow.labels" . | nindent 4 }}
+    app.kubernetes.io/component: thehive-flow-migrations
+  annotations:
+    "helm.sh/hook": pre-install,pre-upgrade
+    "helm.sh/hook-weight": "-1"
+    "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
+    "helm.sh/hook-output-log-policy": hook-failed
+spec:
+  backoffLimit: 6
+  ttlSecondsAfterFinished: 600
+  template:
+    metadata:
+      labels:
+        {{- include "thehive-flow.labels" . | nindent 8 }}
+        app.kubernetes.io/component: thehive-flow-migrations
+    spec:
+      restartPolicy: OnFailure
+      automountServiceAccountToken: false
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      initContainers:
+        - name: wait-postgres
+          image: "{{ .Values.waitContainers.image.repository }}:{{ .Values.waitContainers.image.tag }}"
+          imagePullPolicy: {{ .Values.waitContainers.image.pullPolicy }}
+          command: ["/bin/sh", "-c"]
+          args:
+            - |
+              set -e
+              echo "Waiting for postgres at {{ include "thehive-flow.postgresql.host" . }}:{{ .Values.postgresql.port }}..."
+              for i in $(seq 1 60); do
+                if nc -z {{ include "thehive-flow.postgresql.host" . }} {{ .Values.postgresql.port }}; then
+                  echo "Postgres reachable."
+                  exit 0
+                fi
+                sleep 2
+              done
+              echo "Postgres did not become reachable within 120s."
+              exit 1
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities: { drop: ["ALL"] }
+          resources:
+            {{- toYaml .Values.waitContainers.resources | nindent 12 }}
+      containers:
+        - name: migrate
+          image: {{ include "thehive-flow.image" . }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          # Same flags + config layout as the main Deployment so Viper finds
+          # the thehive-flow.yml mounted from the chart-managed ConfigMap.
+          # The `migrate up` subcommand only needs DB connection info, but
+          # the binary's config loader is unconditional at startup.
+          args:
+            - "-config"
+            - "/thehive-flow.yml"
+            - "-secret"
+            - "/secret"
+            - "migrate"
+            - "up"
+          env:
+            # Same binary, same reason as the Deployment: Go's GC does not read
+            # the cgroup ceiling, so without this the Job is OOM-killed with the
+            # collector still idle — and a migration killed mid-run is worse than
+            # a server restart. Derived from THIS container's own limit, which is
+            # smaller than the Deployment's, hence its own percentage.
+            {{- with (include "thehive-flow.gomemlimit" (dict "resources" .Values.migrations.resources "percent" .Values.migrations.goMemLimitPercent "override" "")) }}
+            - name: GOMEMLIMIT
+              value: {{ . | quote }}
+            {{- end }}
+            # The TheHive Flow binary loads ALL referenced secrets at startup
+            # before dispatching to the `migrate` subcommand. Even though
+            # migrations themselves only need the DB password, the JWT key
+            # must be present or the secret loader fails before migrate runs.
+            {{- if .Values.secrets.jwtSymmetricKey.existingSecret }}
+            - name: BEEFLOW_SECRET_JWT_SYMMETRIC_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secrets.jwtSymmetricKey.existingSecret | quote }}
+                  key: {{ .Values.secrets.jwtSymmetricKey.key | quote }}
+            {{- end }}
+            {{- if .Values.secrets.databasePassword.existingSecret }}
+            - name: FLOW_DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "thehive-flow.databasePassword.secretName" . | quote }}
+                  key: {{ include "thehive-flow.databasePassword.secretKey" . | quote }}
+            {{- end }}
+            {{- if and (eq .Values.blobstore.backend "s3") .Values.blobstore.s3.accessKeyId }}
+            - name: BEEFLOW_SECRET_S3_SECRET_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secrets.s3SecretAccessKey.existingSecret | quote }}
+                  key: {{ .Values.secrets.s3SecretAccessKey.key | quote }}
+            {{- end }}
+          securityContext:
+            {{- toYaml .Values.containerSecurityContext | nindent 12 }}
+          resources:
+            {{- toYaml .Values.migrations.resources | nindent 12 }}
+          volumeMounts:
+            - name: config
+              mountPath: /thehive-flow.yml
+              subPath: thehive-flow.yml
+              readOnly: true
+            {{- if .Values.secrets.thehiveApiKey.existingSecret }}
+            - name: thehive-api-key
+              mountPath: /secret/thehive-api-key
+              subPath: {{ .Values.secrets.thehiveApiKey.key | quote }}
+              readOnly: true
+            {{- end }}
+      volumes:
+        - name: config
+          configMap:
+            name: {{ include "thehive-flow.fullname" . }}-migrations
+        {{- if .Values.secrets.thehiveApiKey.existingSecret }}
+        - name: thehive-api-key
+          secret:
+            secretName: {{ .Values.secrets.thehiveApiKey.existingSecret | quote }}
+        {{- end }}
+{{- end -}}

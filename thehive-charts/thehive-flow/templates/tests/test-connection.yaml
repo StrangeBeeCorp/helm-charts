@@ -1,0 +1,48 @@
+{{/*
+Helm test (`helm test <release>`): probe the REST API's unauthenticated
+/api/v1/version endpoint from a throwaway pod. Succeeds only on a 2xx response.
+
+Scope: this is an API-liveness smoke. Control-plane dependencies (Postgres,
+Temporal, module boot) are already gated by the Deployment's readiness probe
+(/readyz) via `helm --wait`, so they are verified before this test runs.
+Data-plane checks (the S3 blob store and Codex script execution) are
+intentionally NOT exercised here — they need an authenticated request and, for
+Codex, a real Job, which is disproportionate for a helm test.
+*/}}
+apiVersion: v1
+kind: Pod
+metadata:
+  name: {{ include "thehive-flow.fullname" . }}-test-api
+  labels:
+    {{- include "thehive-flow.labels" . | nindent 4 }}
+    app.kubernetes.io/component: test
+  annotations:
+    helm.sh/hook: test
+    helm.sh/hook-delete-policy: before-hook-creation
+spec:
+  restartPolicy: Never
+  automountServiceAccountToken: false
+  {{- with .Values.imagePullSecrets }}
+  imagePullSecrets:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+  securityContext:
+    {{- toYaml .Values.podSecurityContext | nindent 4 }}
+  containers:
+    - name: api-probe
+      image: "{{ .Values.tests.image.repository }}:{{ .Values.tests.image.tag }}"
+      imagePullPolicy: {{ .Values.tests.image.pullPolicy }}
+      command: ["curl"]
+      args:
+        - "-fsS"
+        - "http://{{ include "thehive-flow.fullname" . }}-api:{{ .Values.service.api.port }}/api/v1/version"
+      securityContext:
+        {{- toYaml .Values.containerSecurityContext | nindent 8 }}
+      resources:
+        requests:
+          cpu: 10m
+          memory: 16Mi
+          ephemeral-storage: 16Mi
+        limits:
+          memory: 32Mi
+          ephemeral-storage: 32Mi

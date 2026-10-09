@@ -1,0 +1,31 @@
+################################################################################
+# PostgreSQL cluster hosting the TheHive Flow and Temporal databases.
+# Its read-write Service, thehive-flow-postgresql-rw, is the chart's default
+# postgresql.host and Temporal connectAddr.
+################################################################################
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: thehive-flow-postgresql
+spec:
+  # Single instance for testing; use 3 for high availability
+  instances: 1
+
+  storage:
+    size: 10Gi
+    # storageClass: ""  # Use the default storage class when unset
+
+  managed:
+    roles:
+      - name: thehive_flow
+        ensure: present
+        login: true
+        passwordSecret:
+          name: thehive-flow-postgresql-thehive-flow-user
+      # Temporal's schema setup needs CREATEDB
+      - name: temporal
+        ensure: present
+        login: true
+        createdb: true
+        passwordSecret:
+          name: thehive-flow-postgresql-temporal-user

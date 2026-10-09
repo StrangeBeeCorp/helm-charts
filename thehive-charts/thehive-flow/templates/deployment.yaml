@@ -1,0 +1,292 @@
+{{/*
+Deployment for TheHive Flow.
+  - Image is distroless/nonroot → HTTP probes only.
+  - JWT key and DB password are env vars from operator-supplied secrets.
+  - TheHive API key is mounted as a file at /secret/thehive-api-key
+    (matches install/'s `BEEFLOW_SECRET_THEHIVE_API_KEY` file convention).
+  - OTLP env vars surface OTEL_EXPORTER_OTLP_*.
+  - replicaCount > 1 is unsupported in v1 — the template fails the render if set.
+*/}}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "thehive-flow.fullname" . }}
+  labels:
+    {{- include "thehive-flow.labels" . | nindent 4 }}
+    app.kubernetes.io/component: thehive-flow
+spec:
+  {{- if gt (int .Values.replicaCount) 1 }}
+  {{- fail "replicaCount > 1 is undefined behaviour for v1 and is not supported; keep replicaCount: 1." }}
+  {{- end }}
+  replicas: {{ .Values.replicaCount }}
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 0
+  selector:
+    matchLabels:
+      {{- include "thehive-flow.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: thehive-flow
+  template:
+    metadata:
+      annotations:
+        # Roll the Deployment when the ConfigMap changes.
+        checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
+        {{- with .Values.podAnnotations }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+      labels:
+        {{- include "thehive-flow.labels" . | nindent 8 }}
+        app.kubernetes.io/component: thehive-flow
+        {{- with .Values.podLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "thehive-flow.serviceAccountName" . }}
+      # The kubernetes Codex backend builds an in-cluster client (rest.InClusterConfig),
+      # which needs the ServiceAccount token mounted — force automount on for that backend
+      # regardless of the hardening default.
+      automountServiceAccountToken: {{ or .Values.serviceAccount.automountServiceAccountToken (eq .Values.codex.backend "kubernetes") }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      # Must stay above shutdown.timeout + ~5s of telemetry flush, or the kubelet
+      # SIGKILLs the pod mid-drain and Temporal replays the abandoned activity
+      # attempts only once their heartbeat timeouts elapse.
+      terminationGracePeriodSeconds: {{ .Values.terminationGracePeriodSeconds }}
+      # Wait for Postgres + Temporal to be reachable before starting the
+      # thehive-flow main container. Eliminates the boot-time CrashLoop
+      # window when the chart is installed before its external dependencies
+      # are Ready (e.g. fresh `helm install` with co-tenanted Temporal).
+      # Same pattern as job-migrations.yaml's wait-postgres.
+      initContainers:
+        - name: wait-postgres
+          image: "{{ .Values.waitContainers.image.repository }}:{{ .Values.waitContainers.image.tag }}"
+          imagePullPolicy: {{ .Values.waitContainers.image.pullPolicy }}
+          command: ["/bin/sh", "-c"]
+          args:
+            - |
+              set -e
+              echo "Waiting for postgres at {{ include "thehive-flow.postgresql.host" . }}:{{ .Values.postgresql.port }}..."
+              for i in $(seq 1 60); do
+                if nc -z {{ include "thehive-flow.postgresql.host" . }} {{ .Values.postgresql.port }}; then
+                  echo "Postgres reachable."
+                  exit 0
+                fi
+                sleep 2
+              done
+              echo "Postgres did not become reachable within 120s."
+              exit 1
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities: { drop: ["ALL"] }
+          resources:
+            {{- toYaml .Values.waitContainers.resources | nindent 12 }}
+        {{- if .Values.temporalReadiness.enabled }}
+        # Block startup until Temporal is genuinely ready. `temporal operator
+        # namespace describe` succeeds only once the frontend is serving AND the
+        # namespace-register Job has created the namespace — a deterministic
+        # replacement for the old bare TCP check + fixed sleep (the upstream
+        # namespace Job is not a Helm hook, so it races the server pods).
+        - name: wait-temporal
+          image: "{{ .Values.temporalReadiness.image.repository }}:{{ .Values.temporalReadiness.image.tag }}"
+          imagePullPolicy: {{ .Values.temporalReadiness.image.pullPolicy }}
+          command: ["/bin/sh", "-c"]
+          env:
+            - name: TEMPORAL_ADDRESS
+              value: "{{ include "thehive-flow.temporal.host" . }}:{{ include "thehive-flow.temporal.port" . }}"
+            # The temporal CLI writes its env config under $HOME; point it at the
+            # writable tmp volume (the container's rootfs is read-only).
+            - name: HOME
+              value: /tmp
+          args:
+            - |
+              set -eu
+              ns="{{ .Values.temporalReadiness.namespace }}"
+              echo "Waiting for Temporal namespace '${ns}' at ${TEMPORAL_ADDRESS}..."
+              for i in $(seq 1 90); do
+                if temporal operator namespace describe --namespace "${ns}" >/dev/null 2>&1; then
+                  echo "Temporal namespace '${ns}' is registered."
+                  exit 0
+                fi
+                sleep 2
+              done
+              echo "Temporal namespace '${ns}' not registered within 180s."
+              exit 1
+          volumeMounts:
+            - name: tmp
+              mountPath: /tmp
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities: { drop: ["ALL"] }
+          resources:
+            {{- toYaml .Values.temporalReadiness.resources | nindent 12 }}
+        {{- end }}
+        {{- if .Values.dockerSocketProxy.enabled }}
+        - name: wait-docker-socket-proxy
+          image: "{{ .Values.waitContainers.image.repository }}:{{ .Values.waitContainers.image.tag }}"
+          imagePullPolicy: {{ .Values.waitContainers.image.pullPolicy }}
+          command: ["/bin/sh", "-c"]
+          args:
+            - |
+              set -e
+              echo "Waiting for docker-socket-proxy:{{ .Values.dockerSocketProxy.service.port }}..."
+              for i in $(seq 1 60); do
+                if nc -z docker-socket-proxy {{ .Values.dockerSocketProxy.service.port }}; then
+                  echo "docker-socket-proxy reachable."
+                  exit 0
+                fi
+                sleep 2
+              done
+              echo "docker-socket-proxy did not become reachable within 120s."
+              exit 1
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities: { drop: ["ALL"] }
+          resources:
+            {{- toYaml .Values.waitContainers.resources | nindent 12 }}
+        {{- end }}
+      containers:
+        - name: thehive-flow
+          image: {{ include "thehive-flow.image" . }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          args:
+            - "-config"
+            - "/thehive-flow.yml"
+            - "-secret"
+            - "/secret"
+          ports:
+            - name: api
+              containerPort: {{ include "thehive-flow.addrPort" .Values.config.api.public.addr | int }}
+              protocol: TCP
+            - name: observability
+              containerPort: {{ include "thehive-flow.addrPort" .Values.config.modules.observability.listener.addr | int }}
+              protocol: TCP
+          env:
+            {{- if .Values.secrets.jwtSymmetricKey.existingSecret }}
+            - name: BEEFLOW_SECRET_JWT_SYMMETRIC_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secrets.jwtSymmetricKey.existingSecret | quote }}
+                  key: {{ .Values.secrets.jwtSymmetricKey.key | quote }}
+            {{- end }}
+            {{- if .Values.secrets.databasePassword.existingSecret }}
+            - name: FLOW_DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "thehive-flow.databasePassword.secretName" . | quote }}
+                  key: {{ include "thehive-flow.databasePassword.secretKey" . | quote }}
+            {{- end }}
+            {{- if and (eq .Values.blobstore.backend "s3") .Values.blobstore.s3.accessKeyId }}
+            {{- if not .Values.secrets.s3SecretAccessKey.existingSecret }}
+            {{- fail "blobstore.s3.accessKeyId is set (static S3 credentials) but secrets.s3SecretAccessKey.existingSecret is empty. Provide the Secret holding the S3 secret access key, or clear blobstore.s3.accessKeyId to use the AWS SDK default credential chain (IRSA / Pod Identity)." }}
+            {{- end }}
+            - name: BEEFLOW_SECRET_S3_SECRET_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secrets.s3SecretAccessKey.existingSecret | quote }}
+                  key: {{ .Values.secrets.s3SecretAccessKey.key | quote }}
+            {{- end }}
+            {{- if and .Values.config.modules.workers.activities.mailer.host .Values.secrets.mailerPassword.existingSecret }}
+            - name: BEEFLOW_SECRET_MAILER_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secrets.mailerPassword.existingSecret | quote }}
+                  key: {{ .Values.secrets.mailerPassword.key | quote }}
+            {{- end }}
+            {{- /*
+              DOCKER_HOST resolution:
+                - explicit `codex.dockerHost` wins
+                - else, if the embedded proxy is enabled, default to the
+                  in-namespace `docker-socket-proxy:2375` Service
+                - else, leave the env var unset (binary will crash on
+                  unix:///var/run/docker.sock — operator must arrange Docker
+                  access by other means)
+            */}}
+            {{- $dockerHost := .Values.codex.dockerHost -}}
+            {{- if and (not $dockerHost) .Values.dockerSocketProxy.enabled -}}
+              {{- $dockerHost = printf "tcp://docker-socket-proxy:%d" (int .Values.dockerSocketProxy.service.port) -}}
+            {{- end }}
+            {{- with $dockerHost }}
+            - name: DOCKER_HOST
+              value: {{ . | quote }}
+            {{- end }}
+            {{- with .Values.observability.otlp.endpoint }}
+            - name: OTEL_EXPORTER_OTLP_ENDPOINT
+              value: {{ . | quote }}
+            {{- end }}
+            {{- with .Values.observability.otlp.protocol }}
+            - name: OTEL_EXPORTER_OTLP_PROTOCOL
+              value: {{ . | quote }}
+            {{- end }}
+            {{- with .Values.observability.otlp.headers }}
+            - name: OTEL_EXPORTER_OTLP_HEADERS
+              value: {{ . | quote }}
+            {{- end }}
+            {{- with .Values.observability.otlp.resourceAttributes }}
+            - name: OTEL_RESOURCE_ATTRIBUTES
+              value: {{ . | quote }}
+            {{- end }}
+            - name: OTEL_SERVICE_NAME
+              value: thehive-flow
+            {{- with (include "thehive-flow.gomemlimit" (dict "resources" .Values.resources "percent" .Values.goMemLimitPercent "override" .Values.goMemLimit)) }}
+            - name: GOMEMLIMIT
+              value: {{ . | quote }}
+            {{- end }}
+          {{- with .Values.probes.startup }}
+          startupProbe:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          livenessProbe:
+            {{- toYaml .Values.probes.liveness | nindent 12 }}
+          readinessProbe:
+            {{- toYaml .Values.probes.readiness | nindent 12 }}
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          securityContext:
+            {{- toYaml .Values.containerSecurityContext | nindent 12 }}
+          volumeMounts:
+            - name: config
+              mountPath: /thehive-flow.yml
+              subPath: thehive-flow.yml
+              readOnly: true
+            # Writable scratch for the S3 blob store, which buffers each blob to
+            # a temp file before streaming it to the bucket (readOnlyRootFilesystem).
+            - name: tmp
+              mountPath: /tmp
+            {{- if .Values.secrets.thehiveApiKey.existingSecret }}
+            - name: thehive-api-key
+              mountPath: /secret/thehive-api-key
+              subPath: {{ .Values.secrets.thehiveApiKey.key | quote }}
+              readOnly: true
+            {{- end }}
+      volumes:
+        - name: config
+          configMap:
+            name: {{ include "thehive-flow.fullname" . }}
+        - name: tmp
+          emptyDir: {}
+        {{- if .Values.secrets.thehiveApiKey.existingSecret }}
+        - name: thehive-api-key
+          secret:
+            secretName: {{ .Values.secrets.thehiveApiKey.existingSecret | quote }}
+        {{- end }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

@@ -1,0 +1,62 @@
+{{/*
+docker-socket-proxy Deployment (dev/test convenience).
+
+Mounts the node's Docker socket via hostPath (read-only) and exposes a
+hardened subset of the Docker API on port 2375. The TheHive Flow pod
+dials this via Service DNS (`docker-socket-proxy:2375`) in order to manage Containers (Python Code node,..).
+
+Gated on `.Values.dockerSocketProxy.enabled` — off by default. See
+values.yaml for the security caveats.
+*/}}
+{{- if .Values.dockerSocketProxy.enabled -}}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: docker-socket-proxy
+  labels:
+    {{- include "thehive-flow.labels" . | nindent 4 }}
+    app.kubernetes.io/component: docker-socket-proxy
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      {{- include "thehive-flow.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: docker-socket-proxy
+  template:
+    metadata:
+      labels:
+        {{- include "thehive-flow.labels" . | nindent 8 }}
+        app.kubernetes.io/component: docker-socket-proxy
+    spec:
+      containers:
+        - name: proxy
+          image: "{{ .Values.dockerSocketProxy.image.repository }}:{{ .Values.dockerSocketProxy.image.tag }}"
+          imagePullPolicy: {{ .Values.dockerSocketProxy.image.pullPolicy }}
+          ports:
+            - name: proxy
+              containerPort: {{ .Values.dockerSocketProxy.service.port }}
+              protocol: TCP
+          env:
+            {{- range $key, $value := .Values.dockerSocketProxy.permissions }}
+            - name: {{ $key }}
+              value: {{ $value | quote }}
+            {{- end }}
+          volumeMounts:
+            - name: docker-socket
+              mountPath: /var/run/docker.sock
+              readOnly: true
+          resources:
+            {{- toYaml .Values.dockerSocketProxy.resources | nindent 12 }}
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: ["ALL"]
+              add: ["CHOWN", "DAC_OVERRIDE", "SETGID", "SETUID"]
+      volumes:
+        - name: docker-socket
+          hostPath:
+            path: {{ .Values.dockerSocketProxy.hostSocketPath | quote }}
+            type: Socket
+{{- end -}}

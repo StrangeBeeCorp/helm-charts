@@ -1,0 +1,27 @@
+################################################################################
+# SeaweedFS Helm chart values (https://github.com/seaweedfs/seaweedfs/tree/master/k8s/charts/seaweedfs)
+# Single all-in-one pod (master, volume, filer and S3 gateway) for testing.
+################################################################################
+
+master:
+  enabled: false
+volume:
+  enabled: false
+filer:
+  enabled: false
+
+allInOne:
+  enabled: true
+  data:
+    type: persistentVolumeClaim
+    size: 10Gi
+    # storageClass: ""  # Use the default storage class when unset
+  s3:
+    enabled: true
+    enableAuth: true
+    # Created by seaweedfs-s3-secret.yaml
+    existingConfigSecret: seaweedfs-s3-config
+    # Bucket of TheHive Flow (blobstore.s3.bucket)
+    createBuckets:
+      - name: thehive-flow
+        anonymousRead: false

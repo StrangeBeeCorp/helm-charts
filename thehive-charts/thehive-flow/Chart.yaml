@@ -1,0 +1,51 @@
+apiVersion: v2
+name: thehive-flow
+description: TheHive Flow — TheHive Orchestration engine, running playbooks as durable Temporal workflows.
+type: application
+
+version: 1.0.0
+appVersion: 6.0.0-4-rc1
+kubeVersion: ">=1.29.0-0"
+
+dependencies:
+  - name: temporal
+    version: 1.7.0
+    repository: https://temporalio.github.io/helm-charts
+    condition: temporal.enabled
+
+keywords:
+  - thehive
+  - thehive-flow
+  - soar
+  - security
+  - orchestration
+  - playbooks
+  - strangebee
+
+home: https://strangebee.com/thehive/
+
+sources:
+  - https://github.com/StrangeBeeCorp/helm-charts/tree/main/thehive-charts/thehive-flow
+
+maintainers:
+  - name: StrangeBee
+    url: https://strangebee.com/
+
+icon: https://strangebeecorp.github.io/helm-charts/assets/thehive-icon.svg
+
+# https://artifacthub.io/docs/topics/annotations/helm/
+annotations:
+  artifacthub.io/category: security
+  artifacthub.io/images: |
+    - name: thehive-flow
+      image: strangebee/thehive-flow:6.0.0-4-rc1
+      whitelisted: true
+    - name: thehive-flow-assistant
+      image: strangebee/thehive-flow-assistant:6.0.0-4-rc1
+      whitelisted: true
+  artifacthub.io/license: AGPL-3.0-or-later
+  artifacthub.io/links: |
+    - name: source
+      url: https://github.com/StrangeBeeCorp/helm-charts/tree/main/thehive-charts/thehive-flow
+    - name: support
+      url: https://strangebee.com/contact-strangebee/
