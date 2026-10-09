@@ -1,0 +1,32 @@
+# {{ template "chart.name" . }}
+
+{{ template "chart.deprecationWarning" . }}
+
+[{{ template "chart.versionBadge" . }}](https://github.com/StrangeBeeCorp/helm-charts/releases) {{ template "chart.typeBadge" . }} {{ template "chart.appVersionBadge" . }}
+
+## Description
+
+{{ template "chart.description" . }}
+
+A single `helm install` brings up the TheHive Flow app **and** a bundled Temporal Server. PostgreSQL and an S3-compatible object store are external: provision them before installing, and point the chart at them with `postgresql.*` and `blobstore.*`.
+
+## Upgrading
+
+`config.api.public.url` is required while `config.api.public.enable` is true: `helm upgrade` with values that do not set it refuses to render. Set it to the public URL at which clients reach TheHive Flow's root.
+
+## Codex execution backend
+
+- **Kubernetes (default).** With `codex.backend: kubernetes`, each playbook script runs as a short-lived Kubernetes Job in a dedicated `<release-namespace>-jobs` namespace (derived from the install namespace, not the release name) — no Docker required. The chart provisions the namespace, RBAC, and object-store credentials; the assistant image (`codex.kubernetes.assistantImage`) and the language images must be pullable by the cluster (use `codex.languageImages` to repoint them at an internal registry for air-gapped clusters).
+- **Docker (opt-in).** Set `codex.backend: docker` to run scripts in short-lived Docker containers instead. This needs a reachable Docker endpoint: on nodes that expose a Docker socket (kind, Docker Desktop) enable `dockerSocketProxy`; on containerd/CRI-O clusters (e.g. EKS/Bottlerocket, which have no Docker socket) point `codex.dockerHost` at an external Docker daemon.
+
+{{ template "chart.homepageLine" . }}
+
+{{ template "chart.maintainersSection" . }}
+
+{{ template "chart.sourcesSection" . }}
+
+{{ template "chart.requirementsSection" . }}
+
+{{ template "chart.valuesSection" . }}
+
+{{ template "helm-docs.versionFooter" . }}

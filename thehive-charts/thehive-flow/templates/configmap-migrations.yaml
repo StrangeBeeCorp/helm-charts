@@ -1,0 +1,24 @@
+{{/*
+Pre-install/pre-upgrade copy of the TheHive Flow config, mounted by the
+migration Job hook. It is a hook (not a regular resource) so it exists before
+the runtime ConfigMap — which Helm creates only in the main phase, after
+pre-* hooks. Weight -5 orders it ahead of the migration Job (-1).
+delete-policy is before-hook-creation only (NOT hook-succeeded), so it stays
+alive for the Job to mount during the hook phase.
+*/}}
+{{- if .Values.migrations.enabled -}}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "thehive-flow.fullname" . }}-migrations
+  labels:
+    {{- include "thehive-flow.labels" . | nindent 4 }}
+    app.kubernetes.io/component: thehive-flow-migrations
+  annotations:
+    "helm.sh/hook": pre-install,pre-upgrade
+    "helm.sh/hook-weight": "-5"
+    "helm.sh/hook-delete-policy": before-hook-creation
+data:
+  thehive-flow.yml: |
+    {{- include "thehive-flow.config" . | nindent 4 }}
+{{- end -}}
