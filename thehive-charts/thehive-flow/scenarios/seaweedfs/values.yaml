@@ -1,0 +1,20 @@
+################################################################################
+# TheHive Flow with S3 object storage provided by SeaweedFS
+################################################################################
+# See README.md for deployment instructions.
+
+blobstore:
+  backend: s3
+  s3:
+    bucket: thehive-flow
+    region: us-east-1
+    # Fully qualified: the Codex kubernetes backend passes it to Jobs running in another namespace
+    endpoint: http://seaweedfs-all-in-one.seaweedfs.svc.cluster.local:8333
+    usePathStyle: true
+    accessKeyId: thehive-flow
+
+secrets:
+  s3SecretAccessKey:
+    # Created by thehive-flow-s3-secret.yaml
+    existingSecret: thehive-flow-s3
+    key: AWS_SECRET_ACCESS_KEY

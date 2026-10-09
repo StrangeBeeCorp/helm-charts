@@ -354,7 +354,7 @@ postgresql:
 
 # Blob store. Playbook/webhook file references are stored here. An S3-compatible
 # object store is a prerequisite, installed separately — see
-# deployments/k8s/s3/.
+# scenarios/seaweedfs/.
 blobstore:
   # -- Backend: "s3" (durable). "memory" is unit-test-only and rejected at startup (the chart fails the render).
   backend: s3

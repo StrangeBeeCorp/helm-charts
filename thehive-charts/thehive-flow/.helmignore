@@ -25,4 +25,5 @@ docs/
 scripts/
 bootstrap/
 examples/
+scenarios/
 ci/
