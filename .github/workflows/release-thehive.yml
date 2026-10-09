@@ -1,10 +1,19 @@
 # Based on https://github.com/helm/chart-releaser-action
-name: Release TheHive Helm Chart
+name: Release TheHive Helm Charts
 
+# Releases one chart of thehive-charts/ per tag, named `<chart>-<version>`:
+#   thehive-1.2.0          -> thehive-charts/thehive
+#   thehive-flow-2.0.0     -> thehive-charts/thehive-flow
+# The `thehive-*` glob matching every chart of the directory is intended.
 on:
   push:
     tags:
       - thehive-*
+
+# Two tags pushed together would race when pushing index.yaml to gh-pages
+concurrency:
+  group: release-thehive-charts
+  cancel-in-progress: false
 
 jobs:
   release:
@@ -22,22 +31,53 @@ jobs:
           git config user.name "$GITHUB_ACTOR"
           git config user.email "$GITHUB_ACTOR@users.noreply.github.com"
 
+      - name: Resolve the chart from the tag
+        id: chart
+        env:
+          TAG: ${{ github.ref_name }}
+        run: |
+          if [[ ! "$TAG" =~ ^(.+)-([0-9]+\.[0-9]+\.[0-9]+.*)$ ]]; then
+            echo "::error::Tag '$TAG' is not of the form <chart>-<version>"
+            exit 1
+          fi
+          name="${BASH_REMATCH[1]}"
+          version="${BASH_REMATCH[2]}"
+          dir="thehive-charts/$name"
+
+          if [[ ! -f "$dir/Chart.yaml" ]]; then
+            echo "::error::Tag '$TAG' targets chart '$name', but $dir/Chart.yaml does not exist"
+            exit 1
+          fi
+
+          chart_name=$(sed -n 's/^name:[[:space:]]*//p' "$dir/Chart.yaml" | tr -d "\"' ")
+          chart_version=$(sed -n 's/^version:[[:space:]]*//p' "$dir/Chart.yaml" | tr -d "\"' ")
+          if [[ "$chart_name" != "$name" || "$chart_version" != "$version" ]]; then
+            echo "::error::Tag '$TAG' does not match $dir/Chart.yaml (name: $chart_name, version: $chart_version)"
+            exit 1
+          fi
+
+          echo "dir=$dir" >> "$GITHUB_OUTPUT"
+
       - name: Install Helm
         uses: azure/setup-helm@v4
         env:
           GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
 
-      - name: Add Helm Repositories related to the Helm Charts specified as dependencies
+      # Package only the tagged chart: chart-releaser's own packaging releases every chart
+      # of charts_dir changed since the previous tag, whichever chart that tag was for.
+      # See https://github.com/helm/chart-releaser-action/issues/198
+      - name: Package the chart
+        env:
+          CHART_DIR: ${{ steps.chart.outputs.dir }}
         run: |
-          helm repo add minio https://charts.min.io/
+          helm dependency update "$CHART_DIR"
+          mkdir -p .cr-release-packages
+          helm package "$CHART_DIR" --destination .cr-release-packages
 
-      # At the time of writing, the "helm/chart-releaser-action" does not support multiple Helm Charts
-      # https://github.com/helm/chart-releaser-action/issues/198
-      #
-      # For now we only have TheHive Helm Chart defined, but adding other Charts will create issues
       - name: Run chart-releaser
         uses: helm/chart-releaser-action@v1.7.0
         with:
-          charts_dir: thehive-charts
+          skip_packaging: true
+          skip_existing: true
         env:
           CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
