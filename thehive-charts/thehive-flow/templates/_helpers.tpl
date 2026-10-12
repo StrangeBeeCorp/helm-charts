@@ -334,6 +334,16 @@ mirroring TheHive Flow's own blob store.
 {{- end -}}
 
 {{/*
+Fails unless "value" is unset or a whole number: Sprig's `int` silently reads "abc" as 0 (unset)
+and 1.5 as 1. A values file yields float64, --set an int64 or a string.
+*/}}
+{{- define "thehive-flow.requireWholeNumber" -}}
+{{- $v := .value -}}
+{{- $whole := or (kindIs "invalid" $v) (kindIs "int64" $v) (and (kindIs "float64" $v) (eq (floor $v) $v)) (and (kindIs "string" $v) (regexMatch "^-?[0-9]+$" $v)) -}}
+{{- if not $whole }}{{- fail (printf "%s must be a whole number, got %v." .name $v) }}{{- end -}}
+{{- end -}}
+
+{{/*
 thehive-flow.yml body — shared by the runtime ConfigMap (mounted by the
 Deployment) and the pre-install migration hook ConfigMap, so both render
 identical config. Include with `nindent 4` under a `thehive-flow.yml: |` block.
@@ -348,6 +358,14 @@ auto_migrate is coupled to the migration Job: when the Job runs the migrations
 {{- if and .Values.config.api.public.enable .Values.config.api.public.url (not (regexMatch `^https?://(\[[0-9A-Fa-f:.]+\]|[^/?#@:\[\]%]+)(:[0-9]+)?(/([^?#%]|%[0-9A-Fa-f]{2})*)?$` .Values.config.api.public.url)) }}{{- fail "config.api.public.url must be an absolute http(s) URL without credentials, a query or a fragment." }}{{- end }}
 {{- if not .Values.secrets.databasePassword.existingSecret }}{{- fail "secrets.databasePassword.existingSecret is required (holds the TheHive Flow Postgres password)." }}{{- end }}
 {{- if and (not .Values.temporal.enabled) (not .Values.externalTemporal.host) }}{{- fail "temporal.enabled is false but externalTemporal.host is empty; set externalTemporal.host to your external Temporal frontend." }}{{- end }}
+{{- /* Poller counts TheHive Flow refuses at startup. */ -}}
+{{- $wfPollers := .Values.config.modules.workers.workflows.max_concurrent_workflow_task_pollers }}
+{{- $actPollers := .Values.config.modules.workers.activities.max_concurrent_activity_task_pollers }}
+{{- include "thehive-flow.requireWholeNumber" (dict "name" "config.modules.workers.workflows.max_concurrent_workflow_task_pollers" "value" $wfPollers) }}
+{{- include "thehive-flow.requireWholeNumber" (dict "name" "config.modules.workers.activities.max_concurrent_activity_task_pollers" "value" $actPollers) }}
+{{- if lt (int $wfPollers) 0 }}{{- fail (printf "config.modules.workers.workflows.max_concurrent_workflow_task_pollers must be >= 0, got %v." $wfPollers) }}{{- end }}
+{{- if eq (int $wfPollers) 1 }}{{- fail "config.modules.workers.workflows.max_concurrent_workflow_task_pollers must not be 1: the Temporal SDK panics on a single workflow-task poller." }}{{- end }}
+{{- if lt (int $actPollers) 0 }}{{- fail (printf "config.modules.workers.activities.max_concurrent_activity_task_pollers must be >= 0, got %v." $actPollers) }}{{- end }}
 {{- /*
   The bundled Temporal subchart shares TheHive Flow's Postgres, but its datastore
   connectAddr is a static subchart value the parent can't derive from postgresql.*. Fail
@@ -417,7 +435,14 @@ modules:
       enabled: {{ .Values.config.modules.observability.pprof.enabled }}
 
   workers:
+    {{- with .Values.config.modules.workers.workflows.max_concurrent_workflow_task_pollers }}
+    workflows:
+      max_concurrent_workflow_task_pollers: {{ int . }}
+    {{- end }}
     activities:
+      {{- with .Values.config.modules.workers.activities.max_concurrent_activity_task_pollers }}
+      max_concurrent_activity_task_pollers: {{ int . }}
+      {{- end }}
       http:
         request_logging: {{ .Values.config.modules.workers.activities.http.request_logging }}
       {{- with .Values.config.modules.workers.activities.egress.allowlist }}
@@ -456,6 +481,13 @@ modules:
 
   codex:
     backend: {{ .Values.codex.backend | quote }}
+    {{- $maxExec := .Values.codex.maxConcurrentActivityExecutionSize }}
+    {{- if not (kindIs "invalid" $maxExec) }}
+    {{- /* int64: a values-file number is a float64, which would print 1e+06. Negative mirrors the app's refusal. */}}
+    {{- include "thehive-flow.requireWholeNumber" (dict "name" "codex.maxConcurrentActivityExecutionSize" "value" $maxExec) }}
+    {{- if lt (int64 $maxExec) 0 }}{{- fail (printf "codex.maxConcurrentActivityExecutionSize must be >= 0 (0 keeps the default), got %v" $maxExec) }}{{- end }}
+    max_concurrent_activity_execution_size: {{ int64 $maxExec }}
+    {{- end }}
     {{- with .Values.codex.languageImages }}
     languages:
       {{- range $name, $image := . }}

@@ -65,6 +65,7 @@ Kubernetes: `>=1.29.0-0`
 | codex.kubernetes.serviceAccountAnnotations | object | `{}` | Annotations on the codex-jobs ServiceAccount (e.g. eks.amazonaws.com/role-arn for IRSA), so Codex Jobs can use ambient S3 credentials (AWS SDK default chain) when objectStoreSecret is unset. |
 | codex.kubernetes.ttlSecondsAfterFinished | int | `0` | Auto-delete finished Jobs after N seconds (0 → backend default). |
 | codex.languageImages | object | `{}` | Override the container image for built-in Codex languages, keyed by language name (e.g. "python@v3_11", "javascript@v24"). Point these at your internal registry for air-gapped / proxied clusters that cannot reach the default gcr.io images. Empty uses the built-in defaults. Applies to both backends (kubernetes and docker). |
+| codex.maxConcurrentActivityExecutionSize | int | `nil` | Max Codex steps run at once per language (on the kubernetes backend, concurrent Jobs). Unset or 0 keeps the Temporal SDK default (1000 per language). |
 | config.api.public.addr | string | `"0.0.0.0:8081"` | Bind address for the REST API listener. |
 | config.api.public.enable | bool | `true` | Enable the REST API listener. |
 | config.api.public.trusted_proxies | list | `[]` | Trusted proxy CIDRs: for a request from one of them, the webhook rate limit (`rate_limit_per_minute`) reads the client from X-Forwarded-For. A malformed CIDR (including a bare IP), an IPv4-mapped CIDR or a /0 fails startup. A range that also holds clients lets them bypass that limit, as the pod CIDR does behind an in-cluster ingress. A trusted proxy must append the address of its own peer to X-Forwarded-For. |
@@ -81,7 +82,9 @@ Kubernetes: `>=1.29.0-0`
 | config.modules.workers.activities.mailer.port | int | `587` | SMTP port, 1–65535. |
 | config.modules.workers.activities.mailer.tls | bool | `true` | STARTTLS, the only TLS the mailer speaks (no implicit TLS, so not port 465). Required to send credentials to a non-loopback host. |
 | config.modules.workers.activities.mailer.user | string | `""` | SMTP username. Its password comes from secrets.mailerPassword. |
+| config.modules.workers.activities.max_concurrent_activity_task_pollers | int | `nil` | Activity-task pollers; null leaves the Temporal SDK to decide. A non-integer or negative is refused. |
 | config.modules.workers.activities.thehive.url | string | `"http://thehive:9000"` | TheHive URL (assumes a Service named `thehive` in the namespace). |
+| config.modules.workers.workflows.max_concurrent_workflow_task_pollers | int | `nil` | Workflow-task pollers; null leaves the Temporal SDK to decide. A non-integer, negative or 1 is refused. |
 | containerSecurityContext | object | `{"allowPrivilegeEscalation":false,"capabilities":{"drop":["ALL"]},"readOnlyRootFilesystem":true}` | Container-level securityContext for the TheHive Flow container. |
 | dockerSocketProxy.enabled | bool | `false` | Deploy the embedded docker-socket-proxy. Off by default. |
 | dockerSocketProxy.hostSocketPath | string | `"/var/run/docker.sock"` | Path to the Docker socket on the node, hostPath-mounted read-only into the proxy. |

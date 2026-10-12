@@ -433,7 +433,14 @@ config:
         enabled: false
 
     workers:
+      workflows:
+        # -- (int) Workflow-task pollers; null leaves the Temporal SDK to decide.
+        # A non-integer, negative or 1 is refused.
+        max_concurrent_workflow_task_pollers: null
       activities:
+        # -- (int) Activity-task pollers; null leaves the Temporal SDK to decide.
+        # A non-integer or negative is refused.
+        max_concurrent_activity_task_pollers: null
         http:
           # -- Log every HTTP activity request.
           request_logging: false
@@ -500,6 +507,10 @@ codex:
   # for air-gapped / proxied clusters that cannot reach the default gcr.io images. Empty uses the
   # built-in defaults. Applies to both backends (kubernetes and docker).
   languageImages: {}
+
+  # -- (int) Max Codex steps run at once per language (on the kubernetes backend, concurrent Jobs).
+  # Unset or 0 keeps the Temporal SDK default (1000 per language).
+  maxConcurrentActivityExecutionSize: null
 
   # Kubernetes backend. Each Codex script runs as a Job in a dedicated, isolated namespace so
   # untrusted user code never shares TheHive Flow's namespace or ServiceAccount.
