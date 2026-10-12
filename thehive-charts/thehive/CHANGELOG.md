@@ -2,6 +2,10 @@
 
 - Nothing yet
 
+## 1.1.1
+
+- Update TheHive to v5.8.1-1 [#156](https://github.com/StrangeBeeCorp/helm-charts/pull/156)
+
 ## 1.1.0
 
 - Add TheHive Flow integration values to configure and enable the connection to a TheHive Flow instance [#150](https://github.com/StrangeBeeCorp/helm-charts/issues/150)
