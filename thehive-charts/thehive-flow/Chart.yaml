@@ -4,7 +4,7 @@ description: TheHive Flow — TheHive Orchestration engine, running playbooks as
 type: application
 
 version: 1.0.0
-appVersion: 6.0.0-4-rc1
+appVersion: 6.0.0-1
 kubeVersion: ">=1.29.0-0"
 
 dependencies:
@@ -38,10 +38,10 @@ annotations:
   artifacthub.io/category: security
   artifacthub.io/images: |
     - name: thehive-flow
-      image: strangebee/thehive-flow:6.0.0-4-rc1
+      image: strangebee/thehive-flow:6.0.0-1
       whitelisted: true
     - name: thehive-flow-assistant
-      image: strangebee/thehive-flow-assistant:6.0.0-4-rc1
+      image: strangebee/thehive-flow-assistant:6.0.0-1
       whitelisted: true
   artifacthub.io/license: AGPL-3.0-or-later
   artifacthub.io/links: |

@@ -1,6 +1,6 @@
 # thehive-flow
 
-[![Version: 1.0.0](https://img.shields.io/badge/Version-1.0.0-informational?style=flat-square) ](https://github.com/StrangeBeeCorp/helm-charts/releases) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square)  ![AppVersion: 6.0.0-4-rc1](https://img.shields.io/badge/AppVersion-6.0.0--4--rc1-informational?style=flat-square)
+[![Version: 1.0.0](https://img.shields.io/badge/Version-1.0.0-informational?style=flat-square) ](https://github.com/StrangeBeeCorp/helm-charts/releases) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square)  ![AppVersion: 6.0.0-1](https://img.shields.io/badge/AppVersion-6.0.0--1-informational?style=flat-square)
 
 ## Description
 
