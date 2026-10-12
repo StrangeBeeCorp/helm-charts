@@ -31,13 +31,13 @@ services:
       retries: 30
 
   minio:
-    image: quay.io/minio/minio:RELEASE.2025-09-07T16-13-09Z
+    # Official quay.io/minio images are no longer publicly pullable
+    image: docker.io/bitnamilegacy/minio:2025.7.23-debian-12-r5
     ports:
       - "9002:9000"
     environment:
       MINIO_ROOT_USER: "minio"
       MINIO_ROOT_PASSWORD: "miniominio"
-    command: server /data
     healthcheck:
       test: ["CMD-SHELL", "mc ready local"]
       interval: 10s
