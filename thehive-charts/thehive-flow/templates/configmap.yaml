@@ -1,0 +1,12 @@
+{{/*
+ConfigMap rendering the thehive-flow.yml consumed by the binary at startup.
+*/}}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "thehive-flow.fullname" . }}
+  labels:
+    {{- include "thehive-flow.labels" . | nindent 4 }}
+data:
+  thehive-flow.yml: |
+    {{- include "thehive-flow.config" . | nindent 4 }}

@@ -131,7 +131,7 @@ spec:
                   key: {{ .Values.thehive.cortex.k8sSecretKey }}
             {{- end }}
             {{- if and (.Values.thehive.flow.enabled) (.Values.thehive.flow.k8sSecretName) }}
-            - name: TH_ORCHESTRATOR_KEY
+            - name: TH_FLOW_KEY
               valueFrom:
                 secretKeyRef:
                   name: {{ .Values.thehive.flow.k8sSecretName }}

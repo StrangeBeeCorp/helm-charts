@@ -1,0 +1,26 @@
+{{/*
+docker-socket-proxy Service.
+
+Name is hardcoded to `docker-socket-proxy` so the auto-default DOCKER_HOST
+in deployment.yaml can resolve it without templating. Assumes one
+docker-socket-proxy per namespace (the standard install topology).
+*/}}
+{{- if .Values.dockerSocketProxy.enabled -}}
+apiVersion: v1
+kind: Service
+metadata:
+  name: docker-socket-proxy
+  labels:
+    {{- include "thehive-flow.labels" . | nindent 4 }}
+    app.kubernetes.io/component: docker-socket-proxy
+spec:
+  type: {{ .Values.dockerSocketProxy.service.type }}
+  ports:
+    - name: proxy
+      port: {{ .Values.dockerSocketProxy.service.port }}
+      targetPort: proxy
+      protocol: TCP
+  selector:
+    {{- include "thehive-flow.selectorLabels" . | nindent 4 }}
+    app.kubernetes.io/component: docker-socket-proxy
+{{- end -}}

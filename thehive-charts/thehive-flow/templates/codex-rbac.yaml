@@ -1,0 +1,117 @@
+{{- /*
+RBAC for the Codex kubernetes backend. Two identities, both scoped to the
+dedicated Job namespace (default "<release-namespace>-jobs"):
+
+  1. The TheHive Flow ServiceAccount drives Codex Jobs and reads their pods/logs.
+     Its Role lives in the Job namespace; the RoleBinding is cross-namespace,
+     binding the TheHive Flow SA (in the release namespace) into it.
+  2. The CODEX-JOBS ServiceAccount runs the Job pods (assistant sidecar). The
+     sidecar patches its own pod's result annotation, so it needs pods/patch
+     (RBAC cannot scope to "own pod" only).
+
+Skip entirely when the docker backend is selected, or when the operator manages
+the namespace + RBAC themselves (codex.kubernetes.rbac.create=false).
+*/ -}}
+{{- if and (eq .Values.codex.backend "kubernetes") .Values.codex.kubernetes.rbac.create }}
+{{- $ns := include "thehive-flow.codex.jobNamespace" . }}
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: {{ $ns }}
+  labels:
+    {{- include "thehive-flow.labels" . | nindent 4 }}
+    app.kubernetes.io/component: codex-jobs
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: {{ .Values.codex.kubernetes.serviceAccount }}
+  namespace: {{ $ns }}
+  labels:
+    {{- include "thehive-flow.labels" . | nindent 4 }}
+    app.kubernetes.io/component: codex-jobs
+  {{- with .Values.codex.kubernetes.serviceAccountAnnotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+automountServiceAccountToken: false
+---
+# TheHive Flow: manage Codex Jobs, read their pods + logs, and manage the per-run env Secret.
+# Verbs are exactly what the backend calls (and what Check asserts via SelfSubjectAccessReview).
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: {{ include "thehive-flow.fullname" . }}-codex-server
+  namespace: {{ $ns }}
+  labels:
+    {{- include "thehive-flow.labels" . | nindent 4 }}
+    app.kubernetes.io/component: codex-jobs
+rules:
+  - apiGroups: ["batch"]
+    resources: ["jobs"]
+    verbs: ["create", "get", "delete", "deletecollection"]
+  - apiGroups: [""]
+    resources: ["pods"]
+    verbs: ["list"]
+  - apiGroups: [""]
+    resources: ["pods/log"]
+    verbs: ["get"]
+  # Events on the Job (to diagnose an admission-rejected pod that never increments the Job's counters).
+  - apiGroups: [""]
+    resources: ["events"]
+    verbs: ["list"]
+  # Per-run environment Secret (holds interpolated $secret values). Owned by its Job (patch) so it is
+  # GC'd with it; delete/deletecollection are the crash/leak backstops.
+  - apiGroups: [""]
+    resources: ["secrets"]
+    verbs: ["create", "patch", "delete", "deletecollection"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: {{ include "thehive-flow.fullname" . }}-codex-server
+  namespace: {{ $ns }}
+  labels:
+    {{- include "thehive-flow.labels" . | nindent 4 }}
+    app.kubernetes.io/component: codex-jobs
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: {{ include "thehive-flow.fullname" . }}-codex-server
+subjects:
+  - kind: ServiceAccount
+    name: {{ include "thehive-flow.serviceAccountName" . }}
+    namespace: {{ .Release.Namespace }}
+---
+# Codex Job pods (assistant sidecar): patch their own pod's result annotation. The sidecar only issues a
+# merge Patch (no get), so `patch` is the single verb required.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: {{ include "thehive-flow.fullname" . }}-codex-jobs
+  namespace: {{ $ns }}
+  labels:
+    {{- include "thehive-flow.labels" . | nindent 4 }}
+    app.kubernetes.io/component: codex-jobs
+rules:
+  - apiGroups: [""]
+    resources: ["pods"]
+    verbs: ["patch"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: {{ include "thehive-flow.fullname" . }}-codex-jobs
+  namespace: {{ $ns }}
+  labels:
+    {{- include "thehive-flow.labels" . | nindent 4 }}
+    app.kubernetes.io/component: codex-jobs
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: {{ include "thehive-flow.fullname" . }}-codex-jobs
+subjects:
+  - kind: ServiceAccount
+    name: {{ .Values.codex.kubernetes.serviceAccount }}
+    namespace: {{ $ns }}
+{{- end }}

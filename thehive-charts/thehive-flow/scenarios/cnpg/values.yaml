@@ -1,0 +1,40 @@
+################################################################################
+# TheHive Flow with PostgreSQL provided by CloudNativePG
+################################################################################
+# See README.md for deployment instructions.
+# These are the chart defaults, made explicit: they match the names created by
+# postgres-secrets.yaml, postgres-cluster.yaml and databases.yaml.
+
+postgresql:
+  host: thehive-flow-postgresql-rw
+  port: 5432
+  username: thehive_flow
+  database: thehive_flow
+  # CloudNativePG serves TLS by default
+  sslMode: require
+
+secrets:
+  databasePassword:
+    existingSecret: thehive-flow-postgresql-thehive-flow-user
+    key: password
+
+# The bundled Temporal Server shares the same PostgreSQL cluster
+temporal:
+  server:
+    config:
+      persistence:
+        datastores:
+          default:
+            sql:
+              connectAddr: "thehive-flow-postgresql-rw:5432"
+              databaseName: temporal
+              user: temporal
+              existingSecret: thehive-flow-postgresql-temporal-user
+              secretKey: password
+          visibility:
+            sql:
+              connectAddr: "thehive-flow-postgresql-rw:5432"
+              databaseName: temporal_visibility
+              user: temporal
+              existingSecret: thehive-flow-postgresql-temporal-user
+              secretKey: password

@@ -1,0 +1,20 @@
+{{/*
+Service exposing the TheHive Flow REST API.
+*/}}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "thehive-flow.fullname" . }}-api
+  labels:
+    {{- include "thehive-flow.labels" . | nindent 4 }}
+    app.kubernetes.io/component: api
+spec:
+  type: {{ .Values.service.api.type }}
+  ports:
+    - port: {{ .Values.service.api.port }}
+      targetPort: api
+      protocol: TCP
+      name: api
+  selector:
+    {{- include "thehive-flow.selectorLabels" . | nindent 4 }}
+    app.kubernetes.io/component: thehive-flow
