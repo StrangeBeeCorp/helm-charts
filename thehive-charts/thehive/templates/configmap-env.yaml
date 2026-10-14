@@ -53,5 +53,5 @@ data:
   {{- end }}
   {{- if .Values.thehive.flow.enabled }}
   TH_FEATURE_ORCHESTRATOR: "true"
-  TH_ORCHESTRATOR_URL: {{ .Values.thehive.flow.url | quote }}
+  TH_FLOW_URL: {{ .Values.thehive.flow.url | quote }}
   {{- end }}

@@ -187,7 +187,7 @@ thehive:
   #  # TheHive configuration file
   #  # See https://docs.strangebee.com/thehive/overview/ under the "Configuration" section
   #  # Required to load the TheHive Flow connector when thehive.flow.enabled=true:
-  #  scalligraph.modules += "org.thp.thehive.connector.orchestrator.OrchestratorModule"
+  #  scalligraph.modules += "org.thp.thehive.connector.flow.FlowModule"
 
   # -- Custom logback.xml logging configuration file content for TheHive
   logbackXml: ""
