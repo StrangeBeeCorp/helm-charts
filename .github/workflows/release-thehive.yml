@@ -5,15 +5,18 @@ on:
   push:
     tags:
       - thehive-*
+      - "!thehive-flow-*"
 
 jobs:
   release:
     permissions:
       contents: write
     runs-on: ubuntu-latest
+    env:
+      CHART_DIR: thehive-charts/thehive
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
         with:
           fetch-depth: 0
 
@@ -23,21 +26,33 @@ jobs:
           git config user.email "$GITHUB_ACTOR@users.noreply.github.com"
 
       - name: Install Helm
-        uses: azure/setup-helm@v4
+        uses: azure/setup-helm@1a275c3b69536ee54be43f2070a358922e12c8d4 # v4.3.1
         env:
           GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+
+      - name: Check tag matches chart version
+        run: |
+          version=$(awk '/^version:/ {print $2}' "$CHART_DIR/Chart.yaml")
+          if [ "$GITHUB_REF_NAME" != "thehive-$version" ]; then
+            echo "Tag $GITHUB_REF_NAME does not match chart version $version"
+            exit 1
+          fi
 
       - name: Add Helm Repositories related to the Helm Charts specified as dependencies
         run: |
           helm repo add minio https://charts.min.io/
 
-      # At the time of writing, the "helm/chart-releaser-action" does not support multiple Helm Charts
-      # https://github.com/helm/chart-releaser-action/issues/198
-      #
-      # For now we only have TheHive Helm Chart defined, but adding other Charts will create issues
+      # thehive-charts/ holds several charts and chart-releaser would package every
+      # chart changed since the last tag (https://github.com/helm/chart-releaser-action/issues/198):
+      # package only this one, then let chart-releaser upload it and update the index
+      - name: Package chart
+        run: |
+          helm package "$CHART_DIR" --dependency-update --destination .cr-release-packages
+
       - name: Run chart-releaser
-        uses: helm/chart-releaser-action@v1.7.0
+        uses: helm/chart-releaser-action@cae68fefc6b5f367a0275617c9f83181ba54714f # v1.7.0
         with:
-          charts_dir: thehive-charts
+          skip_packaging: true
+          skip_existing: true
         env:
           CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"

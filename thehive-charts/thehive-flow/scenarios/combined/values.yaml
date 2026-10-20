@@ -1,0 +1,18 @@
+################################################################################
+# TheHive Flow with CloudNativePG (PostgreSQL) and SeaweedFS (S3)
+################################################################################
+# See README.md for deployment instructions. Use it on top of the cnpg and
+# seaweedfs scenario values:
+#   -f ../cnpg/values.yaml -f ../seaweedfs/values.yaml -f values.yaml
+
+config:
+  api:
+    public:
+      # URL at which clients reach TheHive Flow (required)
+      url: http://thehive-flow.example.com
+  modules:
+    workers:
+      activities:
+        thehive:
+          # TheHive URL, here a Service named thehive in the thehive namespace
+          url: http://thehive.thehive.svc.cluster.local:9000

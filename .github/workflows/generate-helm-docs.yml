@@ -6,6 +6,9 @@ on:
       - "thehive-charts/thehive/values.yaml"
       - "thehive-charts/thehive/README.md.gotmpl"
       - "thehive-charts/thehive/Chart.yaml"
+      - "thehive-charts/thehive-flow/values.yaml"
+      - "thehive-charts/thehive-flow/README.md.gotmpl"
+      - "thehive-charts/thehive-flow/Chart.yaml"
       - "cortex-charts/cortex/values.yaml"
       - "cortex-charts/cortex/README.md.gotmpl"
       - "cortex-charts/cortex/Chart.yaml"
@@ -16,6 +19,9 @@ on:
       - "thehive-charts/thehive/values.yaml"
       - "thehive-charts/thehive/README.md.gotmpl"
       - "thehive-charts/thehive/Chart.yaml"
+      - "thehive-charts/thehive-flow/values.yaml"
+      - "thehive-charts/thehive-flow/README.md.gotmpl"
+      - "thehive-charts/thehive-flow/Chart.yaml"
       - "cortex-charts/cortex/values.yaml"
       - "cortex-charts/cortex/README.md.gotmpl"
       - "cortex-charts/cortex/Chart.yaml"
@@ -42,6 +48,11 @@ jobs:
           cd thehive-charts/thehive
           helm-docs -t README.md.gotmpl .
 
+      - name: Generate documentation for TheHive Flow chart
+        run: |
+          cd thehive-charts/thehive-flow
+          helm-docs -t README.md.gotmpl .
+
       - name: Generate documentation for Cortex chart
         run: |
           cd cortex-charts/cortex
@@ -57,7 +68,7 @@ jobs:
         run: |
           git config --global user.name 'github-actions[bot]'
           git config --global user.email 'github-actions[bot]@users.noreply.github.com'
-          git add thehive-charts/thehive/README.md cortex-charts/cortex/README.md
+          git add thehive-charts/thehive/README.md thehive-charts/thehive-flow/README.md cortex-charts/cortex/README.md
           git commit -m "docs: auto-generate helm chart documentation [skip ci]"
           git push
 
