@@ -2,6 +2,11 @@
 
 - Nothing yet
 
+## 2.0.0
+
+- Update TheHive to v6.0.0-1
+- (BREAKING CHANGE) Render the TheHive Flow settings as `TH_FLOW_URL` / `TH_FLOW_KEY` instead of `TH_ORCHESTRATOR_URL` / `TH_ORCHESTRATOR_KEY`, and load the connector with `org.thp.thehive.connector.flow.FlowModule` in `thehive.configFile`, as expected by TheHive 6. The `thehive.flow.*` values are unchanged [#155](https://github.com/StrangeBeeCorp/helm-charts/pull/155)
+
 ## 1.1.1
 
 - Update TheHive to v5.8.1-1 [#156](https://github.com/StrangeBeeCorp/helm-charts/pull/156)
