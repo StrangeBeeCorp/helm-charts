@@ -2,6 +2,10 @@
 
 - Nothing yet
 
+## 1.2.1
+
+- Update Cortex to v4.2.0-1 [#160](https://github.com/StrangeBeeCorp/helm-charts/pull/160)
+
 ## 1.2.0
 
 - Add `cortex.dockerImageRegistryPrefix` to prepend a registry prefix to every neuron Docker image at runtime (useful for pull-through caches and air-gapped clusters)
