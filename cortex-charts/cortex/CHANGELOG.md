@@ -2,6 +2,13 @@
 
 - Nothing yet
 
+## 1.3.0
+
+- Update Cortex to v4.2.0-1 [#160](https://github.com/StrangeBeeCorp/helm-charts/pull/160)
+- Add `cortex.k8sJobs.imagePullSecrets` to attach image pull Secrets to every neuron Job pod (Cortex 4.2.0+) [#161](https://github.com/StrangeBeeCorp/helm-charts/pull/161)
+- Fix default `cortex.configFile` analyzer/responder parallelism: replace the `fork-join-executor` blocks, ignored since Cortex 4.1.0, with `thread-pool-executor.fixed-pool-size = 20` (Cortex's effective default, so no behavior change). If you override `configFile` with custom `fork-join-executor` tuning, switch to `thread-pool-executor.fixed-pool-size` [#161](https://github.com/StrangeBeeCorp/helm-charts/pull/161)
+- Cortex 4.2.0 fixes swapped `auth.sso.autocreate` / `auth.sso.autoupdate` for OAuth2: if you swapped them in `configFile` as a workaround, swap them back
+
 ## 1.2.0
 
 - Add `cortex.dockerImageRegistryPrefix` to prepend a registry prefix to every neuron Docker image at runtime (useful for pull-through caches and air-gapped clusters)

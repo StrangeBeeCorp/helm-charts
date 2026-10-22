@@ -28,6 +28,13 @@ data:
     {{- if hasKey $sc "runAsNonRoot" }}{{- $appConf = printf "%s  runAsNonRoot = %v\n" $appConf $sc.runAsNonRoot }}{{- end }}
     {{- $appConf = printf "%s}\n" $appConf }}
   {{- end }}
+  {{- with .Values.cortex.k8sJobs.imagePullSecrets }}
+    {{- $appConf = printf "%s\njob.kubernetes.imagePullSecrets = [" $appConf }}
+    {{- range $i, $name := . }}
+      {{- $appConf = printf "%s%s%q" $appConf (ternary "" ", " (eq $i 0)) $name }}
+    {{- end }}
+    {{- $appConf = printf "%s]\n" $appConf }}
+  {{- end }}
   application.conf: {{- $appConf | toYaml | indent 1 }}
   {{- end }}
   {{- if .Values.cortex.logbackXml }}

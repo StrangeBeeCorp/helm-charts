@@ -90,6 +90,8 @@ cortex:
       # runAsGroup: 1000
       # fsGroup: 1000
       # runAsNonRoot: false
+    # -- Names of existing image pull Secrets (in the Cortex namespace) attached to every neuron Job pod, to pull analyzer/responder images from private registries. Requires Cortex 4.2.0+. Example: `["regcred"]`
+    imagePullSecrets: []
 
   # -- HTTP secret for Cortex application (must be at least 32 characters)
   httpSecret: "ChangeThisSecretWithOneContainingAtLeast32Chars"
@@ -135,24 +137,20 @@ cortex:
         "https://catalogs.download.strangebee.com/latest/json/analyzers.json",
       ]
 
-      # Customize analyzers parallelism here
-      fork-join-executor {
-        parallelism-min: 8,
-        parallelism-factor: 1.0,
-        parallelism-max: 8,
+      # Max analyzer jobs run concurrently (extra jobs queue)
+      thread-pool-executor {
+        fixed-pool-size = 20
       }
     }
 
-      # Customize responders parallelism here
     responder {
       urls: [
         "https://catalogs.download.strangebee.com/latest/json/responders.json",
       ]
 
-      fork-join-executor {
-        parallelism-min: 8,
-        parallelism-factor: 1.0,
-        parallelism-max: 8,
+      # Max responder jobs run concurrently (extra jobs queue)
+      thread-pool-executor {
+        fixed-pool-size = 20
       }
     }
 
