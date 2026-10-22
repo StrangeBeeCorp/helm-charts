@@ -5,6 +5,51 @@ entries:
       artifacthub.io/category: security
       artifacthub.io/images: |
         - name: cortex
+          image: thehiveproject/cortex:4.2.0-1
+          whitelisted: true
+        - name: curl
+          image: curlimages/curl:8.17.0
+          whitelisted: true
+      artifacthub.io/license: AGPL-3.0
+      artifacthub.io/links: |
+        - name: source
+          url: https://github.com/StrangeBeeCorp/helm-charts/tree/main/cortex-charts/cortex
+        - name: support
+          url: https://strangebee.com/contact-strangebee/
+    apiVersion: v2
+    appVersion: 4.2.0-1
+    created: "2026-10-22T15:05:03.270234278Z"
+    dependencies:
+    - condition: elasticsearch.enabled
+      name: elasticsearch
+      repository: oci://registry-1.docker.io/bitnamicharts
+      version: 22.1.6
+    description: Cortex official Helm Chart
+    digest: 232dd63e7373b769595e17f296c89f106fcd1ca2052e829839fc2e0172d2d72e
+    home: https://strangebee.com/cortex/
+    icon: https://strangebeecorp.github.io/helm-charts/assets/cortex-icon.svg
+    keywords:
+    - cortex
+    - thehive
+    - sirp
+    - incident-response
+    - case-management
+    - strangebee
+    kubeVersion: '>= 1.23.0-0'
+    maintainers:
+    - name: StrangeBee
+      url: https://strangebee.com/
+    name: cortex
+    sources:
+    - https://github.com/StrangeBeeCorp/helm-charts/tree/main/cortex-charts/cortex
+    type: application
+    urls:
+    - https://github.com/StrangeBeeCorp/helm-charts/releases/download/cortex-1.3.0/cortex-1.3.0.tgz
+    version: 1.3.0
+  - annotations:
+      artifacthub.io/category: security
+      artifacthub.io/images: |
+        - name: cortex
           image: thehiveproject/cortex:4.1.0-1
           whitelisted: true
         - name: curl
@@ -2206,4 +2251,4 @@ entries:
     urls:
     - https://github.com/StrangeBeeCorp/helm-charts/releases/download/thehive-flow-1.0.0/thehive-flow-1.0.0.tgz
     version: 1.0.0
-generated: "2026-10-20T09:31:22.927133887Z"
+generated: "2026-10-22T15:05:03.270382094Z"
