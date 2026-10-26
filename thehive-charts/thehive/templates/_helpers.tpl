@@ -76,3 +76,66 @@ app.kubernetes.io/component: "server"
   until curl {{ include "thehive.initContainerCheckEsCurlOptions" . }} {{ if .Values.thehive.initContainers.checkElasticsearch.useHttps }}https{{ else }}http{{ end }}://{{ index .Values.thehive.index.hostnames 0 }}:9200/_cluster/health; do echo 'Waiting for ElasticSearch'; sleep 5; done
 {{- end -}}
 {{- end -}}
+
+{{/* Whether the chart-generated secret is rendered: at least one credential is not a BYO secret */}}
+{{- define "thehive.secrets.enabled" -}}
+{{- if or (not .Values.thehive.database.k8sSecretName) (not .Values.thehive.index.k8sSecretName) (not .Values.thehive.storage.k8sSecretName) (not .Values.thehive.k8sSecretName) (and (.Values.thehive.cortex.enabled) (not .Values.thehive.cortex.k8sSecretName)) (and (.Values.thehive.flow.enabled) (not .Values.thehive.flow.k8sSecretName) (not (include "thehive.flow.bundled" .))) -}}
+true
+{{- end -}}
+{{- end -}}
+
+{{/* Whether the TheHive Flow subchart is deployed with TheHive */}}
+{{- define "thehive.flow.bundled" -}}
+{{- if (index .Values "thehive-flow" "enabled") -}}
+true
+{{- end -}}
+{{- end -}}
+
+{{/* Whether the TheHive Flow integration is enabled, with an external or the bundled TheHive Flow */}}
+{{- define "thehive.flow.enabled" -}}
+{{- if or (.Values.thehive.flow.enabled) (include "thehive.flow.bundled" .) -}}
+true
+{{- end -}}
+{{- end -}}
+
+{{/* TheHive Flow URL: the explicit value, else the Service of the bundled TheHive Flow (named by the subchart helper) */}}
+{{- define "thehive.flow.url" -}}
+{{- if .Values.thehive.flow.url -}}
+  {{- .Values.thehive.flow.url -}}
+{{- else if include "thehive.flow.bundled" . -}}
+  {{- $flow := index .Values "thehive-flow" -}}
+  {{- $flowContext := dict "Values" $flow "Release" .Release "Chart" (dict "Name" "thehive-flow") -}}
+  {{- printf "http://%s-api:%v" (include "thehive-flow.fullname" $flowContext) $flow.service.api.port -}}
+{{- end -}}
+{{- end -}}
+
+{{/* Secret and key holding the JWT signing key shared with the bundled TheHive Flow */}}
+{{- define "thehive.flow.jwtSecretName" -}}
+{{- index .Values "thehive-flow" "secrets" "jwtSymmetricKey" "existingSecret" -}}
+{{- end -}}
+
+{{- define "thehive.flow.jwtSecretKey" -}}
+{{- index .Values "thehive-flow" "secrets" "jwtSymmetricKey" "key" -}}
+{{- end -}}
+
+{{/* Fail on TheHive Flow settings the bundled TheHive Flow cannot honor */}}
+{{- define "thehive.flow.validate" -}}
+{{- if include "thehive.flow.bundled" . -}}
+  {{- if not (include "thehive.flow.jwtSecretName" .) -}}
+    {{- fail "thehive-flow.secrets.jwtSymmetricKey.existingSecret is required: it holds the JWT signing key shared by TheHive and TheHive Flow" -}}
+  {{- end -}}
+  {{- if and (.Values.thehive.flow.k8sSecretName) (ne .Values.thehive.flow.k8sSecretName (include "thehive.flow.jwtSecretName" .)) -}}
+    {{- fail "thehive.flow.k8sSecretName must equal thehive-flow.secrets.jwtSymmetricKey.existingSecret: TheHive and TheHive Flow share the JWT signing key" -}}
+  {{- end -}}
+{{- end -}}
+{{- end -}}
+
+{{/* TheHive application.conf content: thehive.configFile, plus the Flow connector module when the integration is enabled and configFile does not load it */}}
+{{- define "thehive.configFile" -}}
+{{- $configFile := .Values.thehive.configFile -}}
+{{- if and (include "thehive.flow.enabled" .) (not (contains "connector.flow.FlowModule" $configFile)) -}}
+  {{- $separator := ternary "" "\n" (or (empty $configFile) (hasSuffix "\n" $configFile)) -}}
+  {{- $configFile = printf "%s%s# TheHive Flow connector, added by the chart\nscalligraph.modules += \"org.thp.thehive.connector.flow.FlowModule\"\n" $configFile $separator -}}
+{{- end -}}
+{{- $configFile -}}
+{{- end -}}

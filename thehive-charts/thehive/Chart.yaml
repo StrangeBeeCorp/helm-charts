@@ -19,6 +19,10 @@ dependencies:
     repository: https://charts.min.io
     version: 5.4.0
     condition: minio.enabled
+  - name: thehive-flow
+    repository: https://strangebeecorp.github.io/helm-charts
+    version: 1.0.0
+    condition: thehive-flow.enabled
 
 type: application
 description: The official Helm Chart of TheHive for Kubernetes

@@ -1,0 +1,21 @@
+################################################################################
+# TheHive with the bundled TheHive Flow
+################################################################################
+# See README.md for deployment instructions. TheHive Flow uses PostgreSQL from
+# the thehive-flow cnpg scenario and S3 storage from the thehive-flow seaweedfs
+# scenario, with their default names: only the values below differ from the
+# TheHive Flow chart defaults.
+
+thehive-flow:
+  enabled: true
+
+  blobstore:
+    s3:
+      # Fully qualified: the Codex kubernetes backend passes it to Jobs running in another namespace
+      endpoint: http://seaweedfs-all-in-one.seaweedfs.svc.cluster.local:8333
+
+  config:
+    api:
+      public:
+        # URL at which clients reach TheHive Flow (required)
+        url: http://thehive-flow.example.com

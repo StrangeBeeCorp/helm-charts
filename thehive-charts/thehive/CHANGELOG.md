@@ -1,6 +1,8 @@
 ## Next release
 
-- Nothing yet
+- Add TheHive Flow as an optional subchart (`thehive-flow.enabled`), wired to TheHive: TheHive Flow URL, JWT signing key shared through the `thehive-flow-jwt` secret (generated when `thehive.flow.signingKey` is empty, created as a Helm hook and kept on uninstall), and TheHive Flow connector module [#149](https://github.com/StrangeBeeCorp/helm-charts/issues/149)
+- Add the TheHive Flow connector module to `application.conf` when the TheHive Flow integration is enabled, unless `thehive.configFile` already loads it [#149](https://github.com/StrangeBeeCorp/helm-charts/issues/149)
+- Fix the chart-generated secret not being loaded by TheHive when only the Cortex API keys are stored in it [#149](https://github.com/StrangeBeeCorp/helm-charts/issues/149)
 
 ## 2.0.0
 
