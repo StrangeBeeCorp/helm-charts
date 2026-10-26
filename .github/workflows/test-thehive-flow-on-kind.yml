@@ -8,8 +8,9 @@ on:
       - "thehive-charts/thehive/**"
       - "!thehive-charts/thehive/**/*.md"
       - "!thehive-charts/thehive/**/README.md.gotmpl"
-      - "thehive-charts/thehive-flow/scenarios/cnpg/*.yaml"
-      - "thehive-charts/thehive-flow/scenarios/seaweedfs/*.yaml"
+      - "thehive-charts/thehive-flow/**"
+      - "!thehive-charts/thehive-flow/**/*.md"
+      - "!thehive-charts/thehive-flow/**/README.md.gotmpl"
       - ".github/workflows/test-thehive-flow-on-kind.yml"
       - ".github/actions/setup-kind/**"
   push:
@@ -19,8 +20,9 @@ on:
       - "thehive-charts/thehive/**"
       - "!thehive-charts/thehive/**/*.md"
       - "!thehive-charts/thehive/**/README.md.gotmpl"
-      - "thehive-charts/thehive-flow/scenarios/cnpg/*.yaml"
-      - "thehive-charts/thehive-flow/scenarios/seaweedfs/*.yaml"
+      - "thehive-charts/thehive-flow/**"
+      - "!thehive-charts/thehive-flow/**/*.md"
+      - "!thehive-charts/thehive-flow/**/README.md.gotmpl"
       - ".github/workflows/test-thehive-flow-on-kind.yml"
       - ".github/actions/setup-kind/**"
 
@@ -81,6 +83,22 @@ jobs:
           # Placeholder: no TheHive account exists before the install
           kubectl create secret generic thehive-flow-thehive -n "$NAMESPACE" \
             --from-literal=api-key=placeholder
+
+      - name: Use the local TheHive Flow chart if it changed
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
+        run: |
+          if git diff --quiet "$BASE_SHA" HEAD -- thehive-charts/thehive-flow ':(exclude)*.md' ':(exclude)*.gotmpl'; then
+            RELEASED=$(yq '.dependencies[] | select(.name == "thehive-flow") | .version' thehive-charts/thehive/Chart.yaml)
+            echo "TheHive Flow chart unchanged: testing with the released chart $RELEASED" | tee -a "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+          # Released TheHive charts keep the published TheHive Flow version: this change stays in CI
+          VERSION=$(yq '.version' thehive-charts/thehive-flow/Chart.yaml)
+          helm dependency build thehive-charts/thehive-flow
+          VERSION="$VERSION" yq -i '(.dependencies[] | select(.name == "thehive-flow")) |= (.repository = "file://../thehive-flow" | .version = strenv(VERSION))' thehive-charts/thehive/Chart.yaml
+          echo "TheHive Flow chart changed: testing with the local chart $VERSION" | tee -a "$GITHUB_STEP_SUMMARY"
+          git diff thehive-charts/thehive/Chart.yaml
 
       - name: Update Helm dependencies
         working-directory: thehive-charts/thehive
