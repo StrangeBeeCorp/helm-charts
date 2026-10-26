@@ -68,11 +68,12 @@
       "dependencyDashboardApproval": true
     },
     {
-      "description": "GitHub Actions: one grouped ci PR",
+      "description": "GitHub Actions: one grouped ci PR, for releases at least 7 days old",
       "matchManagers": ["github-actions"],
       "groupName": "GitHub Actions",
       "semanticCommitType": "ci",
-      "semanticCommitScope": null
+      "semanticCommitScope": null,
+      "minimumReleaseAge": "7 days"
     },
     {
       "description": "chart-releaser-action: TheHive and TheHive Flow releases are pinned to an unreleased commit with the skip_packaging fix (#202), which v1.7.0 lacks. Re-enable once a release ships it",
