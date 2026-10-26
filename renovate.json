@@ -65,7 +65,8 @@
       "matchDatasources": ["docker"],
       "matchPackageNames": ["strangebee/thehive", "thehiveproject/cortex"],
       "matchUpdateTypes": ["major"],
-      "dependencyDashboardApproval": true
+      "dependencyDashboardApproval": true,
+      "minimumReleaseAge": false
     },
     {
       "description": "GitHub Actions: one grouped ci PR, for releases at least 7 days old",
@@ -79,7 +80,8 @@
       "description": "chart-releaser-action: TheHive and TheHive Flow releases are pinned to an unreleased commit with the skip_packaging fix (#202), which v1.7.0 lacks. Re-enable once a release ships it",
       "matchManagers": ["github-actions"],
       "matchPackageNames": ["helm/chart-releaser-action"],
-      "enabled": false
+      "enabled": false,
+      "minimumReleaseAge": false
     }
   ]
 }
