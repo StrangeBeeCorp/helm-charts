@@ -33,7 +33,7 @@ on:
 jobs:
   detect-changes:
     name: Detect Changed Charts
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     outputs:
       cortex: ${{ steps.filter.outputs.cortex }}
       thehive: ${{ steps.filter.outputs.thehive }}
@@ -62,7 +62,7 @@ jobs:
 
   lint-cortex:
     name: Lint Cortex Chart
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     needs: detect-changes
     if: needs.detect-changes.outputs.cortex == 'true'
     steps:
@@ -84,7 +84,7 @@ jobs:
 
   lint-thehive:
     name: Lint TheHive Chart
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     needs: detect-changes
     if: needs.detect-changes.outputs.thehive == 'true'
     steps:
@@ -107,7 +107,7 @@ jobs:
 
   lint-thehive-flow:
     name: Lint TheHive Flow Chart
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     needs: detect-changes
     if: needs.detect-changes.outputs.thehive-flow == 'true'
     steps:
