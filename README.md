@@ -2,7 +2,7 @@
 
 [![Artifact Hub](https://img.shields.io/endpoint?url=https://artifacthub.io/badge/repository/strangebee-helm)](https://artifacthub.io/packages/search?repo=strangebee-helm)
 [![lint](https://img.shields.io/github/actions/workflow/status/StrangeBeeCorp/helm-charts/static-analysis.yml?branch=main&label=lint)](https://github.com/StrangeBeeCorp/helm-charts/actions/workflows/static-analysis.yml)
-[![Documentation](https://img.shields.io/badge/docs-docs.strangebee.com-yellow)](https://docs.strangebee.com/)
+[![Documentation](https://img.shields.io/badge/docs-official-yellow)](https://docs.strangebee.com/)
 [![License](https://img.shields.io/badge/license-AGPL--3.0-blue)](./LICENSE)
 
 Helm charts for [StrangeBee](https://strangebee.com/) products.
