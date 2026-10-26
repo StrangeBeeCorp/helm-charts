@@ -1,0 +1,18 @@
+name: Install NFS Server Provisioner
+description: Install the NFS Server Provisioner, which creates the "nfs" StorageClass for ReadWriteMany PVCs
+
+runs:
+  using: composite
+  steps:
+    - name: Install NFS Server Provisioner
+      shell: bash
+      run: |
+        helm repo add nfs-ganesha-server-and-external-provisioner \
+          https://kubernetes-sigs.github.io/nfs-ganesha-server-and-external-provisioner/
+
+        helm install nfs-server nfs-ganesha-server-and-external-provisioner/nfs-server-provisioner \
+          --set persistence.enabled=false \
+          --set persistence.storageClass=standard \
+          --set persistence.size=10Gi \
+          --wait \
+          --timeout=5m

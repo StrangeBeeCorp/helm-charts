@@ -9,6 +9,8 @@ on:
       - "!cortex-charts/cortex/**/*.md"
       - "!cortex-charts/cortex/**/README.md.gotmpl"
       - ".github/workflows/test-cortex-on-kind.yml"
+      - ".github/actions/setup-kind/**"
+      - ".github/actions/install-nfs-provisioner/**"
   push:
     branches:
       - main
@@ -17,6 +19,8 @@ on:
       - "!cortex-charts/cortex/**/*.md"
       - "!cortex-charts/cortex/**/README.md.gotmpl"
       - ".github/workflows/test-cortex-on-kind.yml"
+      - ".github/actions/setup-kind/**"
+      - ".github/actions/install-nfs-provisioner/**"
 
 jobs:
   test:
@@ -33,36 +37,14 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Install Helm
-        uses: azure/setup-helm@9bc31f4ebc9c6b171d7bfbaa5d006ae7abdb4310 # v5.0.1
+      - name: Set up Helm and Kind
+        uses: ./.github/actions/setup-kind
         with:
-          version: "latest"
-
-      - name: Create Kind cluster
-        uses: helm/kind-action@1544676c07bb3570fcb70166beaa07c4528fd4aa # v1.15.1
-        with:
-          cluster_name: cortex-test
-          node_image: kindest/node:${{ matrix.k8s-version }}
-          wait: 300s
-
-      - name: Verify cluster
-        run: |
-          kubectl cluster-info
-          kubectl get nodes
+          cluster-name: cortex-test
+          k8s-version: ${{ matrix.k8s-version }}
 
       - name: Install NFS Server Provisioner for RWX support
-        run: |
-          # Install NFS provisioner to support ReadWriteMany PVCs
-          # This creates a StorageClass named "nfs" automatically
-          helm repo add nfs-ganesha-server-and-external-provisioner \
-            https://kubernetes-sigs.github.io/nfs-ganesha-server-and-external-provisioner/
-
-          helm install nfs-server nfs-ganesha-server-and-external-provisioner/nfs-server-provisioner \
-            --set persistence.enabled=false \
-            --set persistence.storageClass=standard \
-            --set persistence.size=10Gi \
-            --wait \
-            --timeout=5m
+        uses: ./.github/actions/install-nfs-provisioner
 
       - name: Create Cortex namespace
         run: |
