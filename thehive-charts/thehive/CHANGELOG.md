@@ -1,4 +1,4 @@
-## Next release
+## 2.1.0
 
 - Add TheHive Flow as an optional subchart (`thehive-flow.enabled`), wired to TheHive: TheHive Flow URL, JWT signing key shared through the `thehive-flow-jwt` secret (generated when `thehive.flow.signingKey` is empty, created as a Helm hook and kept on uninstall), and TheHive Flow connector module [#149](https://github.com/StrangeBeeCorp/helm-charts/issues/149)
 
