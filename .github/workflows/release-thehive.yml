@@ -41,6 +41,7 @@ jobs:
       - name: Add Helm Repositories related to the Helm Charts specified as dependencies
         run: |
           helm repo add minio https://charts.min.io/
+          helm repo add strangebee https://strangebeecorp.github.io/helm-charts
 
       # thehive-charts/ holds several charts and chart-releaser would package every
       # chart changed since the last tag (https://github.com/helm/chart-releaser-action/issues/198):

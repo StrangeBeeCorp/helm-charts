@@ -1,0 +1,157 @@
+name: TheHive with TheHive Flow on Kind
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "thehive-charts/thehive/**"
+      - "!thehive-charts/thehive/**/*.md"
+      - "!thehive-charts/thehive/**/README.md.gotmpl"
+      - "thehive-charts/thehive-flow/scenarios/cnpg/*.yaml"
+      - "thehive-charts/thehive-flow/scenarios/seaweedfs/*.yaml"
+      - ".github/workflows/test-thehive-flow-on-kind.yml"
+  push:
+    branches:
+      - main
+    paths:
+      - "thehive-charts/thehive/**"
+      - "!thehive-charts/thehive/**/*.md"
+      - "!thehive-charts/thehive/**/README.md.gotmpl"
+      - "thehive-charts/thehive-flow/scenarios/cnpg/*.yaml"
+      - "thehive-charts/thehive-flow/scenarios/seaweedfs/*.yaml"
+      - ".github/workflows/test-thehive-flow-on-kind.yml"
+
+permissions:
+  contents: read
+
+env:
+  NAMESPACE: thehive
+  FLOW_SCENARIOS: thehive-charts/thehive-flow/scenarios
+
+jobs:
+  test:
+    name: Install and Test TheHive Chart with TheHive Flow
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+
+      - name: Install Helm
+        uses: azure/setup-helm@9bc31f4ebc9c6b171d7bfbaa5d006ae7abdb4310 # v5.0.1
+        with:
+          version: "latest"
+
+      - name: Create Kind cluster
+        uses: helm/kind-action@1544676c07bb3570fcb70166beaa07c4528fd4aa # v1.15.1
+        with:
+          cluster_name: thehive-flow-test
+          node_image: kindest/node:v1.35.0
+          wait: 300s
+
+      - name: Install PostgreSQL (CloudNativePG)
+        run: |
+          helm upgrade --install cnpg cloudnative-pg \
+            --repo https://cloudnative-pg.github.io/charts --version 0.29.1 \
+            -n cnpg-system --create-namespace --wait
+
+          kubectl create namespace "$NAMESPACE"
+          kubectl apply -n "$NAMESPACE" -f "$FLOW_SCENARIOS/cnpg/postgres-secrets.yaml"
+          kubectl apply -n "$NAMESPACE" -f "$FLOW_SCENARIOS/cnpg/postgres-cluster.yaml"
+          kubectl wait -n "$NAMESPACE" cluster/thehive-flow-postgresql \
+            --for=condition=Ready --timeout=5m
+          kubectl apply -n "$NAMESPACE" -f "$FLOW_SCENARIOS/cnpg/databases.yaml"
+
+      - name: Install object storage (SeaweedFS)
+        run: |
+          kubectl create namespace seaweedfs
+          kubectl apply -f "$FLOW_SCENARIOS/seaweedfs/seaweedfs-s3-secret.yaml"
+          kubectl apply -n "$NAMESPACE" -f "$FLOW_SCENARIOS/seaweedfs/thehive-flow-s3-secret.yaml"
+
+          helm upgrade --install seaweedfs seaweedfs \
+            --repo https://seaweedfs.github.io/seaweedfs/helm --version 4.48.0 \
+            -n seaweedfs -f "$FLOW_SCENARIOS/seaweedfs/seaweedfs-values.yaml" --wait
+
+      - name: Create the TheHive API key secret of TheHive Flow
+        run: |
+          # Placeholder: no TheHive account exists before the install
+          kubectl create secret generic thehive-flow-thehive -n "$NAMESPACE" \
+            --from-literal=api-key=placeholder
+
+      - name: Update Helm dependencies
+        working-directory: thehive-charts/thehive
+        run: helm dependency update
+
+      - name: Install TheHive chart with TheHive Flow
+        working-directory: thehive-charts/thehive
+        run: |
+          # The runner has 4 vCPUs: lower the CPU requests of TheHive, Cassandra and
+          # Elasticsearch (1000m each by default) so TheHive Flow and Temporal can be scheduled
+          helm install thehive . \
+            --namespace "$NAMESPACE" \
+            --values scenarios/flow/values.yaml \
+            --set thehive.httpSecret="$(openssl rand -base64 32)" \
+            --set thehive.resources.requests.cpu=250m \
+            --set cassandra.resourcesPreset=none \
+            --set cassandra.resources.requests.cpu=250m \
+            --set elasticsearch.master.resourcesPreset=none \
+            --set elasticsearch.master.resources.requests.cpu=250m \
+            --set minio.enabled=false \
+            --timeout=20m \
+            --wait
+
+      - name: Check deployment status
+        run: |
+          kubectl get pods -n "$NAMESPACE"
+          kubectl get deployments -n "$NAMESPACE"
+          kubectl get services -n "$NAMESPACE"
+
+      - name: Verify the TheHive Flow wiring
+        run: |
+          set -eu
+          url=$(kubectl exec -n "$NAMESPACE" deploy/thehive -- printenv TH_FLOW_URL)
+          echo "TH_FLOW_URL=$url"
+          test "$url" = "http://thehive-thehive-flow-api:8081"
+
+          # TheHive and TheHive Flow read the same JWT signing key
+          th_key=$(kubectl exec -n "$NAMESPACE" deploy/thehive -- printenv TH_FLOW_KEY)
+          flow_key=$(kubectl get secret -n "$NAMESPACE" thehive-flow-jwt \
+            -o jsonpath='{.data.jwt-symmetric-key}' | base64 -d)
+          test -n "$th_key" && test "$th_key" = "$flow_key"
+
+          kubectl exec -n "$NAMESPACE" deploy/thehive -- \
+            grep -q 'connector.flow.FlowModule' /etc/thehive/application.conf
+
+      - name: Run Helm tests
+        run: |
+          helm test thehive --namespace "$NAMESPACE" --timeout=5m --logs
+
+      - name: Show logs on failure
+        if: failure()
+        run: |
+          echo "=== All Pods Status ==="
+          kubectl get pods -n "$NAMESPACE" -o wide
+          echo ""
+          echo "=== Namespace Events ==="
+          kubectl get events -n "$NAMESPACE" --sort-by='.lastTimestamp'
+          echo ""
+          echo "=== TheHive Pod Logs ==="
+          kubectl logs -n "$NAMESPACE" -l app.kubernetes.io/name=thehive --tail=200
+          echo ""
+          echo "=== TheHive Flow Pod Logs ==="
+          kubectl logs -n "$NAMESPACE" -l app.kubernetes.io/name=thehive-flow --all-containers --tail=200
+          echo ""
+          echo "=== Temporal Pod Logs ==="
+          kubectl logs -n "$NAMESPACE" -l app.kubernetes.io/name=temporal --tail=100
+          echo ""
+          echo "=== Test Pod Logs ==="
+          kubectl logs -n "$NAMESPACE" -l app.kubernetes.io/component=test --tail=100
+
+      - name: Cleanup
+        if: always()
+        run: |
+          helm uninstall thehive --namespace "$NAMESPACE" || true
+          kubectl delete namespace "$NAMESPACE" || true

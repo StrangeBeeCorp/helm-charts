@@ -2,13 +2,17 @@
 
 The official Helm Chart of TheHive for Kubernetes
 
-[![Version: 2.0.0](https://img.shields.io/badge/Version-2.0.0-informational?style=flat-square) ](https://github.com/StrangeBeeCorp/helm-charts/releases) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square)  [![AppVersion: 6.0.0-1](https://img.shields.io/badge/AppVersion-6.0.0--1-informational?style=flat-square) ](https://docs.strangebee.com/thehive/release-notes/release-notes-6.0/)
+[![Version: 2.1.0](https://img.shields.io/badge/Version-2.1.0-informational?style=flat-square) ](https://github.com/StrangeBeeCorp/helm-charts/releases) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square)  [![AppVersion: 6.0.0-1](https://img.shields.io/badge/AppVersion-6.0.0--1-informational?style=flat-square) ](https://docs.strangebee.com/thehive/release-notes/release-notes-6.0/)
 
 ## Description
 
 The official Helm Chart of TheHive for Kubernetes
 
 Please refer to [StrangeBee's official documentation page](https://docs.strangebee.com/thehive/installation/kubernetes/) for installation instructions and configuration.
+
+## TheHive Flow
+
+Set `thehive-flow.enabled=true` to deploy [TheHive Flow](https://github.com/StrangeBeeCorp/helm-charts/tree/main/thehive-charts/thehive-flow) with TheHive. The chart wires both applications: TheHive Flow URL, shared JWT signing key and TheHive Flow connector module. TheHive Flow needs Kubernetes >= 1.29, PostgreSQL and S3-compatible storage: see the [flow scenario](https://github.com/StrangeBeeCorp/helm-charts/tree/main/thehive-charts/thehive/scenarios/flow) for a full installation.
 
 **Homepage:** <https://strangebee.com/thehive/>
 
@@ -29,6 +33,7 @@ Kubernetes: `>= 1.23.0-0`
 | Repository | Name | Version |
 |------------|------|---------|
 | https://charts.min.io | minio | 5.4.0 |
+| https://strangebeecorp.github.io/helm-charts | thehive-flow | 1.0.0 |
 | oci://registry-1.docker.io/bitnamicharts | cassandra | 12.3.11 |
 | oci://registry-1.docker.io/bitnamicharts | elasticsearch | 22.1.6 |
 
@@ -122,6 +127,12 @@ Kubernetes: `>= 1.23.0-0`
 | minio.rootPassword | string | `"ChangeThisPasswordForMinIO"` | MinIO root password |
 | minio.rootUser | string | `"minio"` | MinIO root username |
 | nameOverride | string | `""` | Override the name of the chart |
+| thehive-flow.config.modules.workers.activities.thehive.url | string | `"http://thehive:9000"` | TheHive URL used by TheHive Flow. Matches the TheHive Service for a release named `thehive`: change it for another release name |
+| thehive-flow.enabled | bool | `false` | Enable [TheHive Flow](https://github.com/StrangeBeeCorp/helm-charts/tree/main/thehive-charts/thehive-flow) subchart deployment and wire it to TheHive |
+| thehive-flow.secrets.jwtSymmetricKey.existingSecret | string | `"thehive-flow-jwt"` | Secret holding the JWT signing key shared by TheHive and TheHive Flow. The chart creates it (from `thehive.flow.signingKey`, or a generated key) unless `thehive.flow.k8sSecretName` is set to the same name (BYO secret) |
+| thehive-flow.secrets.jwtSymmetricKey.key | string | `"jwt-symmetric-key"` | Key in the secret that holds the JWT signing key |
+| thehive-flow.secrets.thehiveApiKey.existingSecret | string | `"thehive-flow-thehive"` | Secret holding the API key of the TheHive account used by TheHive Flow. Not created by the chart: create it before installing, it can only hold a valid key once TheHive is running |
+| thehive-flow.secrets.thehiveApiKey.key | string | `"api-key"` | Key in the secret that holds the TheHive API key |
 | thehive.affinity | object | `{}` | Affinity rules for pod assignment |
 | thehive.annotations | object | `{}` | Additional annotations to attach to TheHive resources |
 | thehive.autoscaling.enabled | bool | `false` | Enable horizontal pod autoscaling |
@@ -145,11 +156,12 @@ Kubernetes: `>= 1.23.0-0`
 | thehive.database.wait | bool | `false` | Wait 30 seconds before starting TheHive (can be used to give time for Cassandra to start) |
 | thehive.extraCommand | list | `[]` | Extra command-line arguments for TheHive entrypoint |
 | thehive.extraEnv | list | `[]` | Extra environment variables for TheHive container |
-| thehive.flow.enabled | bool | `false` | Enable the TheHive Flow integration. NOTE: the TheHive image does not auto-load the Flow connector module, so when enabling you must also add the module line via `thehive.configFile` (see the configFile example below) |
-| thehive.flow.k8sSecretKey | string | `"thehive-flow-signing-key"` | Key in the existing secret that holds the signing key |
-| thehive.flow.k8sSecretName | string | `""` | Name of an existing Kubernetes secret holding the TheHive Flow signing key (BYO secret) |
-| thehive.flow.signingKey | string | `""` | TheHive Flow JWT signing key (32-byte random key). Stored in the chart-generated secret unless `flow.k8sSecretName` is set |
-| thehive.flow.url | string | `""` | TheHive Flow base URL, required when enabled (e.g. `http://myflow.example.com:9000`) |
+| thehive.flow.addModule | bool | `true` | Add the TheHive Flow connector module (`FlowModule`) to `application.conf` when the integration is enabled. Set to `false` if your configuration already loads it in a way the chart does not detect (e.g. a multi-line `scalligraph.modules` list, or your own mounted `application.conf`) |
+| thehive.flow.enabled | bool | `false` | Enable the TheHive Flow integration with an external TheHive Flow instance. The chart adds the Flow connector module to `application.conf` unless `thehive.configFile` already loads it |
+| thehive.flow.k8sSecretKey | string | `"thehive-flow-signing-key"` | Key in the existing secret that holds the signing key. With the bundled TheHive Flow, `thehive-flow.secrets.jwtSymmetricKey.key` is used instead |
+| thehive.flow.k8sSecretName | string | `""` | Name of an existing Kubernetes secret holding the TheHive Flow signing key (BYO secret). With the bundled TheHive Flow, must equal `thehive-flow.secrets.jwtSymmetricKey.existingSecret` |
+| thehive.flow.signingKey | string | `""` | TheHive Flow JWT signing key (random, at least 32 characters). Stored in the chart-generated secret unless `flow.k8sSecretName` is set. |
+| thehive.flow.url | string | `""` | TheHive Flow base URL, required when enabled with an external TheHive Flow (e.g. `http://myflow.example.com:9000`). Defaults to the TheHive Flow Service with the bundled TheHive Flow |
 | thehive.httpSecret | string | `"ChangeThisSecretWithOneContainingAtLeast32Chars"` | HTTP secret for TheHive application (must be at least 32 characters) |
 | thehive.image.pullPolicy | string | `"IfNotPresent"` | Image pull policy |
 | thehive.image.registry | string | `"docker.io"` | Docker registry for TheHive image |

@@ -168,26 +168,26 @@ thehive:
     # -- Key in the secret containing Cortex API keys
     k8sSecretKey: "api-keys"
 
-  # TheHive Flow integration
+  # TheHive Flow integration. With the bundled TheHive Flow (`thehive-flow.enabled=true`), the integration is enabled and wired automatically and `flow.enabled` is not needed
   flow:
-    # -- Enable the TheHive Flow integration. NOTE: the TheHive image does not auto-load the Flow connector module, so when enabling you must also add the module line via `thehive.configFile` (see the configFile example below)
+    # -- Enable the TheHive Flow integration with an external TheHive Flow instance. The chart adds the Flow connector module to `application.conf` unless `thehive.configFile` already loads it
     enabled: false
-    # -- TheHive Flow base URL, required when enabled (e.g. `http://myflow.example.com:9000`)
+    # -- TheHive Flow base URL, required when enabled with an external TheHive Flow (e.g. `http://myflow.example.com:9000`). Defaults to the TheHive Flow Service with the bundled TheHive Flow
     url: ""
-    # -- TheHive Flow JWT signing key (32-byte random key). Stored in the chart-generated secret unless `flow.k8sSecretName` is set
+    # -- TheHive Flow JWT signing key (random, at least 32 characters). Stored in the chart-generated secret unless `flow.k8sSecretName` is set.
     signingKey: ""
-    # -- Name of an existing Kubernetes secret holding the TheHive Flow signing key (BYO secret)
+    # -- Name of an existing Kubernetes secret holding the TheHive Flow signing key (BYO secret). With the bundled TheHive Flow, must equal `thehive-flow.secrets.jwtSymmetricKey.existingSecret`
     k8sSecretName: ""
-    # -- Key in the existing secret that holds the signing key
+    # -- Key in the existing secret that holds the signing key. With the bundled TheHive Flow, `thehive-flow.secrets.jwtSymmetricKey.key` is used instead
     k8sSecretKey: "thehive-flow-signing-key"
+    # -- Add the TheHive Flow connector module (`FlowModule`) to `application.conf` when the integration is enabled. Set to `false` if your configuration already loads it in a way the chart does not detect (e.g. a multi-line `scalligraph.modules` list, or your own mounted `application.conf`)
+    addModule: true
 
   # -- Custom application.conf configuration file content for TheHive
   configFile: ""
   #configFile: |
   #  # TheHive configuration file
   #  # See https://docs.strangebee.com/thehive/overview/ under the "Configuration" section
-  #  # Required to load the TheHive Flow connector when thehive.flow.enabled=true:
-  #  scalligraph.modules += "org.thp.thehive.connector.flow.FlowModule"
 
   # -- Custom logback.xml logging configuration file content for TheHive
   logbackXml: ""
@@ -621,3 +621,31 @@ minio:
     storageClass: ""
     # -- Size of MinIO persistent volume
     size: "10Gi"
+
+###################################
+# TheHive Flow subchart variables #
+###################################
+
+thehive-flow:
+  # -- Enable [TheHive Flow](https://github.com/StrangeBeeCorp/helm-charts/tree/main/thehive-charts/thehive-flow) subchart deployment and wire it to TheHive
+  enabled: false
+
+  secrets:
+    jwtSymmetricKey:
+      # -- Secret holding the JWT signing key shared by TheHive and TheHive Flow. The chart creates it (from `thehive.flow.signingKey`, or a generated key) unless `thehive.flow.k8sSecretName` is set to the same name (BYO secret)
+      existingSecret: thehive-flow-jwt
+      # -- Key in the secret that holds the JWT signing key
+      key: jwt-symmetric-key
+    thehiveApiKey:
+      # -- Secret holding the API key of the TheHive account used by TheHive Flow. Not created by the chart: create it before installing, it can only hold a valid key once TheHive is running
+      existingSecret: thehive-flow-thehive
+      # -- Key in the secret that holds the TheHive API key
+      key: api-key
+
+  config:
+    modules:
+      workers:
+        activities:
+          thehive:
+            # -- TheHive URL used by TheHive Flow. Matches the TheHive Service for a release named `thehive`: change it for another release name
+            url: http://thehive:9000

@@ -103,6 +103,7 @@ jobs:
         run: |
           helm dependency update
           helm lint . --strict
+          helm lint . --strict --values scenarios/flow/values.yaml
 
   lint-thehive-flow:
     name: Lint TheHive Flow Chart

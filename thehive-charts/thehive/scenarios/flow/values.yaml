@@ -1,0 +1,19 @@
+################################################################################
+# TheHive with the bundled TheHive Flow
+################################################################################
+# See README.md for deployment instructions.
+
+thehive-flow:
+  enabled: true
+
+  blobstore:
+    s3:
+      endpoint: http://seaweedfs-all-in-one.seaweedfs.svc.cluster.local:8333
+
+  config:
+    api:
+      public:
+        # Base URL of the webhook URLs given by TheHive Flow (required). In-cluster
+        # TheHive Flow API Service for a release named thehive in the thehive namespace:
+        # set the external URL (e.g. Ingress) for callers outside the cluster
+        url: http://thehive-thehive-flow-api.thehive.svc.cluster.local:8081
