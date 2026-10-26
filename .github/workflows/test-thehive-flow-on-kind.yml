@@ -34,6 +34,11 @@ jobs:
     name: Install and Test TheHive Chart with TheHive Flow
     runs-on: ubuntu-24.04
     timeout-minutes: 45
+    strategy:
+      matrix:
+        k8s-version:
+          - v1.35.0
+          - v1.34.0
     steps:
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -49,7 +54,7 @@ jobs:
         uses: helm/kind-action@1544676c07bb3570fcb70166beaa07c4528fd4aa # v1.15.1
         with:
           cluster_name: thehive-flow-test
-          node_image: kindest/node:v1.35.0
+          node_image: kindest/node:${{ matrix.k8s-version }}
           wait: 300s
 
       - name: Install PostgreSQL (CloudNativePG)
