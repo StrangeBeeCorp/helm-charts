@@ -84,12 +84,17 @@ jobs:
       - name: Install TheHive chart with TheHive Flow
         working-directory: thehive-charts/thehive
         run: |
+          # The runner has 4 vCPUs: lower the CPU requests of TheHive, Cassandra and
+          # Elasticsearch (1000m each by default) so TheHive Flow and Temporal can be scheduled
           helm install thehive . \
             --namespace "$NAMESPACE" \
             --values scenarios/flow/values.yaml \
             --set thehive.httpSecret="$(openssl rand -base64 32)" \
+            --set thehive.resources.requests.cpu=250m \
             --set cassandra.resourcesPreset=none \
+            --set cassandra.resources.requests.cpu=250m \
             --set elasticsearch.master.resourcesPreset=none \
+            --set elasticsearch.master.resources.requests.cpu=250m \
             --set minio.enabled=false \
             --timeout=20m \
             --wait
