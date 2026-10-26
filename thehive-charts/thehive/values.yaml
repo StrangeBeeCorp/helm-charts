@@ -627,7 +627,7 @@ minio:
 ###################################
 
 thehive-flow:
-  # -- Enable [TheHive Flow](https://github.com/StrangeBeeCorp/helm-charts/tree/main/thehive-charts/thehive-flow) dependency subchart deployment and wire it to TheHive (Flow URL, shared JWT signing key and Flow connector module). TheHive Flow needs Kubernetes >= 1.29, PostgreSQL and S3-compatible storage: see `scenarios/flow`. The release name must not contain `thehive-flow` unless `thehive-flow.fullnameOverride` is set. All the [TheHive Flow values](https://github.com/StrangeBeeCorp/helm-charts/blob/main/thehive-charts/thehive-flow/values.yaml) can be set under this key
+  # -- Enable [TheHive Flow](https://github.com/StrangeBeeCorp/helm-charts/tree/main/thehive-charts/thehive-flow) subchart deployment and wire it to TheHive
   enabled: false
 
   secrets:
