@@ -148,10 +148,10 @@ true
 {{- end -}}
 {{- end -}}
 
-{{/* TheHive application.conf content: thehive.configFile, plus the Flow connector module when the integration is enabled and no uncommented line of configFile loads it */}}
+{{/* TheHive application.conf content: thehive.configFile, plus the Flow connector module when the integration is enabled, thehive.flow.addModule is true and no uncommented line of configFile loads it */}}
 {{- define "thehive.configFile" -}}
 {{- $configFile := .Values.thehive.configFile -}}
-{{- if and (include "thehive.flow.enabled" .) (not (regexMatch "(?m)^[ \\t]*scalligraph\\.modules[^#\\n]*connector\\.flow\\.FlowModule" $configFile)) -}}
+{{- if and (include "thehive.flow.enabled" .) .Values.thehive.flow.addModule (not (regexMatch "(?m)^[ \\t]*scalligraph\\.modules[^#\\n]*connector\\.flow\\.FlowModule" $configFile)) -}}
   {{- $separator := ternary "" "\n" (or (empty $configFile) (hasSuffix "\n" $configFile)) -}}
   {{- $configFile = printf "%s%s# TheHive Flow connector, added by the chart\nscalligraph.modules += \"org.thp.thehive.connector.flow.FlowModule\"\n" $configFile $separator -}}
 {{- end -}}

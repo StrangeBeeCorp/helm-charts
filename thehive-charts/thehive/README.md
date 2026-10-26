@@ -158,6 +158,7 @@ Kubernetes: `>= 1.23.0-0`
 | thehive.database.wait | bool | `false` | Wait 30 seconds before starting TheHive (can be used to give time for Cassandra to start) |
 | thehive.extraCommand | list | `[]` | Extra command-line arguments for TheHive entrypoint |
 | thehive.extraEnv | list | `[]` | Extra environment variables for TheHive container |
+| thehive.flow.addModule | bool | `true` | Add the TheHive Flow connector module (`FlowModule`) to `application.conf` when the integration is enabled. Set to `false` if your configuration already loads it in a way the chart does not detect (e.g. a multi-line `scalligraph.modules` list, or your own mounted `application.conf`) |
 | thehive.flow.enabled | bool | `false` | Enable the TheHive Flow integration with an external TheHive Flow instance. The chart adds the Flow connector module to `application.conf` unless `thehive.configFile` already loads it |
 | thehive.flow.k8sSecretKey | string | `"thehive-flow-signing-key"` | Key in the existing secret that holds the signing key. With the bundled TheHive Flow, `thehive-flow.secrets.jwtSymmetricKey.key` is used instead |
 | thehive.flow.k8sSecretName | string | `""` | Name of an existing Kubernetes secret holding the TheHive Flow signing key (BYO secret). With the bundled TheHive Flow, must equal `thehive-flow.secrets.jwtSymmetricKey.existingSecret` |

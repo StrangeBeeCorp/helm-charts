@@ -3,7 +3,7 @@
 - Add TheHive Flow as an optional subchart (`thehive-flow.enabled`), wired to TheHive: TheHive Flow URL, JWT signing key shared through the `thehive-flow-jwt` secret (generated when `thehive.flow.signingKey` is empty, created as a Helm hook and kept on uninstall), and TheHive Flow connector module [#149](https://github.com/StrangeBeeCorp/helm-charts/issues/149)
 - With GitOps tools (Argo CD, Flux), set `thehive.flow.signingKey` or a BYO secret: the generated TheHive Flow JWT key is kept across upgrades with `lookup`, which these tools do not run [#149](https://github.com/StrangeBeeCorp/helm-charts/issues/149)
 - Fail at render on TheHive Flow settings that cannot work: Kubernetes < 1.29 or a release name clashing with the bundled TheHive Flow, a `thehive.flow.signingKey` shorter than 32 characters, an external TheHive Flow without `thehive.flow.url` [#149](https://github.com/StrangeBeeCorp/helm-charts/issues/149)
-- Add the TheHive Flow connector module to `application.conf` when the TheHive Flow integration is enabled, unless `thehive.configFile` already loads it [#149](https://github.com/StrangeBeeCorp/helm-charts/issues/149)
+- Add the TheHive Flow connector module to `application.conf` when the TheHive Flow integration is enabled, unless `thehive.configFile` already loads it. Set `thehive.flow.addModule: false` if your configuration loads it another way [#149](https://github.com/StrangeBeeCorp/helm-charts/issues/149)
 - Fix the chart-generated secret not being loaded by TheHive when only the Cortex API keys are stored in it [#149](https://github.com/StrangeBeeCorp/helm-charts/issues/149)
 
 ## 2.0.0

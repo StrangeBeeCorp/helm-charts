@@ -180,6 +180,8 @@ thehive:
     k8sSecretName: ""
     # -- Key in the existing secret that holds the signing key. With the bundled TheHive Flow, `thehive-flow.secrets.jwtSymmetricKey.key` is used instead
     k8sSecretKey: "thehive-flow-signing-key"
+    # -- Add the TheHive Flow connector module (`FlowModule`) to `application.conf` when the integration is enabled. Set to `false` if your configuration already loads it in a way the chart does not detect (e.g. a multi-line `scalligraph.modules` list, or your own mounted `application.conf`)
+    addModule: true
 
   # -- Custom application.conf configuration file content for TheHive
   configFile: ""
