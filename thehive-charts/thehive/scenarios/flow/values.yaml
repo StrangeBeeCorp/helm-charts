@@ -1,10 +1,7 @@
 ################################################################################
 # TheHive with the bundled TheHive Flow
 ################################################################################
-# See README.md for deployment instructions. TheHive Flow uses PostgreSQL from
-# the thehive-flow cnpg scenario and S3 storage from the thehive-flow seaweedfs
-# scenario, with their default names: only the values below differ from the
-# TheHive Flow chart defaults.
+# See README.md for deployment instructions. 
 
 thehive-flow:
   enabled: true
