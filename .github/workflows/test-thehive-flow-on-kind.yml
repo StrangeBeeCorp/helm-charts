@@ -89,7 +89,8 @@ jobs:
           BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
         run: |
           if git diff --quiet "$BASE_SHA" HEAD -- thehive-charts/thehive-flow ':(exclude)*.md' ':(exclude)*.gotmpl'; then
-            echo "TheHive Flow chart unchanged: testing with the released chart" | tee -a "$GITHUB_STEP_SUMMARY"
+            RELEASED=$(yq '.dependencies[] | select(.name == "thehive-flow") | .version' thehive-charts/thehive/Chart.yaml)
+            echo "TheHive Flow chart unchanged: testing with the released chart $RELEASED" | tee -a "$GITHUB_STEP_SUMMARY"
             exit 0
           fi
           # Released TheHive charts keep the published TheHive Flow version: this change stays in CI
