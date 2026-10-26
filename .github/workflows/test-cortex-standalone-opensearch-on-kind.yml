@@ -29,12 +29,12 @@ jobs:
           - v1.34.0
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           fetch-depth: 0
 
       - name: Install Helm
-        uses: azure/setup-helm@v4
+        uses: azure/setup-helm@9bc31f4ebc9c6b171d7bfbaa5d006ae7abdb4310 # v5.0.1
         with:
           version: "latest"
 
@@ -49,7 +49,7 @@ jobs:
           curl -fsSL -u admin:C0rt3xOpenS3arch#2025 http://localhost:9200/_cluster/health
 
       - name: Create Kind cluster
-        uses: helm/kind-action@v1
+        uses: helm/kind-action@1544676c07bb3570fcb70166beaa07c4528fd4aa # v1.15.1
         with:
           cluster_name: cortex-standalone-opensearch-test
           node_image: kindest/node:${{ matrix.k8s-version }}
