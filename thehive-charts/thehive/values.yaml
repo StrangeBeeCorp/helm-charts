@@ -174,7 +174,7 @@ thehive:
     enabled: false
     # -- TheHive Flow base URL, required when enabled with an external TheHive Flow (e.g. `http://myflow.example.com:9000`). Defaults to the TheHive Flow Service with the bundled TheHive Flow
     url: ""
-    # -- TheHive Flow JWT signing key (random, at least 32 characters). Stored in the chart-generated secret unless `flow.k8sSecretName` is set. With the bundled TheHive Flow, a key is generated when empty and kept across upgrades with `lookup`: when deploying with GitOps tools (Argo CD, Flux) or `helm template`, where `lookup` returns nothing, set this key or `flow.k8sSecretName`, or the key changes at every sync
+    # -- TheHive Flow JWT signing key (random, at least 32 characters). Stored in the chart-generated secret unless `flow.k8sSecretName` is set.
     signingKey: ""
     # -- Name of an existing Kubernetes secret holding the TheHive Flow signing key (BYO secret). With the bundled TheHive Flow, must equal `thehive-flow.secrets.jwtSymmetricKey.existingSecret`
     k8sSecretName: ""
