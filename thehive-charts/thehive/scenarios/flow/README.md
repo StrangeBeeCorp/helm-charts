@@ -59,7 +59,7 @@ kubectl create secret generic thehive-flow-thehive -n thehive \
 
 ### 4. TheHive and TheHive Flow
 
-Set `config.api.public.url` in `values.yaml`, then:
+Set `thehive-flow.config.api.public.url` in `thehive-charts/thehive/scenarios/flow/values.yaml`, then:
 
 ```bash
 helm dependency update thehive-charts/thehive
@@ -107,6 +107,17 @@ helm install thehive thehive-charts/thehive -n thehive \
   --set thehive-flow.secrets.jwtSymmetricKey.existingSecret=my-flow-jwt \
   ...
 ```
+
+## JWT signing key notes
+
+- **GitOps tools**: the generated key is kept across upgrades with Helm `lookup`. Argo CD, Flux and `helm template` render without `lookup`, so a new key would be generated at every sync. Set `thehive.flow.signingKey` or bring your own Secret instead.
+- **Existing Secret**: the chart creates `thehive-flow-jwt` as a Helm hook, which replaces a Secret of the same name. If you create the Secret yourself, also set `thehive.flow.k8sSecretName`.
+- **One release per namespace**: the Secret name is fixed by `thehive-flow.secrets.jwtSymmetricKey.existingSecret`. Change it for a second release in the same namespace.
+- **Key change**: changing the key does not restart the pods. Restart TheHive and TheHive Flow afterwards:
+
+  ```bash
+  kubectl rollout restart -n thehive deployment/thehive deployment/thehive-thehive-flow
+  ```
 
 ## Uninstall
 

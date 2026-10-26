@@ -13,7 +13,7 @@ Please refer to [StrangeBee's official documentation page](https://docs.strangeb
 
 ## TheHive Flow
 
-Set `thehive-flow.enabled=true` to deploy [TheHive Flow](../thehive-flow/) with TheHive. The chart wires both applications: TheHive Flow URL, shared JWT signing key and TheHive Flow connector module. TheHive Flow needs PostgreSQL and S3-compatible storage: see the [flow scenario](./scenarios/flow/) for a full installation.
+Set `thehive-flow.enabled=true` to deploy [TheHive Flow](https://github.com/StrangeBeeCorp/helm-charts/tree/main/thehive-charts/thehive-flow) with TheHive. The chart wires both applications: TheHive Flow URL, shared JWT signing key and TheHive Flow connector module. TheHive Flow needs Kubernetes >= 1.29, PostgreSQL and S3-compatible storage: see the [flow scenario](https://github.com/StrangeBeeCorp/helm-charts/tree/main/thehive-charts/thehive/scenarios/flow) for a full installation.
 
 To connect TheHive to an external TheHive Flow instance instead, set `thehive.flow.enabled=true`, `thehive.flow.url` and the signing key.
 

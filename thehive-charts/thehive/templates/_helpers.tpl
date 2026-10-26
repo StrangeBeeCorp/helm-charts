@@ -98,14 +98,18 @@ true
 {{- end -}}
 {{- end -}}
 
-{{/* TheHive Flow URL: the explicit value, else the Service of the bundled TheHive Flow (named by the subchart helper) */}}
+{{/* Full name of the bundled TheHive Flow, as the subchart helper computes it */}}
+{{- define "thehive.flow.fullname" -}}
+{{- $flowContext := dict "Values" (index .Values "thehive-flow") "Release" .Release "Chart" (dict "Name" "thehive-flow") -}}
+{{- include "thehive-flow.fullname" $flowContext -}}
+{{- end -}}
+
+{{/* TheHive Flow URL: the explicit value, else the Service of the bundled TheHive Flow */}}
 {{- define "thehive.flow.url" -}}
 {{- if .Values.thehive.flow.url -}}
   {{- .Values.thehive.flow.url -}}
 {{- else if include "thehive.flow.bundled" . -}}
-  {{- $flow := index .Values "thehive-flow" -}}
-  {{- $flowContext := dict "Values" $flow "Release" .Release "Chart" (dict "Name" "thehive-flow") -}}
-  {{- printf "http://%s-api:%v" (include "thehive-flow.fullname" $flowContext) $flow.service.api.port -}}
+  {{- printf "http://%s-api:%v" (include "thehive.flow.fullname" .) (index .Values "thehive-flow").service.api.port -}}
 {{- end -}}
 {{- end -}}
 
@@ -118,9 +122,23 @@ true
 {{- index .Values "thehive-flow" "secrets" "jwtSymmetricKey" "key" -}}
 {{- end -}}
 
-{{/* Fail on TheHive Flow settings the bundled TheHive Flow cannot honor */}}
+{{/* Fail on TheHive Flow settings that cannot work */}}
 {{- define "thehive.flow.validate" -}}
+{{- if include "thehive.flow.enabled" . -}}
+  {{- if and (.Values.thehive.flow.signingKey) (lt (len .Values.thehive.flow.signingKey) 32) -}}
+    {{- fail "thehive.flow.signingKey must be at least 32 characters long: TheHive Flow refuses shorter keys" -}}
+  {{- end -}}
+  {{- if and (not (include "thehive.flow.bundled" .)) (not .Values.thehive.flow.url) -}}
+    {{- fail "thehive.flow.url is required when thehive.flow.enabled=true without the bundled TheHive Flow (thehive-flow.enabled)" -}}
+  {{- end -}}
+{{- end -}}
 {{- if include "thehive.flow.bundled" . -}}
+  {{- if not (semverCompare ">=1.29.0-0" .Capabilities.KubeVersion.Version) -}}
+    {{- fail (printf "the bundled TheHive Flow (thehive-flow.enabled) requires Kubernetes >= 1.29.0, found %s" .Capabilities.KubeVersion.Version) -}}
+  {{- end -}}
+  {{- if eq (include "thehive.flow.fullname" .) (include "thehive.fullname" .) -}}
+    {{- fail (printf "TheHive and TheHive Flow resources would both be named %q: use a release name that does not contain \"thehive-flow\", or set thehive-flow.fullnameOverride" (include "thehive.fullname" .)) -}}
+  {{- end -}}
   {{- if not (include "thehive.flow.jwtSecretName" .) -}}
     {{- fail "thehive-flow.secrets.jwtSymmetricKey.existingSecret is required: it holds the JWT signing key shared by TheHive and TheHive Flow" -}}
   {{- end -}}
@@ -130,10 +148,10 @@ true
 {{- end -}}
 {{- end -}}
 
-{{/* TheHive application.conf content: thehive.configFile, plus the Flow connector module when the integration is enabled and configFile does not load it */}}
+{{/* TheHive application.conf content: thehive.configFile, plus the Flow connector module when the integration is enabled and no uncommented line of configFile loads it */}}
 {{- define "thehive.configFile" -}}
 {{- $configFile := .Values.thehive.configFile -}}
-{{- if and (include "thehive.flow.enabled" .) (not (contains "connector.flow.FlowModule" $configFile)) -}}
+{{- if and (include "thehive.flow.enabled" .) (not (regexMatch "(?m)^[ \\t]*scalligraph\\.modules[^#\\n]*connector\\.flow\\.FlowModule" $configFile)) -}}
   {{- $separator := ternary "" "\n" (or (empty $configFile) (hasSuffix "\n" $configFile)) -}}
   {{- $configFile = printf "%s%s# TheHive Flow connector, added by the chart\nscalligraph.modules += \"org.thp.thehive.connector.flow.FlowModule\"\n" $configFile $separator -}}
 {{- end -}}

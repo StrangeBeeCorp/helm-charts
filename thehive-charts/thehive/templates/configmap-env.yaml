@@ -1,3 +1,4 @@
+{{- include "thehive.flow.validate" . }}
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -52,7 +53,6 @@ data:
   TH_NO_CONFIG_CORTEX: "1"
   {{- end }}
   {{- if include "thehive.flow.enabled" . }}
-  {{- include "thehive.flow.validate" . }}
   TH_FEATURE_ORCHESTRATOR: "true"
   TH_FLOW_URL: {{ include "thehive.flow.url" . | quote }}
   {{- end }}
