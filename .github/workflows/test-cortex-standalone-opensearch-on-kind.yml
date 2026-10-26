@@ -9,6 +9,8 @@ on:
       - "!cortex-charts/cortex/**/*.md"
       - "!cortex-charts/cortex/**/README.md.gotmpl"
       - ".github/workflows/test-cortex-standalone-opensearch-on-kind.yml"
+      - ".github/actions/setup-kind/**"
+      - ".github/actions/install-nfs-provisioner/**"
   push:
     branches:
       - main
@@ -17,6 +19,8 @@ on:
       - "!cortex-charts/cortex/**/*.md"
       - "!cortex-charts/cortex/**/README.md.gotmpl"
       - ".github/workflows/test-cortex-standalone-opensearch-on-kind.yml"
+      - ".github/actions/setup-kind/**"
+      - ".github/actions/install-nfs-provisioner/**"
 
 jobs:
   test:
@@ -33,11 +37,6 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Install Helm
-        uses: azure/setup-helm@9bc31f4ebc9c6b171d7bfbaa5d006ae7abdb4310 # v5.0.1
-        with:
-          version: "latest"
-
       - name: Start Docker Compose backends
         working-directory: cortex-charts/cortex/ci
         run: docker compose -f docker-compose-opensearch.yml up -d --wait --wait-timeout 300
@@ -48,37 +47,23 @@ jobs:
           echo "=== OpenSearch ==="
           curl -fsSL -u admin:C0rt3xOpenS3arch#2025 http://localhost:9200/_cluster/health
 
-      - name: Create Kind cluster
-        uses: helm/kind-action@1544676c07bb3570fcb70166beaa07c4528fd4aa # v1.15.1
+      - name: Set up Helm and Kind
+        uses: ./.github/actions/setup-kind
         with:
-          cluster_name: cortex-standalone-opensearch-test
-          node_image: kindest/node:${{ matrix.k8s-version }}
-          wait: 300s
-
-      - name: Verify cluster
-        run: |
-          kubectl cluster-info
-          kubectl get nodes
+          cluster-name: cortex-standalone-opensearch-test
+          k8s-version: ${{ matrix.k8s-version }}
 
       - name: Install NFS Server Provisioner for RWX support
-        run: |
-          helm repo add nfs-ganesha-server-and-external-provisioner \
-            https://kubernetes-sigs.github.io/nfs-ganesha-server-and-external-provisioner/
-
-          helm install nfs-server nfs-ganesha-server-and-external-provisioner/nfs-server-provisioner \
-            --set persistence.enabled=false \
-            --set persistence.storageClass=standard \
-            --set persistence.size=10Gi \
-            --wait \
-            --timeout=5m
+        uses: ./.github/actions/install-nfs-provisioner
 
       - name: Create Cortex namespace
         run: kubectl create namespace cortex
 
       - name: Create K8s endpoints for external backends
         run: |
-          export HOST_IP=$(docker network inspect kind --format '{{json .IPAM.Config}}' \
+          HOST_IP=$(docker network inspect kind --format '{{json .IPAM.Config}}' \
             | jq -r '.[] | select(.Gateway // empty | test("^[0-9]+\\.")) | .Gateway')
+          export HOST_IP
           if [ -z "$HOST_IP" ]; then
             echo "ERROR: Could not determine host IPv4 gateway for kind network"
             docker network inspect kind --format '{{json .IPAM.Config}}'

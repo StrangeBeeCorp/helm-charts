@@ -11,6 +11,7 @@ on:
       - "thehive-charts/thehive-flow/scenarios/cnpg/*.yaml"
       - "thehive-charts/thehive-flow/scenarios/seaweedfs/*.yaml"
       - ".github/workflows/test-thehive-flow-on-kind.yml"
+      - ".github/actions/setup-kind/**"
   push:
     branches:
       - main
@@ -21,6 +22,7 @@ on:
       - "thehive-charts/thehive-flow/scenarios/cnpg/*.yaml"
       - "thehive-charts/thehive-flow/scenarios/seaweedfs/*.yaml"
       - ".github/workflows/test-thehive-flow-on-kind.yml"
+      - ".github/actions/setup-kind/**"
 
 permissions:
   contents: read
@@ -45,17 +47,11 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Install Helm
-        uses: azure/setup-helm@9bc31f4ebc9c6b171d7bfbaa5d006ae7abdb4310 # v5.0.1
+      - name: Set up Helm and Kind
+        uses: ./.github/actions/setup-kind
         with:
-          version: "latest"
-
-      - name: Create Kind cluster
-        uses: helm/kind-action@1544676c07bb3570fcb70166beaa07c4528fd4aa # v1.15.1
-        with:
-          cluster_name: thehive-flow-test
-          node_image: kindest/node:${{ matrix.k8s-version }}
-          wait: 300s
+          cluster-name: thehive-flow-test
+          k8s-version: ${{ matrix.k8s-version }}
 
       - name: Install PostgreSQL (CloudNativePG)
         run: |
