@@ -14,7 +14,6 @@ Please refer to [StrangeBee's official documentation page](https://docs.strangeb
 
 Set `thehive-flow.enabled=true` to deploy [TheHive Flow](https://github.com/StrangeBeeCorp/helm-charts/tree/main/thehive-charts/thehive-flow) with TheHive. The chart wires both applications: TheHive Flow URL, shared JWT signing key and TheHive Flow connector module. TheHive Flow needs Kubernetes >= 1.29, PostgreSQL and S3-compatible storage: see the [flow scenario](https://github.com/StrangeBeeCorp/helm-charts/tree/main/thehive-charts/thehive/scenarios/flow) for a full installation.
 
-
 **Homepage:** <https://strangebee.com/thehive/>
 
 ## Maintainers
@@ -129,7 +128,7 @@ Kubernetes: `>= 1.23.0-0`
 | minio.rootUser | string | `"minio"` | MinIO root username |
 | nameOverride | string | `""` | Override the name of the chart |
 | thehive-flow.config.modules.workers.activities.thehive.url | string | `"http://thehive:9000"` | TheHive URL used by TheHive Flow. Matches the TheHive Service for a release named `thehive`: change it for another release name |
-| thehive-flow.enabled | bool | `false` | Enable [TheHive Flow](https://github.com/StrangeBeeCorp/helm-charts/tree/main/thehive-charts/thehive-flow) dependency subchart deployment and wire it to TheHive (Flow URL, shared JWT signing key and Flow connector module). TheHive Flow needs Kubernetes >= 1.29, PostgreSQL and S3-compatible storage: see `scenarios/flow`. The release name must not contain `thehive-flow` unless `thehive-flow.fullnameOverride` is set. All the [TheHive Flow values](https://github.com/StrangeBeeCorp/helm-charts/blob/main/thehive-charts/thehive-flow/values.yaml) can be set under this key |
+| thehive-flow.enabled | bool | `false` | Enable [TheHive Flow](https://github.com/StrangeBeeCorp/helm-charts/tree/main/thehive-charts/thehive-flow) subchart deployment and wire it to TheHive |
 | thehive-flow.secrets.jwtSymmetricKey.existingSecret | string | `"thehive-flow-jwt"` | Secret holding the JWT signing key shared by TheHive and TheHive Flow. The chart creates it (from `thehive.flow.signingKey`, or a generated key) unless `thehive.flow.k8sSecretName` is set to the same name (BYO secret) |
 | thehive-flow.secrets.jwtSymmetricKey.key | string | `"jwt-symmetric-key"` | Key in the secret that holds the JWT signing key |
 | thehive-flow.secrets.thehiveApiKey.existingSecret | string | `"thehive-flow-thehive"` | Secret holding the API key of the TheHive account used by TheHive Flow. Not created by the chart: create it before installing, it can only hold a valid key once TheHive is running |

@@ -1,7 +1,7 @@
 ################################################################################
 # TheHive with the bundled TheHive Flow
 ################################################################################
-# See README.md for deployment instructions. 
+# See README.md for deployment instructions.
 
 thehive-flow:
   enabled: true
