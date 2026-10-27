@@ -5,6 +5,7 @@ thehive:
   index:
     hostnames:
       - elasticsearch-external
+    password: "ChangeThisPasswordForElastic"
   storage:
     endpoint: "http://minio-external:9002"
     accessKey: "minio"

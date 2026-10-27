@@ -60,13 +60,13 @@ spec:
           {{- if or (.Values.thehive.index.password) (.Values.thehive.index.k8sSecretName) }}
           env:
             {{- if .Values.thehive.index.password }}
-            - name: CORTEX_ELASTICSEARCH_PASSWORD
+            - name: TH_ELASTICSEARCH_PASSWORD
               valueFrom:
                 secretKeyRef:
                   name: {{ include "thehive.fullname" . }}-secrets
-                  key: CORTEX_ELASTICSEARCH_PASSWORD
+                  key: TH_ELASTICSEARCH_PASSWORD
             {{- else }}
-            - name: CORTEX_ELASTICSEARCH_PASSWORD
+            - name: TH_ELASTICSEARCH_PASSWORD
               valueFrom:
                 secretKeyRef:
                   name: {{ .Values.thehive.index.k8sSecretName }}

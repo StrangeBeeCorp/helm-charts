@@ -46,7 +46,7 @@ jobs:
           docker compose exec cassandra cqlsh -e 'describe cluster'
           echo ""
           echo "=== Elasticsearch ==="
-          docker compose exec elasticsearch curl -fsSL http://localhost:9200/_cluster/health
+          docker compose exec elasticsearch sh -c 'curl -fsSL -u "elastic:$ELASTIC_PASSWORD" http://localhost:9200/_cluster/health'
 
       - name: Create MinIO bucket
         working-directory: thehive-charts/thehive/ci

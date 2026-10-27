@@ -1,3 +1,7 @@
+## 2.1.1
+
+- Fix the Elasticsearch init container when `thehive.index.password` or `thehive.index.k8sSecretName` is set: it read a secret key the chart does not create and never expanded the password, so TheHive stayed in `Init`
+
 ## 2.1.0
 
 - Add TheHive Flow as an optional subchart (`thehive-flow.enabled`), wired to TheHive: TheHive Flow URL, JWT signing key shared through the `thehive-flow-jwt` secret (generated when `thehive.flow.signingKey` is empty, created as a Helm hook and kept on uninstall), and TheHive Flow connector module [#149](https://github.com/StrangeBeeCorp/helm-charts/issues/149)
