@@ -19,7 +19,7 @@ helm repo update
 helm install cert-manager jetstack/cert-manager \
   --namespace cert-manager \
   --create-namespace \
-  --set installCRDs=true
+  --set crds.enabled=true
 ```
 
 Wait for cert-manager to be ready:
@@ -58,7 +58,7 @@ Wait for Cassandra to be ready (this may take 2-5 minutes):
 
 ```bash
 kubectl wait --for=condition=ready pod \
-  -l app.kubernetes.io/name=cassandra \
+  -l cassandra.datastax.com/cluster=cassandra \
   -n k8ssandra-operator --timeout=10m
 ```
 

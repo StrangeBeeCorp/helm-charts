@@ -15,13 +15,21 @@ Deploy TheHive using both K8ssandra Operator for Cassandra and ECK Operator for 
 Install cert-manager
 
 ```bash
-helm repo add jetstack https://charts.jetstack.io         
-helm repo update                                                                          
+helm repo add jetstack https://charts.jetstack.io
+helm repo update
 
-helm install cert-manager jetstack/cert-manager \                                                     
-  --namespace cert-manager \              
+helm install cert-manager jetstack/cert-manager \
+  --namespace cert-manager \
   --create-namespace \
-  --set installCRDs=true
+  --set crds.enabled=true
+```
+
+Wait for cert-manager to be ready:
+
+```bash
+kubectl wait --for=condition=ready pod \
+  -l app.kubernetes.io/instance=cert-manager \
+  -n cert-manager --timeout=5m
 ```
 
 ### Install K8ssandra Operator

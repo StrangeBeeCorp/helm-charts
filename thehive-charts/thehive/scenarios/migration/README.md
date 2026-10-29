@@ -1,6 +1,6 @@
 # Migrating from bundled to standalone mode
 
-This document is for operators currently running TheHive via this chart in
+This document is for administrators currently running TheHive via this chart in
 **bundled mode** (Cassandra, Elasticsearch and MinIO deployed as Helm
 subcharts inside the same release) and who want to move to **standalone
 mode** (the same chart, with the three backends provided externally).
@@ -21,15 +21,15 @@ It is **not** intended for production loads.
 
 ## Bundled vs standalone
 
-| Concern                  | Bundled mode                                                        | Standalone mode                                                                                                                |
-|--------------------------|---------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------|
-| Cassandra                | Bitnami `cassandra` subchart (StatefulSet)                          | Operator-provided cluster (any reachable Cassandra 4.x)                                                                        |
-| Elasticsearch            | Bitnami `elasticsearch` subchart (StatefulSet)                      | Operator-provided cluster (any reachable Elasticsearch 8.x+)                                                                   |
-| Object storage           | MinIO community subchart (Deployment)                               | Any S3-compatible endpoint (MinIO, AWS S3, GCS, SeaweedFS, etc.)                                                                          |
-| Persistent volumes       | Created by the subcharts in-cluster                                 | Owned by the external backend, outside the chart's scope                                                                       |
-| Backup / DR              | Operator's responsibility                   | Operator's responsibility                                                            |
-| Backend network exposure | Subchart-created `Service` per backend                              | Operator-created `Service` + `EndpointSlice` per backend                                                                       |
-| Chart values toggles     | `cassandra.enabled / elasticsearch.enabled / minio.enabled` all `true` | All three set to `false`; `thehive.{database,index,storage}.hostnames` / `endpoint` point at the operator-provided services |
+| Concern                  | Bundled mode                                                           | Standalone mode                                                                                                                 |
+|--------------------------|------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------|
+| Cassandra                | Bitnami `cassandra` subchart (StatefulSet)                             | Administrator-provided cluster (any reachable Cassandra 4.x)                                                                    |
+| Elasticsearch            | Bitnami `elasticsearch` subchart (StatefulSet)                         | Administrator-provided cluster (any reachable Elasticsearch 8.x+)                                                               |
+| Object storage           | MinIO community subchart (Deployment)                                  | Any S3-compatible endpoint (MinIO, AWS S3, GCS, SeaweedFS, etc.)                                                                |
+| Persistent volumes       | Created by the subcharts in-cluster                                    | Owned by the external backend, outside the chart's scope                                                                        |
+| Backup / DR              | Not provided by the chart; the administrator must snapshot the PVCs    | Provided by the backend platform (k8ssandra Medusa, ECK snapshots, managed service backups)                                     |
+| Backend network exposure | Subchart-created `Service` per backend                                 | Administrator-created `Service` + `EndpointSlice` per backend                                                                   |
+| Chart values toggles     | `cassandra.enabled / elasticsearch.enabled / minio.enabled` all `true` | All three set to `false`; `thehive.{database,index,storage}.hostnames` / `endpoint` point at the administrator-provided services |
 
 See [`scenarios/standalone/`](../standalone/) for the target-side
 configuration: the `values.yaml` overlay to apply, and the
@@ -79,10 +79,10 @@ updated by `helm install`/`helm upgrade` on this chart.
 ## Architecture: standalone mode (target)
 
 In standalone mode the chart owns only the TheHive application. The
-three backends live wherever the operator chooses — another Kubernetes
+three backends live wherever the administrator chooses — another Kubernetes
 namespace, a different cluster, a VM fleet, or a managed cloud service.
 
-The chart still talks to its backends by `Service` name; the **operator**
+The chart still talks to its backends by `Service` name; the **administrator**
 creates those Services + `EndpointSlice` objects so that
 `cassandra-external`, `elasticsearch-external` and `minio-external`
 resolve to the real backend endpoints.
@@ -107,7 +107,7 @@ flowchart LR
         end
     end
 
-    subgraph external[Operator-managed infrastructure]
+    subgraph external[Administrator-managed infrastructure]
         cass_db[(Cassandra<br/>cluster)]
         es_db[(Elasticsearch<br/>cluster)]
         obj[(S3-compatible<br/>object storage)]
@@ -151,7 +151,7 @@ The recommended path is a **cold migration with side-by-side stacks**:
 
 ```mermaid
 sequenceDiagram
-    actor Op as Operator
+    actor Op as Administrator
     participant Bundled as Bundled stack
     participant ExtBackends as External backends
     participant Standalone as Standalone stack
@@ -170,7 +170,7 @@ sequenceDiagram
     Op->>Bundled: 10. Decommission (after acceptance window)
 ```
 
-The exact commands for each step depend on the operator's choice of
+The exact commands for each step depend on the administrator's choice of
 data-movement strategy — filesystem copy vs application-level export,
 hot vs cold, with or without an Elasticsearch backup. Those choices are
 covered in the next document.
