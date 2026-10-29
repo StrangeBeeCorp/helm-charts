@@ -1,0 +1,57 @@
+# Based on https://github.com/helm/chart-releaser-action
+name: Release TheHive Flow Helm Chart
+
+on:
+  push:
+    tags:
+      - thehive-flow-*
+
+jobs:
+  release:
+    permissions:
+      contents: write
+    runs-on: ubuntu-latest
+    env:
+      CHART_DIR: thehive-charts/thehive-flow
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+
+      - name: Configure Git
+        run: |
+          git config user.name "$GITHUB_ACTOR"
+          git config user.email "$GITHUB_ACTOR@users.noreply.github.com"
+
+      - name: Install Helm
+        uses: azure/setup-helm@9bc31f4ebc9c6b171d7bfbaa5d006ae7abdb4310 # v5.0.1
+        env:
+          GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+
+      - name: Check tag matches chart version
+        run: |
+          version=$(awk '/^version:/ {print $2}' "$CHART_DIR/Chart.yaml")
+          if [ "$GITHUB_REF_NAME" != "thehive-flow-$version" ]; then
+            echo "Tag $GITHUB_REF_NAME does not match chart version $version"
+            exit 1
+          fi
+
+      - name: Add Helm Repositories related to the Helm Charts specified as dependencies
+        run: |
+          helm repo add temporal https://temporalio.github.io/helm-charts
+
+      # thehive-charts/ holds several charts: package only this one, then let
+      # chart-releaser upload it and update the index
+      - name: Package chart
+        run: |
+          helm package "$CHART_DIR" --dependency-update --destination .cr-release-packages
+
+      - name: Run chart-releaser
+        uses: helm/chart-releaser-action@3e001cb8c68933439c7e721650f20a07a1a5c61e # v1.7.0 + skip_packaging fix (#202), unreleased
+        with:
+          skip_packaging: true
+          skip_existing: true
+          mark_as_latest: false
+        env:
+          CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"

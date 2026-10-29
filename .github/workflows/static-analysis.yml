@@ -8,6 +8,9 @@ on:
       - "thehive-charts/thehive/**"
       - "!thehive-charts/thehive/**/*.md"
       - "!thehive-charts/thehive/**/README.md.gotmpl"
+      - "thehive-charts/thehive-flow/**"
+      - "!thehive-charts/thehive-flow/**/*.md"
+      - "!thehive-charts/thehive-flow/**/README.md.gotmpl"
       - "cortex-charts/cortex/**"
       - "!cortex-charts/cortex/**/*.md"
       - "!cortex-charts/cortex/**/README.md.gotmpl"
@@ -19,6 +22,9 @@ on:
       - "thehive-charts/thehive/**"
       - "!thehive-charts/thehive/**/*.md"
       - "!thehive-charts/thehive/**/README.md.gotmpl"
+      - "thehive-charts/thehive-flow/**"
+      - "!thehive-charts/thehive-flow/**/*.md"
+      - "!thehive-charts/thehive-flow/**/README.md.gotmpl"
       - "cortex-charts/cortex/**"
       - "!cortex-charts/cortex/**/*.md"
       - "!cortex-charts/cortex/**/README.md.gotmpl"
@@ -27,16 +33,17 @@ on:
 jobs:
   detect-changes:
     name: Detect Changed Charts
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     outputs:
       cortex: ${{ steps.filter.outputs.cortex }}
       thehive: ${{ steps.filter.outputs.thehive }}
+      thehive-flow: ${{ steps.filter.outputs.thehive-flow }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       - name: Check for changes
-        uses: dorny/paths-filter@v3
+        uses: dorny/paths-filter@ceb8a2b8f2d89434be7ff52d3de7ec3738c5cc9d # v4.0.3
         id: filter
         with:
           filters: |
@@ -48,20 +55,24 @@ jobs:
               - 'thehive-charts/thehive/**'
               - '!thehive-charts/thehive/**/*.md'
               - '!thehive-charts/thehive/**/README.md.gotmpl'
+            thehive-flow:
+              - 'thehive-charts/thehive-flow/**'
+              - '!thehive-charts/thehive-flow/**/*.md'
+              - '!thehive-charts/thehive-flow/**/README.md.gotmpl'
 
   lint-cortex:
     name: Lint Cortex Chart
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     needs: detect-changes
     if: needs.detect-changes.outputs.cortex == 'true'
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           fetch-depth: 0
 
       - name: Install Helm
-        uses: azure/setup-helm@v4
+        uses: azure/setup-helm@9bc31f4ebc9c6b171d7bfbaa5d006ae7abdb4310 # v5.0.1
         with:
           version: "latest"
 
@@ -73,22 +84,45 @@ jobs:
 
   lint-thehive:
     name: Lint TheHive Chart
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     needs: detect-changes
     if: needs.detect-changes.outputs.thehive == 'true'
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           fetch-depth: 0
 
       - name: Install Helm
-        uses: azure/setup-helm@v4
+        uses: azure/setup-helm@9bc31f4ebc9c6b171d7bfbaa5d006ae7abdb4310 # v5.0.1
         with:
           version: "latest"
 
       - name: Run helm lint
         working-directory: thehive-charts/thehive
+        run: |
+          helm dependency update
+          helm lint . --strict
+          helm lint . --strict --values scenarios/flow/values.yaml
+
+  lint-thehive-flow:
+    name: Lint TheHive Flow Chart
+    runs-on: ubuntu-26.04
+    needs: detect-changes
+    if: needs.detect-changes.outputs.thehive-flow == 'true'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+
+      - name: Install Helm
+        uses: azure/setup-helm@9bc31f4ebc9c6b171d7bfbaa5d006ae7abdb4310 # v5.0.1
+        with:
+          version: "latest"
+
+      - name: Run helm lint
+        working-directory: thehive-charts/thehive-flow
         run: |
           helm dependency update
           helm lint . --strict

@@ -72,9 +72,26 @@ cortex:
     # -- List of ElasticSearch hostnames (auto-configured if ElasticSearch subchart is enabled and this is empty)
     hostnames: []
       #- "myelasticsearch.example.com"
+    # -- Full ElasticSearch/OpenSearch URI (e.g. http://host:9200). When set, takes precedence over hostnames.
+    uri: ""
 
   # -- Directory in Cortex container used to communicate with running jobs (write inputs and read outputs)
   jobDirectory: "/tmp/cortex-jobs"
+
+  # -- Registry prefix prepended to every neuron (analyzer/responder) Docker image at runtime. Useful for pull-through caches (Harbor, ECR proxy, Artifactory) and air-gapped clusters. Example: `"harbor.example.com/docker.io/"`
+  dockerImageRegistryPrefix: ""
+
+  k8sJobs:
+    # -- Map of Kubernetes labels applied to every neuron Job/Pod (in addition to Cortex's built-in `cortex-job-id`, `cortex-neuron-job`, `cortex-worker-id`). Useful for ArgoCD ownership, cost allocation, and policy selectors. Example: `{"app.kubernetes.io/instance": "cortex", "app.kubernetes.io/part-of": "cortex"}`
+    labels: {}
+    # -- Pod-level securityContext applied to every neuron Job pod. Each sub-field is optional. Make sure your analyzer/responder image accepts the user/group you set.
+    securityContext: {}
+      # runAsUser: 1000
+      # runAsGroup: 1000
+      # fsGroup: 1000
+      # runAsNonRoot: false
+    # -- Names of existing image pull Secrets (in the Cortex namespace) attached to every neuron Job pod, to pull analyzer/responder images from private registries. Requires Cortex 4.2.0+. Example: `["regcred"]`
+    imagePullSecrets: []
 
   # -- HTTP secret for Cortex application (must be at least 32 characters)
   httpSecret: "ChangeThisSecretWithOneContainingAtLeast32Chars"
@@ -120,24 +137,20 @@ cortex:
         "https://catalogs.download.strangebee.com/latest/json/analyzers.json",
       ]
 
-      # Customize analyzers parallelism here
-      fork-join-executor {
-        parallelism-min: 8,
-        parallelism-factor: 1.0,
-        parallelism-max: 8,
+      # Max analyzer jobs run concurrently (extra jobs queue)
+      thread-pool-executor {
+        fixed-pool-size = 20
       }
     }
 
-      # Customize responders parallelism here
     responder {
       urls: [
         "https://catalogs.download.strangebee.com/latest/json/responders.json",
       ]
 
-      fork-join-executor {
-        parallelism-min: 8,
-        parallelism-factor: 1.0,
-        parallelism-max: 8,
+      # Max responder jobs run concurrently (extra jobs queue)
+      thread-pool-executor {
+        fixed-pool-size = 20
       }
     }
 

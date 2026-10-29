@@ -1,6 +1,40 @@
-## Next release
+## 2.1.1
 
-- Nothing yet
+- Fix the Elasticsearch init container when `thehive.index.password` or `thehive.index.k8sSecretName` is set: it read a secret key the chart does not create and never expanded the password, so TheHive stayed in `Init` [#172](https://github.com/StrangeBeeCorp/helm-charts/pull/172)
+
+## 2.1.0
+
+- Add TheHive Flow as an optional subchart (`thehive-flow.enabled`), wired to TheHive: TheHive Flow URL, JWT signing key shared through the `thehive-flow-jwt` secret (generated when `thehive.flow.signingKey` is empty, created as a Helm hook and kept on uninstall), and TheHive Flow connector module [#149](https://github.com/StrangeBeeCorp/helm-charts/issues/149)
+
+## 2.0.0
+
+- Update TheHive to v6.0.0-1
+- (BREAKING CHANGE) Render the TheHive Flow settings as `TH_FLOW_URL` / `TH_FLOW_KEY` instead of `TH_ORCHESTRATOR_URL` / `TH_ORCHESTRATOR_KEY`, and load the connector with `org.thp.thehive.connector.flow.FlowModule` in `thehive.configFile`, as expected by TheHive 6. The `thehive.flow.*` values are unchanged [#155](https://github.com/StrangeBeeCorp/helm-charts/pull/155)
+
+## 1.1.1
+
+- Update TheHive to v5.8.1-1 [#156](https://github.com/StrangeBeeCorp/helm-charts/pull/156)
+
+## 1.1.0
+
+- Add TheHive Flow integration values to configure and enable the connection to a TheHive Flow instance [#150](https://github.com/StrangeBeeCorp/helm-charts/issues/150)
+
+## 1.0.7
+
+- Update TheHive to v5.8.0-1 [#148](https://github.com/StrangeBeeCorp/helm-charts/pull/148)
+- TheHive 5.8 adds support for AWS IRSA / EKS Pod Identity for S3 object storage authentication
+
+## 1.0.6
+
+- Update TheHive to v5.7.6-1 [#145](https://github.com/StrangeBeeCorp/helm-charts/pull/145)
+
+## 1.0.5
+
+- Update TheHive to v5.7.5-1
+
+## 1.0.4
+
+- Update TheHive to v5.7.0-1 [#137](https://github.com/StrangeBeeCorp/helm-charts/pull/137)
 
 ## 1.0.3
 

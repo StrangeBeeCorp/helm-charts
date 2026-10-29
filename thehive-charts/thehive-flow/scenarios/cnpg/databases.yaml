@@ -1,0 +1,34 @@
+################################################################################
+# Databases of TheHive Flow (thehive_flow) and of the bundled Temporal Server
+# (temporal, temporal_visibility), created in the thehive-flow-postgresql cluster.
+################################################################################
+---
+apiVersion: postgresql.cnpg.io/v1
+kind: Database
+metadata:
+  name: thehive-flow-postgresql-thehive-flow
+spec:
+  cluster:
+    name: thehive-flow-postgresql
+  name: thehive_flow
+  owner: thehive_flow
+---
+apiVersion: postgresql.cnpg.io/v1
+kind: Database
+metadata:
+  name: thehive-flow-postgresql-temporal
+spec:
+  cluster:
+    name: thehive-flow-postgresql
+  name: temporal
+  owner: temporal
+---
+apiVersion: postgresql.cnpg.io/v1
+kind: Database
+metadata:
+  name: thehive-flow-postgresql-temporal-visibility
+spec:
+  cluster:
+    name: thehive-flow-postgresql
+  name: temporal_visibility
+  owner: temporal

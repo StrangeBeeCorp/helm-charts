@@ -1,0 +1,27 @@
+services:
+  opensearch:
+    image: docker.io/opensearchproject/opensearch:3.0.0
+    ports:
+      - "9200:9200"
+    environment:
+      discovery.type: single-node
+      OPENSEARCH_INITIAL_ADMIN_PASSWORD: "C0rt3xOpenS3arch#2025"
+      OPENSEARCH_JAVA_OPTS: "-Xms512m -Xmx512m"
+      cluster.name: "cortex"
+    entrypoint:
+      - /bin/bash
+      - -c
+      - |
+        # Run the demo security installer to generate certs and config
+        bash /usr/share/opensearch/plugins/opensearch-security/tools/install_demo_configuration.sh -y -i -s
+        # Disable HTTPS on the REST layer (keep auth enabled)
+        sed -i 's/plugins.security.ssl.http.enabled: true/plugins.security.ssl.http.enabled: false/' /usr/share/opensearch/config/opensearch.yml
+        # Skip the demo installer on actual startup since we already ran it
+        export DISABLE_INSTALL_DEMO_CONFIG=true
+        # Start OpenSearch via the original entrypoint
+        exec /usr/share/opensearch/opensearch-docker-entrypoint.sh opensearch
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsSL -u admin:C0rt3xOpenS3arch#2025 http://localhost:9200/_cluster/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 30

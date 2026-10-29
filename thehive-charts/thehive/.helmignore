@@ -21,7 +21,7 @@
 .idea/
 *.tmproj
 .vscode/
-# Chart-specific exclusions
+ci/
 scenarios/
 tools/
 docs-openapi.yaml

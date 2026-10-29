@@ -1,0 +1,21 @@
+thehive:
+  database:
+    hostnames:
+      - cassandra-external
+  index:
+    hostnames:
+      - elasticsearch-external
+    password: "ChangeThisPasswordForElastic"
+  storage:
+    endpoint: "http://minio-external:9002"
+    accessKey: "minio"
+    secretKey: "miniominio"
+
+cassandra:
+  enabled: false
+
+elasticsearch:
+  enabled: false
+
+minio:
+  enabled: false

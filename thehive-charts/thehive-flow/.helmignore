@@ -1,0 +1,29 @@
+.DS_Store
+*.swp
+*.bak
+*.tmp
+*.orig
+*~
+
+.git/
+.gitignore
+
+.github/
+
+.idea/
+.vscode/
+
+dist/
+
+# helm-docs template (regenerates README.md; not part of the package)
+README.md.gotmpl
+
+# Docs consumed via the repo, not shipped in the chart package
+docs/
+
+# Deployment tooling consumed from the repo, not shipped in the chart package
+scripts/
+bootstrap/
+examples/
+scenarios/
+ci/

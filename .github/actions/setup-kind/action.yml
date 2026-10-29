@@ -1,0 +1,31 @@
+name: Set up Helm and Kind
+description: Install the latest Helm, create a Kind cluster and print its nodes
+
+inputs:
+  cluster-name:
+    description: Name of the Kind cluster
+    required: true
+  k8s-version:
+    description: Kubernetes version of the kindest/node image (e.g. v1.36.4)
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - name: Install Helm
+      uses: azure/setup-helm@9bc31f4ebc9c6b171d7bfbaa5d006ae7abdb4310 # v5.0.1
+      with:
+        version: "latest"
+
+    - name: Create Kind cluster
+      uses: helm/kind-action@1544676c07bb3570fcb70166beaa07c4528fd4aa # v1.15.1
+      with:
+        cluster_name: ${{ inputs.cluster-name }}
+        node_image: kindest/node:${{ inputs.k8s-version }}
+        wait: 300s
+
+    - name: Verify cluster
+      shell: bash
+      run: |
+        kubectl cluster-info
+        kubectl get nodes

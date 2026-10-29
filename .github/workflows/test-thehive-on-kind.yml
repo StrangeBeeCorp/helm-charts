@@ -9,6 +9,7 @@ on:
       - "!thehive-charts/thehive/**/*.md"
       - "!thehive-charts/thehive/**/README.md.gotmpl"
       - ".github/workflows/test-thehive-on-kind.yml"
+      - ".github/actions/setup-kind/**"
   push:
     branches:
       - main
@@ -17,38 +18,28 @@ on:
       - "!thehive-charts/thehive/**/*.md"
       - "!thehive-charts/thehive/**/README.md.gotmpl"
       - ".github/workflows/test-thehive-on-kind.yml"
+      - ".github/actions/setup-kind/**"
 
 jobs:
   test:
     name: Install and Test TheHive Chart
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     strategy:
       matrix:
         k8s-version:
-          - v1.35.0
-          - v1.34.0
+          - v1.36.4
+          - v1.35.8
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           fetch-depth: 0
 
-      - name: Install Helm
-        uses: azure/setup-helm@v4
+      - name: Set up Helm and Kind
+        uses: ./.github/actions/setup-kind
         with:
-          version: "latest"
-
-      - name: Create Kind cluster
-        uses: helm/kind-action@v1
-        with:
-          cluster_name: thehive-test
-          node_image: kindest/node:${{ matrix.k8s-version }}
-          wait: 300s
-
-      - name: Verify cluster
-        run: |
-          kubectl cluster-info
-          kubectl get nodes
+          cluster-name: thehive-test
+          k8s-version: ${{ matrix.k8s-version }}
 
       - name: Create TheHive namespace
         run: |

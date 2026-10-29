@@ -1,3 +1,4 @@
+{{- $configFile := include "thehive.configFile" . }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -59,13 +60,13 @@ spec:
           {{- if or (.Values.thehive.index.password) (.Values.thehive.index.k8sSecretName) }}
           env:
             {{- if .Values.thehive.index.password }}
-            - name: CORTEX_ELASTICSEARCH_PASSWORD
+            - name: TH_ELASTICSEARCH_PASSWORD
               valueFrom:
                 secretKeyRef:
                   name: {{ include "thehive.fullname" . }}-secrets
-                  key: CORTEX_ELASTICSEARCH_PASSWORD
+                  key: TH_ELASTICSEARCH_PASSWORD
             {{- else }}
-            - name: CORTEX_ELASTICSEARCH_PASSWORD
+            - name: TH_ELASTICSEARCH_PASSWORD
               valueFrom:
                 secretKeyRef:
                   name: {{ .Values.thehive.index.k8sSecretName }}
@@ -130,10 +131,23 @@ spec:
                   name: {{ .Values.thehive.cortex.k8sSecretName }}
                   key: {{ .Values.thehive.cortex.k8sSecretKey }}
             {{- end }}
+            {{- if include "thehive.flow.bundled" . }}
+            - name: TH_FLOW_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "thehive.flow.jwtSecretName" . }}
+                  key: {{ include "thehive.flow.jwtSecretKey" . }}
+            {{- else if and (.Values.thehive.flow.enabled) (.Values.thehive.flow.k8sSecretName) }}
+            - name: TH_FLOW_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.thehive.flow.k8sSecretName }}
+                  key: {{ .Values.thehive.flow.k8sSecretKey }}
+            {{- end }}
           envFrom:
             - configMapRef:
                 name: {{ include "thehive.fullname" . }}-env
-            {{- if or (not .Values.thehive.database.k8sSecretName) (not .Values.thehive.index.k8sSecretName) (not .Values.thehive.storage.k8sSecretName) (not .Values.thehive.k8sSecretName) }}
+            {{- if include "thehive.secrets.enabled" . }}
             - secretRef:
                 name: {{ include "thehive.fullname" . }}-secrets
             {{- end }}
@@ -178,9 +192,9 @@ spec:
           {{- end }}
           resources:
             {{- toYaml .Values.thehive.resources | nindent 12 }}
-          {{- if or (.Values.thehive.volumeMounts) (.Values.thehive.configFile) (.Values.thehive.logbackXml) }}
+          {{- if or (.Values.thehive.volumeMounts) ($configFile) (.Values.thehive.logbackXml) }}
           volumeMounts:
-          {{- if .Values.thehive.configFile }}
+          {{- if $configFile }}
             - name: config
               mountPath: /etc/thehive/application.conf
               subPath: application.conf
@@ -196,9 +210,9 @@ spec:
             {{- toYaml . | nindent 12 }}
           {{- end }}
           {{- end }}
-      {{- if or (.Values.thehive.volumes) (.Values.thehive.configFile) (.Values.thehive.logbackXml) }}
+      {{- if or (.Values.thehive.volumes) ($configFile) (.Values.thehive.logbackXml) }}
       volumes:
-      {{- if or (.Values.thehive.configFile) (.Values.thehive.logbackXml) }}
+      {{- if or ($configFile) (.Values.thehive.logbackXml) }}
         - name: config
           configMap:
             name: {{ include "thehive.fullname" . }}-config
