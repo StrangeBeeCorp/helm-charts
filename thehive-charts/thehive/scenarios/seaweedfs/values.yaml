@@ -22,23 +22,32 @@ minio:
   enabled: false
 
 # Minimal resources for Kind cluster compatibility
+# JVM heaps must stay below the memory limits, or the containers are OOMKilled
 cassandra:
   resourcesPreset: none
   resources:
     requests:
       cpu: 100m
-      memory: 256Mi
-    limits:
-      cpu: 500m
       memory: 1Gi
+    limits:
+      cpu: 1000m
+      memory: 1536Mi
+  jvm:
+    extraOpts: "-Xms768m -Xmx768m -Xmn128m"
+    maxHeapSize: "768m"
+    newHeapSize: "128m"
 
 elasticsearch:
   master:
     resourcesPreset: none
+    heapSize: "512m"
+    extraEnvVars:
+      - name: JVM_OPTS
+        value: "-Xms512m -Xmx512m"
     resources:
       requests:
         cpu: 100m
-        memory: 512Mi
+        memory: 768Mi
       limits:
-        cpu: 500m
+        cpu: 1000m
         memory: 1Gi
