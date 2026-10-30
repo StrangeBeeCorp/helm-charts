@@ -134,6 +134,9 @@ jobs:
           kubectl get pods -n seaweedfs -o wide
           kubectl get pods -n thehive -o wide
           echo ""
+          echo "=== Container Termination Reasons ==="
+          kubectl get pods -n thehive -o jsonpath='{range .items[*]}{.metadata.name}{"\t"}{range .status.containerStatuses[*]}{.name}={.lastState.terminated.reason}({.lastState.terminated.exitCode}) {end}{"\n"}{end}'
+          echo ""
           echo "=== Namespace Events ==="
           kubectl get events -n seaweedfs --sort-by='.lastTimestamp'
           kubectl get events -n thehive --sort-by='.lastTimestamp'
