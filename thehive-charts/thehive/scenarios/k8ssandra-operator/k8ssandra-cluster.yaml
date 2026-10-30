@@ -1,0 +1,23 @@
+apiVersion: k8ssandra.io/v1alpha1
+kind: K8ssandraCluster
+metadata:
+  name: cassandra
+  namespace: k8ssandra-operator
+spec:
+  cassandra:
+    serverVersion: "4.1.3"
+    datacenters:
+      - metadata:
+          name: datacenter1
+        size: 1
+        storageConfig:
+          cassandraDataVolumeClaimSpec:
+            storageClassName: standard
+            accessModes:
+              - ReadWriteOnce
+            resources:
+              requests:
+                storage: 50Gi
+        config:
+          jvmOptions:
+            heapSize: 512M

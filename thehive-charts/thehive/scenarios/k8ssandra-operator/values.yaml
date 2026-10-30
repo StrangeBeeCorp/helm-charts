@@ -1,0 +1,16 @@
+################################################################################
+# TheHive with K8ssandra Operator
+################################################################################
+# See README.md for deployment instructions
+
+thehive:
+  database:
+    username: "cassandra-superuser"
+    k8sSecretName: "cassandra-credentials"
+    k8sSecretKey: "password"
+    hostnames:
+      - "cassandra-datacenter1-service.k8ssandra-operator.svc.cluster.local"
+
+# Disable Bitnami Cassandra subchart (using K8ssandra operator instead)
+cassandra:
+  enabled: false
