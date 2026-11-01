@@ -17,15 +17,10 @@ Using Helm (recommended):
 ```bash
 helm repo add elastic https://helm.elastic.co
 helm repo update
-helm install elastic-operator elastic/eck-operator -n elastic-system --create-namespace
-```
-
-Wait for the operator to be ready:
-
-```bash
-kubectl wait --for=condition=ready pod \
-  -l app.kubernetes.io/name=elastic-operator \
-  -n elastic-system --timeout=5m
+helm install elastic-operator elastic/eck-operator \
+  --version 3.5.0 \
+  -n elastic-system --create-namespace \
+  --wait --timeout 5m
 ```
 
 ### Deploy Elasticsearch Cluster
@@ -34,9 +29,12 @@ kubectl wait --for=condition=ready pod \
 kubectl apply -f elasticsearch.yaml
 ```
 
-Wait for Elasticsearch to be ready (this may take 2-5 minutes):
+Wait for Elasticsearch to be ready (this may take 2-5 minutes). The operator creates the pod a few seconds after the apply, so wait for it to exist first:
 
 ```bash
+until kubectl get pod -l elasticsearch.k8s.elastic.co/cluster-name=elasticsearch \
+  -n elastic-system -o name | grep -q .; do sleep 5; done
+
 kubectl wait --for=condition=ready pod \
   -l elasticsearch.k8s.elastic.co/cluster-name=elasticsearch \
   -n elastic-system --timeout=10m
@@ -85,12 +83,19 @@ kubectl run curl-init --image=curlimages/curl:8.17.0 --restart=Never \
 
 ### Deploy TheHive
 
-The `values.yaml` file is already configured to use the secret. Deploy TheHive:
+Fetch the chart dependencies (the `charts/` directory is not committed):
+
+```bash
+helm dependency update ../../
+```
+
+The `values.yaml` file is already configured to use the secret. Deploy TheHive with a random HTTP secret:
 
 ```bash
 helm install thehive ../../ \
   -f values.yaml \
-  -n thehive --create-namespace
+  -n thehive --create-namespace \
+  --set thehive.httpSecret="$(openssl rand -base64 32)"
 ```
 
 ### Verify Deployment

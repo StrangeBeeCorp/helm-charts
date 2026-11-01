@@ -19,7 +19,9 @@ This directory contains tested deployment scenarios for TheHive Helm chart.
 Each scenario is self-contained. Follow its README for prerequisites, then deploy from the chart directory:
 
 ```bash
-helm install thehive . -f scenarios/<scenario-name>/values.yaml -n thehive --create-namespace
+helm dependency update .
+helm install thehive . -f scenarios/<scenario-name>/values.yaml -n thehive --create-namespace \
+  --set thehive.httpSecret="$(openssl rand -base64 32)"
 ```
 
 ## Scenario: k8ssandra-operator

@@ -17,17 +17,11 @@ helm repo add jetstack https://charts.jetstack.io
 helm repo update
 
 helm install cert-manager jetstack/cert-manager \
+  --version v1.21.3 \
   --namespace cert-manager \
   --create-namespace \
-  --set crds.enabled=true
-```
-
-Wait for cert-manager to be ready:
-
-```bash
-kubectl wait --for=condition=ready pod \
-  -l app.kubernetes.io/instance=cert-manager \
-  -n cert-manager --timeout=5m
+  --set crds.enabled=true \
+  --wait --timeout 5m
 ```
 
 ### Install k8ssandra-operator
@@ -37,15 +31,9 @@ helm repo add k8ssandra https://helm.k8ssandra.io/stable
 helm repo update
 
 helm install k8ssandra-operator k8ssandra/k8ssandra-operator \
-  -n k8ssandra-operator --create-namespace
-```
-
-Wait for the operator pods to be ready:
-
-```bash
-kubectl wait --for=condition=ready pod \
-  -l app.kubernetes.io/name=k8ssandra-operator \
-  -n k8ssandra-operator --timeout=5m
+  --version 1.34.0 \
+  -n k8ssandra-operator --create-namespace \
+  --wait --timeout 5m
 ```
 
 ### Deploy Cassandra Cluster
@@ -54,9 +42,12 @@ kubectl wait --for=condition=ready pod \
 kubectl apply -f k8ssandra-cluster.yaml
 ```
 
-Wait for Cassandra to be ready (this may take 2-5 minutes):
+Wait for Cassandra to be ready (this may take 2-5 minutes). The operator creates the pod a few seconds after the apply, so wait for it to exist first:
 
 ```bash
+until kubectl get pod -l cassandra.datastax.com/cluster=cassandra \
+  -n k8ssandra-operator -o name | grep -q .; do sleep 5; done
+
 kubectl wait --for=condition=ready pod \
   -l cassandra.datastax.com/cluster=cassandra \
   -n k8ssandra-operator --timeout=10m
@@ -94,12 +85,19 @@ kubectl get secret cassandra-credentials -n thehive
 
 ### Deploy TheHive
 
-The `values.yaml` file is already configured to use the secret. Deploy TheHive:
+Fetch the chart dependencies (the `charts/` directory is not committed):
+
+```bash
+helm dependency update ../../
+```
+
+The `values.yaml` file is already configured to use the secret. Deploy TheHive with a random HTTP secret:
 
 ```bash
 helm install thehive ../../ \
   -f values.yaml \
-  -n thehive --create-namespace
+  -n thehive --create-namespace \
+  --set thehive.httpSecret="$(openssl rand -base64 32)"
 ```
 
 ### Verify Deployment

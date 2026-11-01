@@ -30,16 +30,10 @@ Install SeaweedFS:
 
 ```bash
 helm install seaweedfs seaweedfs/seaweedfs \
+  --version 4.48.0 \
   -f seaweedfs-values.yaml \
-  -n seaweedfs
-```
-
-Wait for SeaweedFS to be ready:
-
-```bash
-kubectl wait --for=condition=ready pod \
-  -l app.kubernetes.io/name=seaweedfs \
-  -n seaweedfs --timeout=5m
+  -n seaweedfs \
+  --wait --timeout 5m
 ```
 
 ### Verify S3 Service
@@ -80,12 +74,19 @@ kubectl get secret thehive-s3-credentials -n thehive
 
 ### Deploy TheHive
 
-The `values.yaml` file is already configured to use the secret. Deploy TheHive:
+Fetch the chart dependencies (the `charts/` directory is not committed):
+
+```bash
+helm dependency update ../../
+```
+
+The `values.yaml` file is already configured to use the secret. Deploy TheHive with a random HTTP secret:
 
 ```bash
 helm install thehive ../../ \
   -f values.yaml \
-  -n thehive
+  -n thehive \
+  --set thehive.httpSecret="$(openssl rand -base64 32)"
 ```
 
 ### Verify Deployment
