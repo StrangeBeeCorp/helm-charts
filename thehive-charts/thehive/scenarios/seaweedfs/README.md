@@ -7,6 +7,7 @@ Deploy TheHive using SeaweedFS for object storage.
 - Kubernetes cluster (>= 1.23.0)
 - Helm 3.x
 - kubectl
+- jq
 
 ## Deployment
 

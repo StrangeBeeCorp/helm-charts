@@ -8,7 +8,7 @@ thehive:
     accessKey: "seaweedfs-admin"
 
     # S3 Secret Key - Using Kubernetes Secret (recommended)
-    # The secret is created by thehive-s3-credentials.yaml
+    # Created from the SeaweedFS S3 config, see "Extract Credentials" in README.md
     k8sSecretName: "thehive-s3-credentials"
     k8sSecretKey: "secretKey"
 

@@ -172,5 +172,5 @@ sequenceDiagram
 
 The exact commands for each step depend on the administrator's choice of
 data-movement strategy — filesystem copy vs application-level export,
-hot vs cold, with or without an Elasticsearch backup. Those choices are
-covered in the next document.
+hot vs cold, with or without an Elasticsearch backup. Those choices will be
+covered by the runbooks under `scenarios/migration/`, which are not written yet.

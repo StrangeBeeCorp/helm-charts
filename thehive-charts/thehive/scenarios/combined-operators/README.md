@@ -129,11 +129,13 @@ ELASTICSEARCH_PASSWORD=$(kubectl get secret elasticsearch-credentials \
   -n thehive \
   -o jsonpath='{.data.password}' | base64 -d)
 
-kubectl run curl-init --image=curlimages/curl:8.17.0 --restart=Never \
+printf 'user = "elastic:%s"\n' "${ELASTICSEARCH_PASSWORD}" | \
+  kubectl run curl-init --image=curlimages/curl:8.17.0 --restart=Never \
   -n elastic-system --rm -i --quiet -- \
-  sh -c "curl -X PUT -u 'elastic:${ELASTICSEARCH_PASSWORD}' \
-  http://elasticsearch-es-http:9200/thehive_global"
+  curl -fsS -K - -X PUT http://elasticsearch-es-http:9200/thehive_global
 ```
+
+The credentials are passed on stdin, so they do not appear in the pod spec.
 
 ### Deploy TheHive
 
