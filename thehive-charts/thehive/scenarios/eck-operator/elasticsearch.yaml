@@ -5,6 +5,9 @@ metadata:
   namespace: elastic-system
 spec:
   version: 8.15.0
+  # TLS is disabled to keep this example simple. In production, remove this
+  # block so ECK serves HTTPS, set thehive.initContainers.checkElasticsearch.useHttps
+  # to true, and configure TheHive to trust the ECK CA.
   http:
     tls:
       selfSignedCertificate:

@@ -20,6 +20,9 @@ on:
       - ".github/workflows/test-thehive-seaweedfs-on-kind.yml"
       - ".github/actions/setup-kind/**"
 
+permissions:
+  contents: read
+
 jobs:
   test:
     name: Install and Test TheHive Chart with SeaweedFS

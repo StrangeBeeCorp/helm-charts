@@ -5,6 +5,8 @@
 
 thehive:
   index:
+    # The elastic superuser keeps this example simple. In production, create a
+    # dedicated user with access limited to the TheHive indices.
     username: "elastic"
     k8sSecretName: "elasticsearch-credentials"
     k8sSecretKey: "password"

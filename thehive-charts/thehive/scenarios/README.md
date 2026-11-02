@@ -24,17 +24,6 @@ helm install thehive . -f scenarios/<scenario-name>/values.yaml -n thehive --cre
   --set thehive.httpSecret="$(openssl rand -base64 32)"
 ```
 
-## Scenario: k8ssandra-operator
-
-Use this scenario if you want:
-
-- Operator-based Cassandra deployment
-- Automated backups with Medusa
-- Multi-datacenter replication
-- No dependency on deprecated Bitnami images
-
-To deploy, follow the [scenario documentation](./k8ssandra-operator/README.md).
-
 ## Support
 
 For issues or questions:
