@@ -109,11 +109,12 @@ jobs:
             --namespace thehive \
             pod -l app.kubernetes.io/name=elasticsearch
 
+      # Deployment "available" is already true with 0 ready pods (maxUnavailable: 1)
       - name: Wait for TheHive to be ready
         run: |
-          kubectl wait --for=condition=available --timeout=10m \
+          kubectl wait --for=condition=ready --timeout=10m \
             --namespace thehive \
-            deployment -l app.kubernetes.io/name=thehive
+            pod -l app.kubernetes.io/name=thehive
 
       - name: Check deployment status
         run: |
