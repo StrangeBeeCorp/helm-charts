@@ -10,6 +10,8 @@ Deploy TheHive using both K8ssandra Operator for Cassandra and ECK Operator for 
 
 ## Deployment
 
+Run all commands from the root of the repository.
+
 ### Requirements
 
 Install cert-manager
@@ -40,7 +42,7 @@ helm install k8ssandra-operator k8ssandra/k8ssandra-operator \
 ### Deploy Cassandra Cluster
 
 ```bash
-kubectl apply -f ../k8ssandra-operator/k8ssandra-cluster.yaml
+kubectl apply -f thehive-charts/thehive/scenarios/k8ssandra-operator/k8ssandra-cluster.yaml
 ```
 
 Wait for Cassandra to be ready (this may take 2-5 minutes). The operator creates the pod a few seconds after the apply, so wait for it to exist first:
@@ -68,7 +70,7 @@ helm install elastic-operator elastic/eck-operator \
 ### Deploy Elasticsearch Cluster
 
 ```bash
-kubectl apply -f ../eck-operator/elasticsearch.yaml
+kubectl apply -f thehive-charts/thehive/scenarios/eck-operator/elasticsearch.yaml
 ```
 
 Wait for Elasticsearch to be ready (this may take 2-5 minutes). The operator creates the pod a few seconds after the apply, so wait for it to exist first:
@@ -142,14 +144,14 @@ The credentials are passed on stdin, so they do not appear in the pod spec.
 Fetch the chart dependencies (the `charts/` directory is not committed):
 
 ```bash
-helm dependency update ../../
+helm dependency update thehive-charts/thehive
 ```
 
 Deploy TheHive with a random HTTP secret:
 
 ```bash
-helm install thehive ../../ \
-  -f values.yaml \
+helm install thehive thehive-charts/thehive \
+  -f thehive-charts/thehive/scenarios/combined-operators/values.yaml \
   -n thehive --create-namespace \
   --set thehive.httpSecret="$(openssl rand -base64 32)"
 ```

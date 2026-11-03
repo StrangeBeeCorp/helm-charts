@@ -10,6 +10,8 @@ Deploy TheHive using Elastic Cloud on Kubernetes (ECK) operator for Elasticsearc
 
 ## Deployment
 
+Run all commands from the root of the repository.
+
 ### Install ECK Operator
 
 Using Helm (recommended):
@@ -26,7 +28,7 @@ helm install elastic-operator elastic/eck-operator \
 ### Deploy Elasticsearch Cluster
 
 ```bash
-kubectl apply -f elasticsearch.yaml
+kubectl apply -f thehive-charts/thehive/scenarios/eck-operator/elasticsearch.yaml
 ```
 
 Wait for Elasticsearch to be ready (this may take 2-5 minutes). The operator creates the pod a few seconds after the apply, so wait for it to exist first:
@@ -88,14 +90,14 @@ The credentials are passed on stdin, so they do not appear in the pod spec.
 Fetch the chart dependencies (the `charts/` directory is not committed):
 
 ```bash
-helm dependency update ../../
+helm dependency update thehive-charts/thehive
 ```
 
 The `values.yaml` file is already configured to use the secret. Deploy TheHive with a random HTTP secret:
 
 ```bash
-helm install thehive ../../ \
-  -f values.yaml \
+helm install thehive thehive-charts/thehive \
+  -f thehive-charts/thehive/scenarios/eck-operator/values.yaml \
   -n thehive --create-namespace \
   --set thehive.httpSecret="$(openssl rand -base64 32)"
 ```

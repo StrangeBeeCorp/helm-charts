@@ -10,6 +10,8 @@ Deploy TheHive using K8ssandra operator for Cassandra.
 
 ## Deployment
 
+Run all commands from the root of the repository.
+
 ### Install cert-manager
 
 ```bash
@@ -39,7 +41,7 @@ helm install k8ssandra-operator k8ssandra/k8ssandra-operator \
 ### Deploy Cassandra Cluster
 
 ```bash
-kubectl apply -f k8ssandra-cluster.yaml
+kubectl apply -f thehive-charts/thehive/scenarios/k8ssandra-operator/k8ssandra-cluster.yaml
 ```
 
 Wait for Cassandra to be ready (this may take 2-5 minutes). The operator creates the pod a few seconds after the apply, so wait for it to exist first:
@@ -88,14 +90,14 @@ kubectl get secret cassandra-credentials -n thehive
 Fetch the chart dependencies (the `charts/` directory is not committed):
 
 ```bash
-helm dependency update ../../
+helm dependency update thehive-charts/thehive
 ```
 
 The `values.yaml` file is already configured to use the secret. Deploy TheHive with a random HTTP secret:
 
 ```bash
-helm install thehive ../../ \
-  -f values.yaml \
+helm install thehive thehive-charts/thehive \
+  -f thehive-charts/thehive/scenarios/k8ssandra-operator/values.yaml \
   -n thehive --create-namespace \
   --set thehive.httpSecret="$(openssl rand -base64 32)"
 ```

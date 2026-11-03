@@ -11,6 +11,8 @@ Deploy TheHive using SeaweedFS for object storage.
 
 ## Deployment
 
+Run all commands from the root of the repository.
+
 ### Install SeaweedFS
 
 Using Helm (recommended):
@@ -24,7 +26,7 @@ Create namespace and S3 credentials:
 
 ```bash
 kubectl create namespace seaweedfs
-kubectl apply -f seaweedfs-s3-secret.yaml
+kubectl apply -f thehive-charts/thehive/scenarios/seaweedfs/seaweedfs-s3-secret.yaml
 ```
 
 Install SeaweedFS:
@@ -32,7 +34,7 @@ Install SeaweedFS:
 ```bash
 helm install seaweedfs seaweedfs/seaweedfs \
   --version 4.48.0 \
-  -f seaweedfs-values.yaml \
+  -f thehive-charts/thehive/scenarios/seaweedfs/seaweedfs-values.yaml \
   -n seaweedfs \
   --wait --timeout 5m
 ```
@@ -78,14 +80,14 @@ kubectl get secret thehive-s3-credentials -n thehive
 Fetch the chart dependencies (the `charts/` directory is not committed):
 
 ```bash
-helm dependency update ../../
+helm dependency update thehive-charts/thehive
 ```
 
 The `values.yaml` file is already configured to use the secret. Deploy TheHive with a random HTTP secret:
 
 ```bash
-helm install thehive ../../ \
-  -f values.yaml \
+helm install thehive thehive-charts/thehive \
+  -f thehive-charts/thehive/scenarios/seaweedfs/values.yaml \
   -n thehive \
   --set thehive.httpSecret="$(openssl rand -base64 32)"
 ```
