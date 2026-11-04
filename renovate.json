@@ -88,7 +88,8 @@
       "matchManagers": ["helmv3", "helm-values"],
       "matchFileNames": ["thehive-charts/thehive-flow/**"],
       "matchPackageNames": ["temporal", "docker.io/temporalio/admin-tools"],
-      "enabled": true
+      "enabled": true,
+      "minimumReleaseAge": "7 days"
     },
     {
       "description": "Product image major bumps need explicit dashboard approval",
