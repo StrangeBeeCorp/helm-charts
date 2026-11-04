@@ -87,6 +87,7 @@ jobs:
           helm install thehive . \
             --namespace thehive \
             --values scenarios/seaweedfs/values.yaml \
+            --values ci/kind-values.yaml \
             --set thehive.httpSecret="$SECRET" \
             --timeout=15m \
             --wait
