@@ -3,7 +3,7 @@ name: thehive-flow
 description: TheHive Flow — TheHive Orchestration engine, running playbooks as durable Temporal workflows.
 type: application
 
-version: 1.0.0
+version: 1.0.1
 appVersion: 6.0.0-1
 kubeVersion: ">=1.29.0-0"
 
