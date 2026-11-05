@@ -16,6 +16,3 @@
 # Local values.yaml file for development
 /cortex-charts/*/values-dev.yaml
 /thehive-charts/*/values-dev.yaml
-
-# OpenAPI documentation (can be fetched at runtime)
-thehive-charts/thehive/docs-openapi.yaml
