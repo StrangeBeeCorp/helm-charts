@@ -1,7 +1,8 @@
 ################################################################################
 # TheHive with K8ssandra and ECK Operators
 ################################################################################
-# Uses K8ssandra Operator for Cassandra and ECK Operator for Elasticsearch
+# Uses K8ssandra Operator for Cassandra, ECK Operator for Elasticsearch and
+# SeaweedFS for object storage
 
 thehive:
   database:
@@ -12,6 +13,7 @@ thehive:
     k8sSecretKey: "password"
     hostnames:
       - "cassandra-datacenter1-service.k8ssandra-operator.svc.cluster.local"
+
   index:
     # The elastic superuser keeps this example simple. In production, create a
     # dedicated user with access limited to the TheHive indices.
@@ -24,9 +26,26 @@ thehive:
     checkElasticsearch:
       useHttps: false
 
+  storage:
+    accessKey: "seaweedfs-admin"
+
+    # S3 Secret Key - Using Kubernetes Secret (recommended)
+    # Created from the SeaweedFS S3 config, see "Extract Credentials" in README.md
+    k8sSecretName: "thehive-s3-credentials"
+    k8sSecretKey: "secretKey"
+
+    endpoint: "http://seaweedfs-s3.seaweedfs.svc.cluster.local:8333"
+    bucket: "thehive"
+    region: "us-east-1"
+    usePathAccessStyle: true
+
 # Disable Bitnami subcharts (using operators instead)
 cassandra:
   enabled: false
 
 elasticsearch:
+  enabled: false
+
+# Disable MinIO subchart (using external SeaweedFS instead)
+minio:
   enabled: false

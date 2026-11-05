@@ -9,7 +9,7 @@ This directory contains example deployment scenarios for TheHive Helm chart. Sce
 | [standalone](./standalone/) | External Cassandra, Elasticsearch and S3 | Backends operated outside the chart (managed services, dedicated clusters) | Kind |
 | [k8ssandra-operator](./k8ssandra-operator/) | K8ssandra Operator for Cassandra | Modern, operator-based Cassandra deployment | - |
 | [eck-operator](./eck-operator/) | Elastic Cloud on Kubernetes (ECK) | Operator-based Elasticsearch deployment | - |
-| [combined-operators](./combined-operators/) | K8ssandra + ECK Operators | Full operator-based deployment (Cassandra + Elasticsearch) | - |
+| [combined-operators](./combined-operators/) | K8ssandra + ECK Operators, SeaweedFS | No bundled subcharts (Cassandra, Elasticsearch and S3 storage) | - |
 | [seaweedfs](./seaweedfs/) | SeaweedFS object storage | Lightweight S3-compatible replacement for the MinIO subchart | Kind |
 | [flow](./flow/) | TheHive Flow | Deploy TheHive together with TheHive Flow | Kind |
 | [migration](./migration/) | Bundled to standalone migration | Move an existing bundled release to external backends | - |
