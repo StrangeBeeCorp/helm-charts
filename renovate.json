@@ -6,7 +6,7 @@
     "Each image update also patch-bumps the chart's own version (bumpVersions). Product tags are X.Y.Z-N, so custom regex versioning is used to order the -N revision.",
     "NOTE: Renovate does NOT regenerate helm-docs here (postUpgradeTasks are unavailable on the hosted Mend app), so an image bump arrives with stale README version/appVersion badges. The generate-helm-docs workflow does not fail Renovate PRs for that; it regenerates and commits the docs on merge to main. Pull main before tagging a release so the packaged chart ships an up-to-date README.",
     "Chart-only bumps, non-patch chart versions, other subcharts, and CHANGELOG.md entries are handled manually - Renovate does not cover them.",
-    "TheHive scenarios: the operator and storage charts, database versions and images pinned in thehive-charts/thehive/scenarios and the Kind workflows are tracked too, grouped in one PR. They are not packaged in the chart, so they do not bump its version."
+    "TheHive scenarios: the database versions pinned in the thehive-charts/thehive/scenarios manifests and the charts pinned in the Kind workflows are tracked too, grouped in one PR. They are not packaged in the chart, so they do not bump its version. The install commands, with their operator versions, live in the StrangeBee docs."
   ],
   "extends": [
     "config:recommended",
@@ -53,15 +53,6 @@
     },
     {
       "customType": "regex",
-      "description": "Scenario READMEs: helm install <release> <repo>/<chart> --version X, with the registry from the preceding helm repo add",
-      "managerFilePatterns": ["thehive-charts/thehive/scenarios/**/README.md"],
-      "matchStrings": [
-        "helm repo add \\S+ (?<registryUrl>\\S+)[\\s\\S]*?helm install \\S+ \\S+/(?<depName>[^\\s/]+)\\s*\\\\\\s*--version (?<currentValue>\\S+)"
-      ],
-      "datasourceTemplate": "helm"
-    },
-    {
-      "customType": "regex",
       "description": "Kind workflows: helm upgrade --install <release> <chart> --repo <url> --version X",
       "managerFilePatterns": [".github/workflows/*.yml"],
       "matchStrings": [
@@ -83,13 +74,6 @@
       "managerFilePatterns": ["thehive-charts/thehive/scenarios/k8ssandra-operator/k8ssandra-cluster.yaml"],
       "matchStrings": ["serverVersion: \"(?<currentValue>[^\"]+)\""],
       "depNameTemplate": "k8ssandra/cass-management-api",
-      "datasourceTemplate": "docker"
-    },
-    {
-      "customType": "regex",
-      "description": "Scenario READMEs: kubectl run --image=<image>:<tag>",
-      "managerFilePatterns": ["thehive-charts/thehive/scenarios/**/README.md"],
-      "matchStrings": ["--image=(?<depName>[^:\\s]+):(?<currentValue>\\S+)"],
       "datasourceTemplate": "docker"
     }
   ],
@@ -142,14 +126,14 @@
       "minimumReleaseAge": "0 days"
     },
     {
-      "description": "TheHive scenarios: one grouped PR for the pinned operators, storage, databases and images, for releases at least 7 days old",
+      "description": "TheHive scenarios: one grouped PR for the pinned charts and database versions, for releases at least 7 days old",
       "matchManagers": ["custom.regex"],
       "matchFileNames": ["thehive-charts/thehive/scenarios/**", ".github/workflows/**"],
       "groupName": "TheHive scenario dependencies",
       "minimumReleaseAge": "7 days"
     },
     {
-      "description": "TheHive scenarios: major bumps (operator APIs, database majors) need explicit dashboard approval",
+      "description": "TheHive scenarios: major bumps (chart and database majors) need explicit dashboard approval",
       "matchManagers": ["custom.regex"],
       "matchFileNames": ["thehive-charts/thehive/scenarios/**", ".github/workflows/**"],
       "matchUpdateTypes": ["major"],
