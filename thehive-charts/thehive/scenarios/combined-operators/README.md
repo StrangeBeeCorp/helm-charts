@@ -1,13 +1,12 @@
 # TheHive with K8ssandra and ECK Operators
 
-Deploy TheHive using K8ssandra Operator for Cassandra, ECK Operator for Elasticsearch and SeaweedFS for object storage - no bundled subcharts.
+Deploy TheHive using both K8ssandra Operator for Cassandra and ECK Operator for Elasticsearch - a fully operator-based deployment.
 
 ## Prerequisites
 
 - Kubernetes cluster (>= 1.23.0)
 - Helm 3.x
 - kubectl
-- jq
 
 ## Deployment
 
@@ -85,24 +84,6 @@ kubectl wait --for=condition=ready pod \
   -n elastic-system --timeout=10m
 ```
 
-### Install SeaweedFS
-
-Create the namespace and the S3 credentials, then install SeaweedFS:
-
-```bash
-helm repo add seaweedfs https://seaweedfs.github.io/seaweedfs/helm
-helm repo update
-
-kubectl create namespace seaweedfs
-kubectl apply -f thehive-charts/thehive/scenarios/seaweedfs/seaweedfs-s3-secret.yaml
-
-helm install seaweedfs seaweedfs/seaweedfs \
-  --version 4.48.0 \
-  -f thehive-charts/thehive/scenarios/seaweedfs/seaweedfs-values.yaml \
-  -n seaweedfs \
-  --wait --timeout 5m
-```
-
 ### Extract Credentials and Create Secrets
 
 Create thehive namespace if it doesn't exist:
@@ -139,19 +120,6 @@ kubectl create secret generic elasticsearch-credentials \
   -n thehive \
   --from-literal=username="elastic" \
   --from-literal=password="${ELASTICSEARCH_PASSWORD}"
-```
-
-Extract and create S3 credentials:
-
-```bash
-S3_CONFIG=$(kubectl get secret seaweedfs-s3-config \
-  -n seaweedfs \
-  -o jsonpath='{.data.seaweedfs_s3_config}' | base64 -d)
-
-kubectl create secret generic thehive-s3-credentials \
-  -n thehive \
-  --from-literal=accessKey="$(jq -r '.identities[0].credentials[0].accessKey' <<<"${S3_CONFIG}")" \
-  --from-literal=secretKey="$(jq -r '.identities[0].credentials[0].secretKey' <<<"${S3_CONFIG}")"
 ```
 
 ### Initialize Elasticsearch Index
@@ -195,7 +163,6 @@ helm install thehive thehive-charts/thehive \
 kubectl get pods -n thehive
 kubectl get pods -n k8ssandra-operator
 kubectl get pods -n elastic-system
-kubectl get pods -n seaweedfs
 
 # Check TheHive logs
 kubectl logs -n thehive -l app.kubernetes.io/name=thehive --tail=50
