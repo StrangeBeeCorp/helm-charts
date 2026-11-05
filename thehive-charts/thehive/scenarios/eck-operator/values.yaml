@@ -1,7 +1,7 @@
 ################################################################################
 # TheHive with ECK Operator
 ################################################################################
-# See README.md for deployment instructions
+# Deployment steps: https://docs.strangebee.com/thehive/installation/kubernetes/
 
 thehive:
   index:

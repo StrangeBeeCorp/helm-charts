@@ -1,14 +1,14 @@
 ################################################################################
 # TheHive with SeaweedFS Object Storage
 ################################################################################
-# See README.md for deployment instructions
+# Deployment steps: https://docs.strangebee.com/thehive/installation/kubernetes/
 
 thehive:
   storage:
     accessKey: "seaweedfs-admin"
 
     # S3 Secret Key - Using Kubernetes Secret (recommended)
-    # Created from the SeaweedFS S3 config, see "Extract Credentials" in README.md
+    # Created from the SeaweedFS S3 config, see https://docs.strangebee.com/thehive/installation/kubernetes/#step-4-provision-the-secrets
     k8sSecretName: "thehive-s3-credentials"
     k8sSecretKey: "secretKey"
 
