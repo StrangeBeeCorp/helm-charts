@@ -1,6 +1,6 @@
 # thehive-flow
 
-[![Version: 1.0.0](https://img.shields.io/badge/Version-1.0.0-informational?style=flat-square) ](https://github.com/StrangeBeeCorp/helm-charts/releases) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square)  ![AppVersion: 6.0.0-1](https://img.shields.io/badge/AppVersion-6.0.0--1-informational?style=flat-square)
+[![Version: 1.0.1](https://img.shields.io/badge/Version-1.0.1-informational?style=flat-square) ](https://github.com/StrangeBeeCorp/helm-charts/releases) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square)  ![AppVersion: 6.0.0-1](https://img.shields.io/badge/AppVersion-6.0.0--1-informational?style=flat-square)
 
 ## Description
 
@@ -35,7 +35,7 @@ Kubernetes: `>=1.29.0-0`
 
 | Repository | Name | Version |
 |------------|------|---------|
-| https://temporalio.github.io/helm-charts | temporal | 1.7.0 |
+| https://temporalio.github.io/helm-charts | temporal | 1.8.0 |
 
 ## Values
 
@@ -181,7 +181,7 @@ Kubernetes: `>=1.29.0-0`
 | temporalReadiness.enabled | bool | `true` | Gate the wait-temporal init container. Disable to skip the readiness wait when Temporal is already ready or reachable by other means. |
 | temporalReadiness.image.pullPolicy | string | `"IfNotPresent"` | Image pull policy. |
 | temporalReadiness.image.repository | string | `"docker.io/temporalio/admin-tools"` | Admin-tools image (ships the `temporal` CLI). Pin to match your Temporal server version. |
-| temporalReadiness.image.tag | string | `"1.32.1@sha256:9ef0dc5b063bf4ffd5c1512de72e0e73e225bd2c7006a18ce69bd592a8862a83"` | Image tag. |
+| temporalReadiness.image.tag | string | `"1.32.2@sha256:4a95866efba29d7e17ab012df5232795e8b0ad0f7d5f9d1ec4df321f7792a754"` | Image tag. |
 | temporalReadiness.namespace | string | `"default"` | Temporal namespace to wait for (the namespace TheHive Flow uses). |
 | temporalReadiness.resources | object | `{"limits":{"ephemeral-storage":"32Mi","memory":"64Mi"},"requests":{"cpu":"10m","ephemeral-storage":"16Mi","memory":"32Mi"}}` | Resource requests/limits for the wait-temporal init container. |
 | terminationGracePeriodSeconds | int | `30` | Grace period the kubelet grants the TheHive Flow pod on SIGTERM before SIGKILL. 30 is Kubernetes' own default, made explicit here because it is paired with an application setting: `shutdown.timeout` (20s by default, warned about above 25s) plus a separate ~5s telemetry flush. Raising `shutdown.timeout` past 25s means raising this too, or the drain is cut short by SIGKILL. |
