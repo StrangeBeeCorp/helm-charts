@@ -1,3 +1,7 @@
+## 2.1.2
+
+- Update TheHive to v6.0.0-2
+
 ## 2.1.1
 
 - Fix the Elasticsearch init container when `thehive.index.password` or `thehive.index.k8sSecretName` is set: it read a secret key the chart does not create and never expanded the password, so TheHive stayed in `Init` [#172](https://github.com/StrangeBeeCorp/helm-charts/pull/172)
