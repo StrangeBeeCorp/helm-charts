@@ -2,8 +2,8 @@
 apiVersion: v2
 
 name: thehive
-version: 2.1.2
-appVersion: "6.0.0-2"
+version: 2.1.3
+appVersion: "6.0.0-3"
 kubeVersion: ">= 1.23.0-0"
 
 dependencies:
@@ -46,7 +46,7 @@ annotations:
   artifacthub.io/category: security
   artifacthub.io/images: |
     - name: thehive
-      image: strangebee/thehive:6.0.0-2
+      image: strangebee/thehive:6.0.0-3
       whitelisted: true
     - name: curl
       image: curlimages/curl:8.17.0
