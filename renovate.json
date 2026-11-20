@@ -5,7 +5,8 @@
     "Scope (for now): the product image tags strangebee/thehive, thehiveproject/cortex and strangebee/thehive-flow, mirrored in appVersion and the artifacthub.io/images annotation of each Chart.yaml; the Temporal subchart and Temporal admin-tools image of TheHive Flow; and the GitHub Actions of the workflows and composite actions (SHA-pinned, grouped in one ci PR). Other subcharts and values.yaml images are not managed (see the helmv3 and helm-values rules).",
     "Each image update also patch-bumps the chart's own version (bumpVersions). Product tags are X.Y.Z-N, so custom regex versioning is used to order the -N revision.",
     "NOTE: Renovate does NOT regenerate helm-docs here (postUpgradeTasks are unavailable on the hosted Mend app), so an image bump arrives with stale README version/appVersion badges. The generate-helm-docs workflow does not fail Renovate PRs for that; it regenerates and commits the docs on merge to main. Pull main before tagging a release so the packaged chart ships an up-to-date README.",
-    "Chart-only bumps, non-patch chart versions, other subcharts, and CHANGELOG.md entries are handled manually - Renovate does not cover them."
+    "Chart-only bumps, non-patch chart versions, other subcharts, and CHANGELOG.md entries are handled manually - Renovate does not cover them.",
+    "TheHive scenarios: the database versions pinned in the thehive-charts/thehive/scenarios manifests and the charts pinned in the Kind workflows are tracked too, grouped in one PR. They are not packaged in the chart, so they do not bump its version. The install commands, with their operator versions, live in the StrangeBee docs."
   ],
   "extends": [
     "config:recommended",
@@ -49,6 +50,31 @@
       "depNameTemplate": "strangebee/thehive-flow",
       "datasourceTemplate": "docker",
       "versioningTemplate": "regex:^(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)-(?<revision>\\d+)$"
+    },
+    {
+      "customType": "regex",
+      "description": "Kind workflows: helm upgrade --install <release> <chart> --repo <url> --version X",
+      "managerFilePatterns": [".github/workflows/*.yml"],
+      "matchStrings": [
+        "helm upgrade --install \\S+ (?<depName>\\S+)\\s*\\\\\\s*--repo (?<registryUrl>\\S+) --version (?<currentValue>\\S+)"
+      ],
+      "datasourceTemplate": "helm"
+    },
+    {
+      "customType": "regex",
+      "description": "ECK scenario: Elasticsearch version",
+      "managerFilePatterns": ["thehive-charts/thehive/scenarios/eck-operator/elasticsearch.yaml"],
+      "matchStrings": ["kind: Elasticsearch\\n[\\s\\S]*?\\n  version: (?<currentValue>\\S+)"],
+      "depNameTemplate": "docker.elastic.co/elasticsearch/elasticsearch",
+      "datasourceTemplate": "docker"
+    },
+    {
+      "customType": "regex",
+      "description": "K8ssandra scenario: Cassandra server version",
+      "managerFilePatterns": ["thehive-charts/thehive/scenarios/k8ssandra-operator/k8ssandra-cluster.yaml"],
+      "matchStrings": ["serverVersion: \"(?<currentValue>[^\"]+)\""],
+      "depNameTemplate": "k8ssandra/cass-management-api",
+      "datasourceTemplate": "docker"
     }
   ],
   "bumpVersions": [
@@ -98,6 +124,20 @@
       "matchUpdateTypes": ["major"],
       "dependencyDashboardApproval": true,
       "minimumReleaseAge": "0 days"
+    },
+    {
+      "description": "TheHive scenarios: one grouped PR for the pinned charts and database versions, for releases at least 7 days old",
+      "matchManagers": ["custom.regex"],
+      "matchFileNames": ["thehive-charts/thehive/scenarios/**", ".github/workflows/**"],
+      "groupName": "TheHive scenario dependencies",
+      "minimumReleaseAge": "7 days"
+    },
+    {
+      "description": "TheHive scenarios: major bumps (chart and database majors) need explicit dashboard approval",
+      "matchManagers": ["custom.regex"],
+      "matchFileNames": ["thehive-charts/thehive/scenarios/**", ".github/workflows/**"],
+      "matchUpdateTypes": ["major"],
+      "dependencyDashboardApproval": true
     },
     {
       "description": "GitHub Actions: one grouped ci PR, for releases at least 7 days old",

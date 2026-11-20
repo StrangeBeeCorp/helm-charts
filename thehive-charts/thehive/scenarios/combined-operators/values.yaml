@@ -1,0 +1,32 @@
+################################################################################
+# TheHive with K8ssandra and ECK Operators
+################################################################################
+# Uses K8ssandra Operator for Cassandra and ECK Operator for Elasticsearch
+
+thehive:
+  database:
+    # The Cassandra superuser keeps this example simple. In production, create a
+    # dedicated user with access limited to the TheHive keyspace.
+    username: "cassandra-superuser"
+    k8sSecretName: "cassandra-credentials"
+    k8sSecretKey: "password"
+    hostnames:
+      - "cassandra-datacenter1-service.k8ssandra-operator.svc.cluster.local"
+  index:
+    # The elastic superuser keeps this example simple. In production, create a
+    # dedicated user with access limited to the TheHive indices.
+    username: "elastic"
+    k8sSecretName: "elasticsearch-credentials"
+    k8sSecretKey: "password"
+    hostnames:
+      - "elasticsearch-es-http.elastic-system.svc.cluster.local"
+  initContainers:
+    checkElasticsearch:
+      useHttps: false
+
+# Disable Bitnami subcharts (using operators instead)
+cassandra:
+  enabled: false
+
+elasticsearch:
+  enabled: false
